@@ -27,19 +27,21 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
     // Resolve role IDs for the provided role names
     int[]|error? rolesIds = getRoleIdsByNames(roles);
 
+    // Return null id not ids are found
     if rolesIds is () {
         return;
     }
 
+    // Return custom error if id is error
     if rolesIds is error {
         return rolesIds;
     }
 
     // Resolve user's favourites id; maybe `error` when no favourites exist
-    int|error id = databaseClient->queryRow(findUserHasFavourites(email));
+    int|error favId = databaseClient->queryRow(findUserHasFavourites(email));
 
-    if id is error {
-        log:printError("User has no favourites ", id);
+    if favId is error {
+        log:printError("User has no favourites ", favId);
     }
 
     // Fetch all links visible to the roles
@@ -52,9 +54,9 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
         do {
 
             int isFav = 0;
-            if id is int {
+            if favId is int {
                 // Returns 1/0 for favourite; will error if not found
-                int t | error = findIfItIsFav(link.id);
+                isFav = check databaseClient->queryRow(findIfItIsFavQuery(favId, link.id));
             }
 
             links.push({
@@ -74,37 +76,32 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
     return links;
 }
 
+# Resolve DB role IDs for the provided role names and handle empty input
+#
+# + roles - Role names to resolve
+# + return - int[] of role IDs, () when roles empty, or error? on failure
 public isolated function getRoleIdsByNames(string[] roles) returns int[]|error? {
-    // Resolve role IDs for the provided role names
-    stream<record {|int id;|}, error?> rs = databaseClient->query(getRoleIdsByNamesQuery(roles));
+    // short-circuit when no roles are provided
+    if roles.length() == 0 {
+        return;
+    }
+    // query role ids as a stream
+    stream<record {|int id;|}, error?> rs =
+        databaseClient->query(getRoleIdsByNamesQuery(roles));
 
     int[] rolesIds = [];
-    // Collect role IDs into an array
     do {
+        // pull rows and project to int[]
         rolesIds = check from record {|int id;|} row in rs
             select row.id;
 
         check rs.close();
-
     } on fail var e {
-        string customError = string `Error while retrieving user roles`;
+        // close stream but do not override the original error
+        string customError = "Error while retrieving user roles";
         log:printError(customError, e);
         return error(customError);
     }
 
-    if roles.length() === 0 {
-        return;
-    }
-
     return rolesIds;
-}
-
-public isolated function findIfItIsFav(int id) returns int|error {
-    int|error isFav = databaseClient->queryRow(findIfItIsFavQuery(id));
-
-    if isFav is error {
-        log:printError("Error while finding if its fav or not : ", isFav);
-    }
-
-    return isFav;
 }
