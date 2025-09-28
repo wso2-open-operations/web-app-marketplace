@@ -25,13 +25,15 @@ import ballerina/log;
 public isolated function getCollectionByRoles(string email, string[] roles) returns AppLinks[]|error? {
 
     // Resolve role IDs for the provided role names
-    stream<record {|int id;|}, error?> rs = databaseClient->query(getRoleIdsByNamesQuery(roles));
+    int[]|error? rolesIds = getRoleIdsByNames(roles);
 
-    // Collect role IDs into an array
-    int[] rolesIds = check from record {|int id;|} row in rs
-        select row.id;
+    if rolesIds is () {
+        return;
+    }
 
-    check rs.close();
+    if rolesIds is error {
+        return rolesIds;
+    }
 
     // Resolve user's favourites id; maybe `error` when no favourites exist
     int|error id = databaseClient->queryRow(findUserHasFavourites(email));
@@ -52,7 +54,7 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
             int isFav = 0;
             if id is int {
                 // Returns 1/0 for favourite; will error if not found
-                isFav = check databaseClient->queryRow(findIfItIsFavQuery(link.id));
+                int t | error = findIfItIsFav(link.id);
             }
 
             links.push({
@@ -70,4 +72,39 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
         };
 
     return links;
+}
+
+public isolated function getRoleIdsByNames(string[] roles) returns int[]|error? {
+    // Resolve role IDs for the provided role names
+    stream<record {|int id;|}, error?> rs = databaseClient->query(getRoleIdsByNamesQuery(roles));
+
+    int[] rolesIds = [];
+    // Collect role IDs into an array
+    do {
+        rolesIds = check from record {|int id;|} row in rs
+            select row.id;
+
+        check rs.close();
+
+    } on fail var e {
+        string customError = string `Error while retrieving user roles`;
+        log:printError(customError, e);
+        return error(customError);
+    }
+
+    if roles.length() === 0 {
+        return;
+    }
+
+    return rolesIds;
+}
+
+public isolated function findIfItIsFav(int id) returns int|error {
+    int|error isFav = databaseClient->queryRow(findIfItIsFavQuery(id));
+
+    if isFav is error {
+        log:printError("Error while finding if its fav or not : ", isFav);
+    }
+
+    return isFav;
 }
