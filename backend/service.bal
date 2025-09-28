@@ -13,9 +13,9 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-import visitor.authorization;
-import visitor.database;
-import visitor.people;
+import app_store.authorization;
+import app_store.database;
+import app_store.people;
 
 import ballerina/cache;
 import ballerina/http;

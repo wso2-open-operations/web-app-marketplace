@@ -13,7 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-import visitor.people;
+import app_store.people;
 
 # Response for fetching user information.
 type UserInfo record {
