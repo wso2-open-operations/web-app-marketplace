@@ -98,41 +98,45 @@ service http:InterceptableService / on new http:Listener(9090) {
         return userInfoResponse;
     }
 
-    resource function get links(http:RequestContext ctx) returns AppLinks[]|http:NotFound|http:InternalServerError {
+    # Handle GET /links and return app links visible to the user.
+    #
+    # + ctx - Request context carrying authenticated user info
+    # + return - AppLinks[] on success, 404 when no links, or 500 on internal errors
+    resource function get links(http:RequestContext ctx)
+        returns AppLinks[]|http:NotFound|http:InternalServerError {
 
-        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        // read user info from header context
+        authorization:CustomJwtPayload|error userInfo =
+        ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
-                body: {
-                    message: USER_INFO_HEADER_NOT_FOUND_ERROR
-                }
+                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
             };
         }
 
-        AppLinks[]|error? result = database:getCollectionByRoles(userInfo.email, userInfo.groups);
+        // fetch links for user's roles
+        AppLinks[]|error? result =
+        database:getCollectionByRoles(userInfo.email, userInfo.groups);
 
+        // db/repo failure → 500
         if result is error {
-            string customError = string `Error whilte retrieving applinks`;
+            string customError = "Error while retrieving app links";
             log:printError(customError, result);
             return <http:InternalServerError>{
-                body: {
-                    message: customError
-                }
+                body: {message: customError}
             };
         }
 
+        // no links for these roles 
         if result is () {
             string customError = string `No app links found for user : ${userInfo.email}`;
             log:printError(customError, result);
             return <http:NotFound>{
-                body: {
-                    message: customError
-                }
+                body: {message: customError}
             };
         }
 
         return result;
     }
-
 }
