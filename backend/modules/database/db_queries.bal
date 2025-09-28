@@ -58,14 +58,14 @@ isolated function getRoleIdsByNamesQuery(string[] roleNames) returns sql:Paramet
     `);
 };
 
-isolated function findIfItIsFavQuery(int id) returns sql:ParameterizedQuery {
-    sql:ParameterizedQuery query =
-        `SELECT EXISTS (
-            SELECT 1 
-            FROM favourite_links fl
-            WHERE fl.link_id = ${id}
-        ) AS is_fav`;
-    return query;
+isolated function findIfItIsFavQuery(int favId, int linkId)
+        returns sql:ParameterizedQuery {
+    return `SELECT CAST(EXISTS(
+              SELECT 1
+              FROM favourite_links fl
+              WHERE fl.favourite_id = ${favId}
+                AND fl.link_id      = ${linkId}
+            ) AS UNSIGNED) AS is_fav`;
 }
 
 isolated function findUserHasFavourites(string email) returns sql:ParameterizedQuery {
