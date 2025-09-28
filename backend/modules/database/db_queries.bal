@@ -15,6 +15,9 @@
 // under the License.
 import ballerina/sql;
 
+# [Database] Build query to fetch all non-deleted collection rows.
+#
+# + return - Parameterized query for selecting collection metadata
 isolated function fetchAllCollectionQuery() returns sql:ParameterizedQuery {
     sql:ParameterizedQuery query = `
         SELECT
@@ -30,10 +33,13 @@ isolated function fetchAllCollectionQuery() returns sql:ParameterizedQuery {
         FROM collection
         WHERE is_deleted = 0
     `;
-
     return query;
 }
 
+# [Database] Build query to fetch a user's favourites row by email.
+#
+# + email - User email to match
+# + return - Parameterized query selecting favourites for the user
 isolated function fetchFavouritesQuery(string email) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery query = `
         SELECT
@@ -42,10 +48,13 @@ isolated function fetchFavouritesQuery(string email) returns sql:ParameterizedQu
         FROM favourites
         WHERE user_email = ${email}
     `;
-
     return query;
-};
+}
 
+# [Database] Build query to resolve role IDs from role names.
+#
+# + roleNames - Role names to filter
+# + return - Parameterized query selecting distinct role ids for given names
 isolated function getRoleIdsByNamesQuery(string[] roleNames) returns sql:ParameterizedQuery {
     return sql:queryConcat(`
         SELECT 
@@ -56,10 +65,14 @@ isolated function getRoleIdsByNamesQuery(string[] roleNames) returns sql:Paramet
             name IN(`, sql:arrayFlattenQuery(roleNames), `) 
             AND is_deleted = 0
     `);
-};
+}
 
-isolated function findIfItIsFavQuery(int favId, int linkId)
-        returns sql:ParameterizedQuery {
+# [Database] Build query to test if a link is favourited within a specific favourites bucket.
+#
+# + favId - Favourites table id for the user
+# + linkId - Link id to test
+# + return - Parameterized query returning 0 or 1 as is_fav
+isolated function findIfItIsFavQuery(int favId, int linkId) returns sql:ParameterizedQuery {
     return `SELECT CAST(EXISTS(
               SELECT 1
               FROM favourite_links fl
@@ -68,16 +81,23 @@ isolated function findIfItIsFavQuery(int favId, int linkId)
             ) AS UNSIGNED) AS is_fav`;
 }
 
+# [Database] Build query to fetch the favourites id for a user by email.
+#
+# + email - User email to match
+# + return - Parameterized query selecting favourites id
 isolated function findUserHasFavourites(string email) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery query = `
         SELECT id
         FROM favourites
         WHERE user_email = ${email}
     `;
-
     return query;
 }
 
+# [Database] Build query to fetch distinct links visible to any of the given role IDs.
+#
+# + roleIds - Role ids used in the IN filter
+# + return - Parameterized query selecting link metadata for the roles
 isolated function fetchLinksByRolesQuery(int[] roleIds) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery head = `
     SELECT DISTINCT
