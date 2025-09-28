@@ -13,91 +13,61 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-import ballerina/sql;
+// import ballerina/sql;
+import ballerina/log;
 
-# Fetch Visitor.
+# Fetch all app links visible to the given `roles` and mark whether each link
+# is a favourite for the user identified by `email`.
 #
-# + hashedNic - Filter :  hashed NIC of the visitor
-# + return - Visitor object or error if so
-public isolated function fetchVisitor(string hashedNic) returns Visitor|error? {
-    Visitor|error visitor = databaseClient->queryRow(getVisitorByNicQuery(hashedNic));
-    if visitor is sql:NoRowsError {
-        return;
+# + email - User email used to look up favourites
+# + roles - Role names used to resolve visible links
+# + return - List of links with `isFavourite` set, or an `error?` on failure
+public isolated function getCollectionByRoles(string email, string[] roles) returns AppLinks[]|error? {
+
+    // Resolve role IDs for the provided role names
+    stream<record {|int id;|}, error?> rs = databaseClient->query(getRoleIdsByNamesQuery(roles));
+
+    // Collect role IDs into an array
+    int[] rolesIds = check from record {|int id;|} row in rs
+        select row.id;
+
+    check rs.close();
+
+    // Resolve user's favourites id; maybe `error` when no favourites exist
+    int|error id = databaseClient->queryRow(findUserHasFavourites(email));
+
+    if id is error {
+        log:printError("User has no favourites ", id);
     }
-    if visitor is error {
-        return visitor;
-    }
 
-    // Decrypt sensitive fields.
-    visitor.name = check decrypt(visitor.name);
-    visitor.nicNumber = check decrypt(visitor.nicNumber);
-    visitor.contactNumber = check decrypt(visitor.contactNumber);
+    // Fetch all links visible to the roles
+    stream<AppLinks, error?> collectionStream = databaseClient->query(fetchLinksByRolesQuery(rolesIds));
 
-    string? email = visitor.email;
-    visitor.email = email is string ? check decrypt(email) : null;
+    AppLinks[] links = [];
 
-    return visitor;
-}
-
-# Add new visitor.
-#
-# + payload - Payload containing the visitor details  
-# + createdBy - Person who is creating the visitor
-# + return - Error if the insertion failed
-public isolated function AddVisitor(AddVisitorPayload payload, string createdBy) returns error? {
-    // Encrypt sensitive fields.
-    payload.name = check encrypt(payload.name);
-    payload.nicNumber = check encrypt(payload.nicNumber);
-    string? email = payload.email;
-    payload.email = email is string ? check encrypt(email) : null;
-    payload.contactNumber = check encrypt(payload.contactNumber);
-
-    _ = check databaseClient->execute(addVisitorQuery(payload, createdBy));
-}
-
-# Add new visit.
-#
-# + payload - Payload containing the visit details
-# + createdBy - Person who is creating the visit
-# + return - Error if the insertion failed
-public isolated function AddVisit(AddVisitPayload payload, string createdBy) returns error? {
-    sql:ExecutionResult _ = check databaseClient->execute(addVisitQuery(payload, createdBy));
-}
-
-# Fetch visits with pagination.
-#
-# + 'limit - Limit number of visits to fetch
-# + offset - Offset for pagination
-# + return - Array of visits objects or error
-public isolated function fetchVisits(int? 'limit, int? offset) returns VisitsResponse|error {
-    stream<VisitRecord, sql:Error?> resultStream = databaseClient->query(getVisitsQuery('limit, offset));
-
-    int totalCount = 0;
-    Visit[] visits = [];
-    check from VisitRecord visit in resultStream
+    // For each link, check if it's a favourite (only if user has a favourites id)
+    check from AppLinks link in collectionStream
         do {
-            totalCount = visit.totalCount;
-            visits.push({
-                id: visit.id,
-                timeOfEntry: visit.timeOfEntry,
-                timeOfDeparture: visit.timeOfDeparture,
-                passNumber: visit.passNumber,
-                nicHash: visit.nicHash,
-                nicNumber: check decrypt(visit.nicNumber),
-                name: check decrypt(visit.name),
-                email: visit.email is string ? check decrypt(<string>visit.email) : null,
-                contactNumber: check decrypt(visit.contactNumber),
-                companyName: visit.companyName,
-                whomTheyMeet: visit.whomTheyMeet,
-                purposeOfVisit: visit.purposeOfVisit,
-                accessibleLocations: check visit.accessibleLocations.cloneWithType(),
-                status: visit.status,
-                createdBy: visit.createdBy,
-                createdOn: visit.createdOn,
-                updatedBy: visit.updatedBy,
-                updatedOn: visit.updatedOn
+
+            int isFav = 0;
+            if id is int {
+                // Returns 1/0 for favourite; will error if not found
+                isFav = check databaseClient->queryRow(findIfItIsFavQuery(link.id));
+            }
+
+            links.push({
+                id: link.id,
+                header: link.header,
+                description: link.description,
+                versionName: link.versionName,
+                tagId: link.tagId,
+                iconName: link.iconName,
+                addedBy: link.addedBy,
+                isFavourite: isFav,
+                urlName: link.urlName
             });
+
         };
 
-    return {totalCount, visits};
+    return links;
 }
