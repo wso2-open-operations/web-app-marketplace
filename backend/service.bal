@@ -98,8 +98,41 @@ service http:InterceptableService / on new http:Listener(9090) {
         return userInfoResponse;
     }
 
-    resource function get app\-config(http:RequestContext ctx) returns AppConfig|http:InternalServerError {
+    resource function get links(http:RequestContext ctx) returns AppLinks[]|http:NotFound|http:InternalServerError {
 
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {
+                    message: USER_INFO_HEADER_NOT_FOUND_ERROR
+                }
+            };
+        }
+
+        AppLinks[]|error? result = database:getCollectionByRoles(userInfo.email, userInfo.groups);
+
+        if result is error {
+            string customError = string `Error whilte retrieving applinks`;
+            log:printError(customError, result);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if result is () {
+            string customError = string `No app links found for user : ${userInfo.email}`;
+            log:printError(customError, result);
+            return <http:NotFound>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        return result;
     }
 
 }
