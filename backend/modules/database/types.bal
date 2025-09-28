@@ -13,7 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-import ballerina/constraint;
+
 import ballerina/sql;
 import ballerinax/mysql;
 
@@ -35,147 +35,32 @@ type DatabaseConfig record {|
     sql:ConnectionPool connectionPool?;
 |};
 
-# Database audit fields.
-public type AuditFields record {|
-    # Who created the visitor 
-    string createdBy;
-    # When the visitor was created 
-    string createdOn;
-    # Who updated the visitor
-    string updatedBy;
-    # When the visitor was updated
-    string updatedOn;
-|};
-
-# Database record for Visitor.
-public type Visitor record {|
-    *AddVisitorPayload;
-    *AuditFields;
-|};
-
-# [Database] Insert record for visitor.
-public type AddVisitorPayload record {|
-    # Nic Hash of the visitor
-    @constraint:String {
-        pattern: {
-            value: NONE_EMPTY_PRINTABLE_STRING_REGEX,
-            message: "The NIC Hash should be a non-empty string with printable characters."
-        }
-    }
-    string nicHash;
-    # Name of the visitor
-    @constraint:String {
-        pattern: {
-            value: NONE_EMPTY_PRINTABLE_STRING_REGEX,
-            message: "The name should be a non-empty string with printable characters."
-        }
-    }
-    string name;
-    # NIC number of visitor
-    @constraint:String {
-        pattern: {
-            value: NONE_EMPTY_PRINTABLE_STRING_REGEX,
-            message: "The NIC number should be a non-empty string with printable characters."
-        }
-    }
-    string nicNumber;
-    # Working phone number of visitor
-    @constraint:String {
-        pattern: {
-            value: INTERNATIONAL_CONTACT_NUMBER_REGEX,
-            message: "The contact number should be in valid international format."
-        }
-    }
-    string contactNumber;
-    # Email of the visitor
-    string? email;
-|};
-
-# [Database] Floor record.
-public type Floor record {|
-    # Floor
-    string floor;
-    # Array of rooms
-    string[] rooms;
-|};
-
-# [Database] Insert record for visit.
-public type AddVisitPayload record {|
-    # Nic Hash of the visitor
-    string nicHash;
-    # Company name of visitor
-    string? companyName;
-    # Number in the tag given to visitor
-    string passNumber;
-    # The person the visitor is supposed to meet
-    string whomTheyMeet;
-    # Purpose of the visit
-    string purposeOfVisit;
-    # The floors and rooms that the visitor can access
-    Floor[] accessibleLocations;
-    # Time at which the visitor is supposed to check in [in UTC]
-    string timeOfEntry;
-    # Time at which the visitor is supposed to check out [in UTC]
-    string timeOfDeparture;
-    # Status of the visit
-    Status status;
-|};
-
-# [Database] Visit record.
-public type VisitRecord record {|
-    *AuditFields;
-    # Nic Hash of the visitor
-    string nicHash;
-    # Unique identifier for the visit
+# [Database] Link record — app catalog entry pointing to an application's URL.
+public type AppLinks record {|
+    # Unique identifier of the link
+    @sql:Column {name: "id"}
     int id;
-    # Name of the visitor
-    string name;
-    # NIC number of visitor
-    string nicNumber;
-    # Working phone number of visitor
-    string contactNumber;
-    # Email of the visitor
-    string? email;
-    # Company name of visitor
-    string? companyName;
-    # Number in the tag given to visitor
-    string passNumber;
-    # The person the visitor is supposed to meet
-    string whomTheyMeet;
-    # Purpose of the visit
-    string purposeOfVisit;
-    # The floors and rooms that the visitor can access
-    json accessibleLocations;
-    # Time at which the visitor is supposed to check in [in UTC]
-    string timeOfEntry;
-    # Time at which the visitor is supposed to check out [in UTC]
-    string timeOfDeparture;
-    # Status of the visit
-    Status status;
-    # Total number of visits
-    int totalCount;
-|};
-
-# Visit record.
-public type Visit record {|
-    *AddVisitPayload;
-    *AuditFields;
-    # Unique identifier for the visit
-    int id;
-    # Name of the visitor
-    string name;
-    # NIC number of visitor
-    string nicNumber;
-    # Working phone number of visitor
-    string contactNumber;
-    # Email of the visitor
-    string? email;
-|};
-
-# Response Record for Visits.
-public type VisitsResponse record {|
-    # The total count of visits
-    int totalCount;
-    # Array of visits
-    Visit[] visits;
+    # Display title
+    @sql:Column {name: "header"}
+    string header;
+    # Target URL 
+    @sql:Column {name: "url_name"}
+    string urlName;
+    # Short description
+    @sql:Column {name: "description"}
+    string description;
+    # Version label of the target app
+    @sql:Column {name: "version_name"}
+    string versionName;
+    # Tag/category ID
+    @sql:Column {name: "tag"}
+    int tagId;
+    # Icon asset name/key
+    @sql:Column {name: "icon"}
+    string iconName;
+    # User who added the link
+    @sql:Column {name: "added_by"}
+    string addedBy;
+    # Whether the current user has favorited this link (0 = no, 1 = yes)
+    int isFavourite;
 |};
