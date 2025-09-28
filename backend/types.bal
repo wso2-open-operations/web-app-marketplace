@@ -22,22 +22,24 @@ type UserInfo record {
     int[] privileges;
 };
 
+# AppLinks record
 public type AppLinks record {|
+    # Unique identifier of the link
     int id;
-
+    # Display title
     string header;
-
+    # Target URL
     string urlName;
-
+    # Short description
     string description;
-
+    # Version label of the target app
     string versionName;
-
+    # Tag id of the target app
     int tagId;
-
+    # Icon asset name or key
     string iconName;
-
+    # User who added the link
     string addedBy;
-
+    # Whether the current user has favorited this link (0 = no, 1 = yes)
     int isFavourite;
 |};
