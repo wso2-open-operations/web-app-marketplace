@@ -55,7 +55,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        // Check if the employees are already cached.
+        // Check if the employees are already cached
         if cache.hasKey(userInfo.email) {
             UserInfo|error cachedUserInfo = cache.get(userInfo.email).ensureType();
             if cachedUserInfo is UserInfo {

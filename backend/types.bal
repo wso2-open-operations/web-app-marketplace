@@ -22,7 +22,7 @@ type UserInfo record {
     int[] privileges;
 };
 
-# AppLinks record
+# Strucutre of AppLinks record.
 public type AppLinks record {|
     # Unique identifier of the link
     int id;

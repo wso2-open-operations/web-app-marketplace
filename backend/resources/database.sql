@@ -2,7 +2,6 @@ DROP DATABASE IF EXISTS app_store;
 CREATE DATABASE app_store;
 USE app_store;
 
--- -----------------
 -- Roles table
 CREATE TABLE roles (
   id           INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,7 +13,6 @@ CREATE TABLE roles (
   updated_on   TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
 );
 
--- -----------------
 -- Tags table
 CREATE TABLE tags (
   id          INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,7 +25,6 @@ CREATE TABLE tags (
   updated_on  TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
 );
 
--- -----------------
 -- Links table
 CREATE TABLE links (
   id            INT AUTO_INCREMENT PRIMARY KEY,
@@ -46,7 +43,6 @@ CREATE TABLE links (
     FOREIGN KEY (tag) REFERENCES tags(id)
 );
 
--- -----------------
 -- Role ↔ Links link table
 DROP TABLE IF EXISTS roleLinks;
 CREATE TABLE roleLinks (
@@ -59,7 +55,6 @@ CREATE TABLE roleLinks (
     FOREIGN KEY (linkId) REFERENCES links(id)
 );
 
--- -----------------
 -- Favourites table
 CREATE TABLE favourites (
   id         INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,7 +63,6 @@ CREATE TABLE favourites (
   updated_on TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
 );
 
--- -----------------
 -- Favourite ↔ Links link table
 CREATE TABLE favourite_links (
   link_id      INT NOT NULL,

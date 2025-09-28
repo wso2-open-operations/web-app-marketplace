@@ -76,7 +76,7 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
     return links;
 }
 
-# Resolve DB role IDs for the provided role names and handle empty input
+# Resolve DB role IDs for the provided role names and handle empty input.
 #
 # + roles - Role names to resolve
 # + return - int[] of role IDs, () when roles empty, or error? on failure
