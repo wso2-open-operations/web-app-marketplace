@@ -105,7 +105,6 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get links(http:RequestContext ctx)
         returns AppLinks[]|http:NotFound|http:InternalServerError {
 
-        // read user info from header context
         authorization:CustomJwtPayload|error userInfo =
         ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -115,11 +114,9 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        // fetch links for user's roles
         AppLinks[]|error? result =
         database:getCollectionByRoles(userInfo.email, userInfo.groups);
 
-        // db/repo failure → 500
         if result is error {
             string customError = "Error while retrieving app links";
             log:printError(customError, result);
@@ -128,7 +125,6 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        // no links for these roles 
         if result is () {
             string customError = string `No app links found for user : ${userInfo.email}`;
             log:printError(customError, result);
