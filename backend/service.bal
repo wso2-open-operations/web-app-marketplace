@@ -127,7 +127,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         if result is () {
             string customError = string `No app links found for user : ${userInfo.email}`;
-            log:printError(customError, result);
+            log:printError(customError);
             return <http:NotFound>{
                 body: {message: customError}
             };
