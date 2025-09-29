@@ -25,16 +25,11 @@ import ballerina/log;
 public isolated function getCollectionByRoles(string email, string[] roles) returns AppLinks[]|error? {
 
     // Resolve role IDs for the provided role names
-    int[]|error? rolesIds = getRoleIdsByNames(roles);
+    int[]? rolesIds = check getRoleIdsByNames(roles);
 
     // Return null id not ids are found
     if rolesIds is () {
         return;
-    }
-
-    // Return custom error if id is error
-    if rolesIds is error {
-        return rolesIds;
     }
 
     // Resolve user's favourites id; maybe `error` when no favourites exist
