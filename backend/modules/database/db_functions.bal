@@ -27,7 +27,6 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
     // Resolve role IDs for the provided role names
     int[]? rolesIds = check getRoleIdsByNames(roles);
 
-    // Return null id not ids are found
     if rolesIds is () {
         return;
     }
@@ -44,7 +43,6 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
 
     AppLinks[] links = [];
 
-    // For each link, check if it's a favourite (only if user has a favourites id)
     check from AppLinks link in collectionStream
         do {
 
@@ -76,7 +74,6 @@ public isolated function getCollectionByRoles(string email, string[] roles) retu
 # + roles - Role names to resolve
 # + return - int[] of role IDs, () when roles empty, or error? on failure
 public isolated function getRoleIdsByNames(string[] roles) returns int[]|error? {
-    // short-circuit when no roles are provided
     if roles.length() == 0 {
         return;
     }
@@ -92,7 +89,6 @@ public isolated function getRoleIdsByNames(string[] roles) returns int[]|error? 
 
         check rs.close();
     } on fail var e {
-        // close stream but do not override the original error
         string customError = "Error while retrieving user roles";
         log:printError(customError, e);
         return error(customError);
