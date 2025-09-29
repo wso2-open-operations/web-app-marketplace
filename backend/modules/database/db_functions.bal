@@ -14,85 +14,36 @@
 // specific language governing permissions and limitations
 // under the License. 
 // import ballerina/sql;
-import ballerina/log;
 
 # Fetch all app links visible to the given `roles` and mark whether each link
 # is a favourite for the user identified by `email`.
 #
 # + email - User email used to look up favourites
 # + roles - Role names used to resolve visible links
-# + return - List of links with `isFavourite` set, or an `error?` on failure
-public isolated function getCollectionByRoles(string email, string[] roles) returns AppLinks[]|error? {
+# + return - AppLinks[] with `isFavourite` set, or an `error?` on failure
+public isolated function fetchAppByRoles(string email, string[] roles) returns AppLinks[]|error {
 
-    // Resolve role IDs for the provided role names
-    int[]? rolesIds = check getRoleIdsByNames(roles);
+    stream<AppLinksRow, error?> result = databaseClient->query(fetchAppsByUserRolesQuery(roles));
 
-    if rolesIds is () {
-        return;
-    }
+    AppLinks[] apps = [];
 
-    // Resolve user's favourites id; maybe `error` when no favourites exist
-    int|error favId = databaseClient->queryRow(findUserHasFavourites(email));
-
-    if favId is error {
-        log:printError("User has no favourites ", favId);
-    }
-
-    // Fetch all links visible to the roles
-    stream<AppLinks, error?> collectionStream = databaseClient->query(fetchLinksByRolesQuery(rolesIds));
-
-    AppLinks[] links = [];
-
-    check from AppLinks link in collectionStream
+    check from AppLinksRow app in result
         do {
 
-            int isFav = 0;
-            if favId is int {
-                // Returns 1/0 for favourite; will error if not found
-                isFav = check databaseClient->queryRow(findIfItIsFavQuery(favId, link.id));
-            }
+            int isFav = check databaseClient->queryRow(findUserHasFavouritesQuery(app.id, email));
 
-            links.push({
-                id: link.id,
-                header: link.header,
-                description: link.description,
-                versionName: link.versionName,
-                tagId: link.tagId,
-                iconName: link.iconName,
-                addedBy: link.addedBy,
+            apps.push({
+                id: app.id,
+                header: app.header,
+                description: app.description,
+                versionName: app.versionName,
+                tagId: app.tagId,
+                iconName: app.iconName,
+                addedBy: app.addedBy,
                 isFavourite: isFav,
-                urlName: link.urlName
+                urlName: app.urlName
             });
-
         };
 
-    return links;
-}
-
-# Resolve DB role IDs for the provided role names and handle empty input.
-#
-# + roles - Role names to resolve
-# + return - int[] of role IDs, () when roles empty, or error? on failure
-public isolated function getRoleIdsByNames(string[] roles) returns int[]|error? {
-    if roles.length() == 0 {
-        return;
-    }
-    // query role ids as a stream
-    stream<record {|int id;|}, error?> rs =
-        databaseClient->query(getRoleIdsByNamesQuery(roles));
-
-    int[] rolesIds = [];
-    do {
-        // pull rows and project to int[]
-        rolesIds = check from record {|int id;|} row in rs
-            select row.id;
-
-        check rs.close();
-    } on fail var e {
-        string customError = "Error while retrieving user roles";
-        log:printError(customError, e);
-        return error(customError);
-    }
-
-    return rolesIds;
+    return apps;
 }
