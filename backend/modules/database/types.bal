@@ -35,7 +35,7 @@ type DatabaseConfig record {|
     sql:ConnectionPool connectionPool?;
 |};
 
-# [Database] Link record — app catalog entry pointing to an application's URL.
+# [Database] AppLinks record 
 public type AppLinks record {|
     # Unique identifier of the link
     @sql:Column {name: "id"}
@@ -63,4 +63,32 @@ public type AppLinks record {|
     string addedBy;
     # Whether the current user has favorited this link (0 = no, 1 = yes)
     int isFavourite;
+|};
+
+# [Database] AppLinkRow record 
+public type AppLinksRow record {|
+    # Unique identifier of the link
+    @sql:Column {name: "id"}
+    int id;
+    # Display title
+    @sql:Column {name: "header"}
+    string header;
+    # Target URL 
+    @sql:Column {name: "url"}
+    string urlName;
+    # Short description
+    @sql:Column {name: "description"}
+    string description;
+    # Version label of the target app
+    @sql:Column {name: "version_name"}
+    string versionName;
+    # Tag/category ID
+    @sql:Column {name: "tag_id"}
+    int tagId;
+    # Icon asset name/key
+    @sql:Column {name: "icon"}
+    string iconName;
+    # User who added the link
+    @sql:Column {name: "added_by"}
+    string addedBy;
 |};
