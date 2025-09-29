@@ -15,108 +15,64 @@
 // under the License.
 import ballerina/sql;
 
-# [Database] Build query to fetch all non-deleted collection rows.
+# [Database] Build query to fetch apps visible to any of the given user roles.
+# Apps with empty user_groups are visible to everyone.
 #
-# + return - Parameterized query for selecting collection metadata
-isolated function fetchAllCollectionQuery() returns sql:ParameterizedQuery {
-    sql:ParameterizedQuery query = `
-        SELECT
+# + roles - User roles to filter
+# + return - Parameterized query selecting apps for the roles
+isolated function fetchAppsByUserRolesQuery(string[] roles) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery selectClause = `
+        SELECT 
             id,
             header,
+            url,
             description,
-            url_name,
             version_name,
-            tag,
+            tag_id,
             icon,
-            role_ids,
             added_by
-        FROM collection
-        WHERE is_deleted = 0
-    `;
-    return query;
+        FROM apps
+        WHERE is_active = 1`;
+
+    if roles.length() == 0 {
+        // No roles provided: show only apps with empty user_groups
+        return sql:queryConcat(selectClause, `
+          AND (user_groups IS NULL OR user_groups = '')
+        ORDER BY header`);
+    }
+
+    // Roles provided: show apps matching any role OR with empty user_groups
+    sql:ParameterizedQuery[] roleConditions = [];
+    foreach var role in roles {
+        roleConditions.push(`FIND_IN_SET(${role}, user_groups)`);
+    }
+
+    sql:ParameterizedQuery roleClause = roleConditions[0];
+    foreach int i in 1 ..< roleConditions.length() {
+        roleClause = sql:queryConcat(roleClause, ` OR `, roleConditions[i]);
+    }
+
+    sql:ParameterizedQuery whereClause = sql:queryConcat(`
+          AND ((`, roleClause, `) OR (user_groups IS NULL OR user_groups = ''))`);
+
+    return sql:queryConcat(selectClause, whereClause, `
+        ORDER BY header`);
 }
 
-# [Database] Build query to fetch a user's favourites row by email.
+# [Database] Build query to check if a given app is a favourite for a user.
 #
-# + email - User email to match
-# + return - Parameterized query selecting favourites for the user
-isolated function fetchFavouritesQuery(string email) returns sql:ParameterizedQuery {
+# + appId - App ID to check
+# + email - User email to check
+# + return - Parameterized query returning 1 if favourite, 0 otherwise
+isolated function findUserHasFavouritesQuery(int appId, string email) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery query = `
-        SELECT
-            user_email,
-            favourite_collection
-        FROM favourites
-        WHERE user_email = ${email}
-    `;
+        SELECT CAST(EXISTS(
+            SELECT 1
+            FROM user_favourites
+            WHERE app_id = ${appId}
+                AND user_email = ${email}
+                AND is_active = 1
+        ) AS UNSIGNED) AS is_fav`;
+
     return query;
-}
-
-# [Database] Build query to resolve role IDs from role names.
-#
-# + roleNames - Role names to filter
-# + return - Parameterized query selecting distinct role ids for given names
-isolated function getRoleIdsByNamesQuery(string[] roleNames) returns sql:ParameterizedQuery {
-    return sql:queryConcat(`
-        SELECT 
-            id 
-        FROM 
-            roles 
-        WHERE 
-            name IN(`, sql:arrayFlattenQuery(roleNames), `) 
-            AND is_deleted = 0
-    `);
-}
-
-# [Database] Build query to test if a link is favourited within a specific favourites bucket.
-#
-# + favId - Favourites table id for the user
-# + linkId - Link id to test
-# + return - Parameterized query returning 0 or 1 as is_fav
-isolated function findIfItIsFavQuery(int favId, int linkId) returns sql:ParameterizedQuery {
-    return `SELECT CAST(EXISTS(
-              SELECT 1
-              FROM favourite_links fl
-              WHERE fl.favourite_id = ${favId}
-                AND fl.link_id      = ${linkId}
-            ) AS UNSIGNED) AS is_fav`;
-}
-
-# [Database] Build query to fetch the favourites id for a user by email.
-#
-# + email - User email to match
-# + return - Parameterized query selecting favourites id
-isolated function findUserHasFavourites(string email) returns sql:ParameterizedQuery {
-    sql:ParameterizedQuery query = `
-        SELECT id
-        FROM favourites
-        WHERE user_email = ${email}
-    `;
-    return query;
-}
-
-# [Database] Build query to fetch distinct links visible to any of the given role IDs.
-#
-# + roleIds - Role ids used in the IN filter
-# + return - Parameterized query selecting link metadata for the roles
-isolated function fetchLinksByRolesQuery(int[] roleIds) returns sql:ParameterizedQuery {
-    sql:ParameterizedQuery head = `
-    SELECT DISTINCT
-           l.id, 
-           l.header, 
-           l.url_name, 
-           l.description, 
-           l.version_name,
-           l.tag, 
-           l.icon, 
-           l.added_by
-    FROM links l
-    JOIN role_links rl ON rl.link_id = l.id
-    WHERE l.is_deleted = 0
-      AND rl.role_id IN (
-`;
-    sql:ParameterizedQuery mid = sql:arrayFlattenQuery(roleIds);
-    sql:ParameterizedQuery tail = `)
-    ORDER BY l.header
-`;
-    return sql:queryConcat(head, mid, tail);
 }
