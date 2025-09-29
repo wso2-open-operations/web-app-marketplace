@@ -16,11 +16,12 @@
 import app_store.people;
 
 # Response for fetching user information.
-type UserInfo record {
+type UserInfo record {|
     *people:Employee;
     # Array of privileges assigned to the user
     int[] privileges;
-};
+    json...;
+|};
 
 # Strucutre of AppLinks record.
 public type AppLinks record {|
