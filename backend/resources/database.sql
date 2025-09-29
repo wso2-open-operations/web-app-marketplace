@@ -2,74 +2,50 @@ DROP DATABASE IF EXISTS app_store;
 CREATE DATABASE app_store;
 USE app_store;
 
--- Roles table
-CREATE TABLE roles (
-  id           INT AUTO_INCREMENT PRIMARY KEY,
-  name         VARCHAR(64) NOT NULL UNIQUE,
-  is_deleted   TINYINT(1) NOT NULL DEFAULT 0,
-  added_by     VARCHAR(60) NOT NULL,
-  added_on     TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  updated_by   VARCHAR(60) NOT NULL,
-  updated_on   TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
-);
-
 -- Tags table
+DROP TABLE IF EXISTS tags;
 CREATE TABLE tags (
-  id          INT AUTO_INCREMENT PRIMARY KEY,
-  name        VARCHAR(64) NOT NULL UNIQUE,
-  color       VARCHAR(32) NOT NULL,
-  is_deleted  TINYINT(1) NOT NULL DEFAULT 0,
-  added_by    VARCHAR(60) NOT NULL,
-  added_on    TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  updated_by  VARCHAR(60) NOT NULL,
-  updated_on  TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  `name`        VARCHAR(64) NOT NULL UNIQUE,
+  color         VARCHAR(32) NOT NULL,
+  `is_active`   TINYINT(1) NOT NULL DEFAULT 0,
+  added_by      VARCHAR(254) NOT NULL,           
+  added_on      TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_by    VARCHAR(254) NOT NULL,
+  updated_on    TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
 );
 
--- Links table
-CREATE TABLE links (
+-- Apps table
+DROP TABLE IF EXISTS apps;
+CREATE TABLE apps (
   id            INT AUTO_INCREMENT PRIMARY KEY,
   header        VARCHAR(150) NOT NULL,
-  url_name      VARCHAR(150) NOT NULL,
-  `description` TEXT,
+  `url`         VARCHAR(2048) NOT NULL,         
+  `description` TEXT NULL,
   version_name  VARCHAR(64) NOT NULL,
-  tag           INT NULL,
+  tag_id        INT NULL,                       
   icon          VARCHAR(255) NULL,
+  user_groups   SET('wso2-everyone','admin','app-appstore-admin','wso2-interns') NOT NULL DEFAULT '',
+  `is_active`   TINYINT(1) NOT NULL DEFAULT 0,  
   added_by      VARCHAR(254) NOT NULL,
-  is_deleted    TINYINT(1) NOT NULL DEFAULT 0,
   added_on      TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  updated_by    VARCHAR(60) NOT NULL,
+  updated_by    VARCHAR(254) NOT NULL,          
   updated_on    TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  CONSTRAINT fk_links_tag
-    FOREIGN KEY (tag) REFERENCES tags(id)
+
+  CONSTRAINT fk_apps_tag
+    FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
 
--- Role ↔ Links link table
-DROP TABLE IF EXISTS roleLinks;
-CREATE TABLE roleLinks (
-  roleId INT NOT NULL,
-  linkId INT NOT NULL,
-  PRIMARY KEY (roleId, linkId),
-  CONSTRAINT fk_rolelinks_role
-    FOREIGN KEY (roleId) REFERENCES roles(id),
-  CONSTRAINT fk_rolelinks_link
-    FOREIGN KEY (linkId) REFERENCES links(id)
-);
+-- User favourites (per-user starred apps)
+DROP TABLE IF EXISTS user_favourites;
+CREATE TABLE user_favourites (
+  user_email    VARCHAR(254) NOT NULL,
+  app_id        INT NOT NULL,
+  `is_active`   TINYINT(1) NOT NULL DEFAULT 0,  
+  added_on      TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_on    TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 
--- Favourites table
-CREATE TABLE favourites (
-  id         INT AUTO_INCREMENT PRIMARY KEY,
-  user_email VARCHAR(254) UNIQUE,
-  added_on   TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  updated_on TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
-);
-
--- Favourite ↔ Links link table
-CREATE TABLE favourite_links (
-  link_id      INT NOT NULL,
-  favourite_id INT NOT NULL,
-  PRIMARY KEY (link_id, favourite_id),
-  CONSTRAINT fk_favlinks_favourite
-    FOREIGN KEY (favourite_id) REFERENCES favourites(id),
-  CONSTRAINT fk_favlinks_link
-    FOREIGN KEY (link_id) REFERENCES links(id)
+  PRIMARY KEY (user_email, app_id),
+  CONSTRAINT fk_fav_app
+    FOREIGN KEY (app_id) REFERENCES apps(id)
 );
