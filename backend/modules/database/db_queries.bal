@@ -59,17 +59,52 @@ isolated function fetchAppsByUserRolesQuery(string[] roles) returns sql:Paramete
         ORDER BY header`);
 }
 
-# [Database] Build query to check if a given app is a favourite for a user.
+# [Database] Build query to fetch apps visible to any of the given user roles, including favourite status for the user.
+# Apps with empty user_groups are visible to everyone.
+# If no roles are provided, only apps with empty user_groups are returned.
 #
-# + appId - App ID to check
-# + email - User email to check
-# + return - Parameterized query returning 1 if favourite, 0 otherwise
-isolated function findUserHasFavouritesQuery(int appId, string email) returns sql:ParameterizedQuery =>
-    `SELECT CAST(EXISTS(
-        SELECT 1
-        FROM user_favourites
-        WHERE app_id = ${appId}
-            AND user_email = ${email}
-            AND is_active = 1
-    ) AS UNSIGNED) AS is_fav`;
+# + email - User email to check favourites
+# + roles - User roles to filter
+# + return - Parameterized query selecting apps with favourite status
+isolated function fetchAppsWithFavouritesQuery(string email, string[] roles) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery selectClause = `
+        SELECT 
+            a.id,
+            a.header,
+            a.url,
+            a.description,
+            a.version_name,
+            a.tag_id,
+            a.icon,
+            a.added_by,
+            CASE WHEN uf.app_id IS NOT NULL THEN 1 ELSE 0 END AS is_favourite
+        FROM apps a
+        LEFT JOIN user_favourites uf ON a.id = uf.app_id 
+            AND uf.user_email = ${email} 
+            AND uf.is_active = 1
+        WHERE a.is_active = 1`;
 
+    if roles.length() == 0 {
+        // No roles provided: show only apps with empty user_groups
+        return sql:queryConcat(selectClause, `
+          AND (a.user_groups IS NULL OR a.user_groups = '')
+        ORDER BY a.header`);
+    }
+
+    // Roles provided: show apps matching any role OR with empty user_groups
+    sql:ParameterizedQuery[] roleConditions = [];
+    foreach var role in roles {
+        roleConditions.push(`FIND_IN_SET(${role}, a.user_groups)`);
+    }
+
+    sql:ParameterizedQuery roleClause = roleConditions[0];
+    foreach int i in 1 ..< roleConditions.length() {
+        roleClause = sql:queryConcat(roleClause, ` OR `, roleConditions[i]);
+    }
+
+    sql:ParameterizedQuery whereClause = sql:queryConcat(`
+          AND ((`, roleClause, `) OR (a.user_groups IS NULL OR a.user_groups = ''))`);
+
+    return sql:queryConcat(selectClause, whereClause, `
+        ORDER BY a.header`);
+}
