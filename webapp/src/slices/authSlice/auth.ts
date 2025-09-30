@@ -38,7 +38,6 @@ interface AuthState {
 
 interface AuthData {
   userInfo: BasicUserInfo;
-  idToken: string;
   decodedIdToken: DecodedIDTokenPayload;
 }
 
