@@ -23,15 +23,12 @@
 # + return - AppLinks[] with `isFavourite` set, or an `error?` on failure
 public isolated function fetchAppByRoles(string email, string[] roles) returns AppLinks[]|error {
 
-    stream<AppLinksRow, error?> result = databaseClient->query(fetchAppsByUserRolesQuery(roles));
+    stream<AppLinks, error?> result = databaseClient->query(fetchAppsWithFavouritesQuery(email, roles));
 
     AppLinks[] apps = [];
 
-    check from AppLinksRow app in result
+    check from AppLinks app in result
         do {
-
-            int isFav = check databaseClient->queryRow(findUserHasFavouritesQuery(app.id, email));
-
             apps.push({
                 id: app.id,
                 header: app.header,
@@ -40,7 +37,7 @@ public isolated function fetchAppByRoles(string email, string[] roles) returns A
                 tagId: app.tagId,
                 iconName: app.iconName,
                 addedBy: app.addedBy,
-                isFavourite: isFav,
+                isFavourite: app.isFavourite,
                 urlName: app.urlName
             });
         };
