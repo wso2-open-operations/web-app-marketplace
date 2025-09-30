@@ -44,36 +44,6 @@ public type AppLinks record {|
     @sql:Column {name: "header"}
     string header;
     # Target URL 
-    @sql:Column {name: "url_name"}
-    string urlName;
-    # Short description
-    @sql:Column {name: "description"}
-    string description;
-    # Version label of the target app
-    @sql:Column {name: "version_name"}
-    string versionName;
-    # Tag/category ID
-    @sql:Column {name: "tag"}
-    int tagId;
-    # Icon asset name/key
-    @sql:Column {name: "icon"}
-    string iconName;
-    # User who added the link
-    @sql:Column {name: "added_by"}
-    string addedBy;
-    # Whether the current user has favorited this link (0 = no, 1 = yes)
-    int isFavourite;
-|};
-
-# [Database] AppLinkRow record 
-public type AppLinksRow record {|
-    # Unique identifier of the link
-    @sql:Column {name: "id"}
-    int id;
-    # Display title
-    @sql:Column {name: "header"}
-    string header;
-    # Target URL 
     @sql:Column {name: "url"}
     string urlName;
     # Short description
@@ -91,4 +61,7 @@ public type AppLinksRow record {|
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
+    # Whether the current user has favorited this link (0 = no, 1 = yes)
+    @sql:Column {name: "is_favourite"}
+    int isFavourite;
 |};
