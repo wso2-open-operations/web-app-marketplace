@@ -23,9 +23,12 @@ export const SnackMessage = {
   error: {
     fetchEmployees: "Error while fetching employees",
     fetchPrivileges: "Error while fetching user privileges",
-    insufficientPrivileges: "You don't have sufficient privileges to access this resource",
+    insufficientPrivileges:
+      "You don't have sufficient privileges to access this resource",
     fetchAppConfigMessage: "Error while fetching app config",
     addEmployee: "Unable to add employee",
   },
   warning: {},
 };
+
+export const APP_DESC = " Internal App Product Template.";
