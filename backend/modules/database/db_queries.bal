@@ -64,15 +64,12 @@ isolated function fetchAppsByUserRolesQuery(string[] roles) returns sql:Paramete
 # + appId - App ID to check
 # + email - User email to check
 # + return - Parameterized query returning 1 if favourite, 0 otherwise
-isolated function findUserHasFavouritesQuery(int appId, string email) returns sql:ParameterizedQuery {
-    sql:ParameterizedQuery query = `
-        SELECT CAST(EXISTS(
-            SELECT 1
-            FROM user_favourites
-            WHERE app_id = ${appId}
-                AND user_email = ${email}
-                AND is_active = 1
-        ) AS UNSIGNED) AS is_fav`;
+isolated function findUserHasFavouritesQuery(int appId, string email) returns sql:ParameterizedQuery =>
+    `SELECT CAST(EXISTS(
+        SELECT 1
+        FROM user_favourites
+        WHERE app_id = ${appId}
+            AND user_email = ${email}
+            AND is_active = 1
+    ) AS UNSIGNED) AS is_fav`;
 
-    return query;
-}
