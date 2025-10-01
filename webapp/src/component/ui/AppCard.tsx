@@ -6,12 +6,7 @@ import {
   Chip,
   IconButton,
 } from "@mui/material";
-import {
-  Favorite,
-  FavoriteBorder,
-  Launch,
-  Visibility,
-} from "@mui/icons-material";
+import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 import { useState } from "react";
 
 interface AppCardProps {
@@ -21,6 +16,7 @@ interface AppCardProps {
   category: string;
   appUrl: string;
   logoAlt?: string;
+  isFavourite?: number;
 }
 
 export default function AppCard({
@@ -30,8 +26,9 @@ export default function AppCard({
   category,
   appUrl,
   logoAlt = "App Logo",
+  isFavourite = 0,
 }: AppCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
 
   const handleFavoriteClick = () => {
     setIsFavorite(!isFavorite);
@@ -39,11 +36,6 @@ export default function AppCard({
 
   const handleLaunchClick = () => {
     window.open(appUrl, "_blank", "noopener,noreferrer");
-  };
-
-  const handleViewClick = () => {
-    // You can implement view logic here
-    console.log("View clicked for:", title);
   };
 
   return (
@@ -81,9 +73,9 @@ export default function AppCard({
             }}
           >
             {isFavorite ? (
-              <Favorite sx={{ fontSize: 32, color: "#e53e3e" }} />
+              <Favorite sx={{ fontSize: 20, color: "#e53e3e" }} />
             ) : (
-              <FavoriteBorder sx={{ fontSize: 32, color: "#a0aec0" }} />
+              <FavoriteBorder sx={{ fontSize: 20, color: "#a0aec0" }} />
             )}
           </IconButton>
         </Box>
@@ -142,17 +134,7 @@ export default function AppCard({
               }}
               aria-label="Open app in new tab"
             >
-              <Launch sx={{ fontSize: 32, color: "#718096" }} />
-            </IconButton>
-            <IconButton
-              onClick={handleViewClick}
-              sx={{
-                padding: 0.5,
-                "&:hover": { backgroundColor: "transparent" },
-              }}
-              aria-label="View app details"
-            >
-              <Visibility sx={{ fontSize: 32, color: "#718096" }} />
+              <Launch sx={{ fontSize: 20, color: "#718096" }} />
             </IconButton>
           </Box>
         </Box>
