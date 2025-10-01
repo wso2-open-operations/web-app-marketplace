@@ -1,7 +1,20 @@
 import { Box } from "@mui/material";
 import AppCard from "../../component/ui/AppCard";
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from "@root/src/slices/store";
+import { fetchAppLinks } from "@root/src/slices/appSlice/app";
+import { State } from "@root/src/types/types";
 
 export default function Home() {
+  const dispatch = useAppDispatch();
+
+  dispatch(fetchAppLinks());
+
+  const apps = useAppSelector((state: RootState) => state.appLinks);
+
   return (
     <Box
       sx={{
