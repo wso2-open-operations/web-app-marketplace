@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import { fetchAppLinks } from "../slices/appSlice/app";
 import { fetchEmployees } from "../slices/employeeSlice/employee";
 
 export const SnackMessage = {
@@ -27,6 +28,7 @@ export const SnackMessage = {
       "You don't have sufficient privileges to access this resource",
     fetchAppConfigMessage: "Error while fetching app config",
     addEmployee: "Unable to add employee",
+    fetchAppLinks: "Unable to fetch apps",
   },
   warning: {},
 };
