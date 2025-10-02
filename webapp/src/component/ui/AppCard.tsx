@@ -54,17 +54,22 @@ export default function AppCard({
         width: "100%",
         borderRadius: 4,
         boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        padding: 2,
         position: "relative",
       }}
     >
-      <CardContent>
+      <CardContent
+        sx={{
+          padding: 3,
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+        }}
+      >
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            mb: 3,
           }}
         >
           <Box
@@ -93,8 +98,7 @@ export default function AppCard({
           component="h1"
           sx={{
             fontWeight: 600,
-            mb: 2,
-            color: "#1a202c",
+            fontSize: "18px",
           }}
         >
           {title}
@@ -104,7 +108,6 @@ export default function AppCard({
           variant="body1"
           sx={{
             color: "#718096",
-            mb: 4,
             lineHeight: 1.6,
           }}
         >
