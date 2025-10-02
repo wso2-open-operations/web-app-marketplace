@@ -102,6 +102,7 @@ export const updateAppFavourite = createAsyncThunk<
 
       const res = await APIService.getInstance().patch(
         AppConfig.serviceUrls.appLinks,
+        {},
         {
           cancelToken: newCancelTokenSource.token,
           params: {
@@ -110,6 +111,8 @@ export const updateAppFavourite = createAsyncThunk<
           },
         }
       );
+
+      console.log("Res : ", res);
 
       return { id: Number(id), active: normalized as 0 | 1 };
     } catch (error: any) {
