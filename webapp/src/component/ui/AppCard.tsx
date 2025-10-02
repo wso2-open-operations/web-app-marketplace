@@ -8,6 +8,8 @@ import {
 } from "@mui/material";
 import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 import { useState } from "react";
+import { useAppDispatch } from "@root/src/slices/store";
+import { updateAppFavourite } from "@root/src/slices/appSlice/app";
 
 interface AppCardProps {
   title: string;
@@ -17,6 +19,7 @@ interface AppCardProps {
   appUrl: string;
   logoAlt?: string;
   isFavourite?: number;
+  appId: number;
 }
 
 export default function AppCard({
@@ -27,11 +30,17 @@ export default function AppCard({
   appUrl,
   logoAlt = "App Logo",
   isFavourite = 0,
+  appId,
 }: AppCardProps) {
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
+  const dispatch = useAppDispatch();
 
   const handleFavoriteClick = () => {
-    setIsFavorite(!isFavorite);
+    const newFavoriteState = !isFavorite;
+    setIsFavorite(newFavoriteState);
+    dispatch(
+      updateAppFavourite({ id: appId, active: newFavoriteState ? 1 : 0 })
+    );
   };
 
   const handleLaunchClick = () => {

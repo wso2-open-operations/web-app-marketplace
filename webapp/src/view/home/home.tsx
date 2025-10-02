@@ -17,6 +17,8 @@ export default function Home() {
     dispatch(fetchAppLinks());
   }, [dispatch]);
 
+  console.log("apps : ", apps);
+
   if (state === State.loading) {
     return (
       <Box
@@ -68,6 +70,7 @@ export default function Home() {
                 category={app.tagId.toString()}
                 appUrl={app.urlName}
                 isFavourite={app.isFavourite}
+                appId={app.id}
               />
             </Grid>
           ))}
