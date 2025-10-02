@@ -50,7 +50,6 @@ export default function AppCard({
       }}
     >
       <CardContent>
-        {/* Header with logo and favorite icon */}
         <Box
           sx={{
             display: "flex",
@@ -80,7 +79,6 @@ export default function AppCard({
           </IconButton>
         </Box>
 
-        {/* Title */}
         <Typography
           variant="h4"
           component="h1"
@@ -93,7 +91,6 @@ export default function AppCard({
           {title}
         </Typography>
 
-        {/* Description */}
         <Typography
           variant="body1"
           sx={{
