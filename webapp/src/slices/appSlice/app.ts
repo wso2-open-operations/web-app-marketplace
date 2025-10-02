@@ -48,6 +48,11 @@ const initialState: AppLinksState = {
   apps: null,
 };
 
+interface UpdateArgs {
+  id: number;
+  active: 1 | 0;
+}
+
 export const fetchAppLinks = createAsyncThunk(
   "appLinks/fetchAppLinks",
   async (_, { dispatch, rejectWithValue }) => {
@@ -79,6 +84,53 @@ export const fetchAppLinks = createAsyncThunk(
           reject(error.response.data.message);
         });
     });
+  }
+);
+
+export const updateAppFavourite = createAsyncThunk<
+  { id: number; active: 0 | 1 },
+  UpdateArgs
+>(
+  "apps/updateAppFavourite",
+  async ({ id, active }, { dispatch, rejectWithValue }) => {
+    APIService.getCancelToken().cancel();
+    const newCancelTokenSource = APIService.updateCancelToken();
+
+    try {
+      const normalized =
+        typeof active === "boolean" ? (active ? 1 : 0) : active;
+
+      const res = await APIService.getInstance().patch(
+        AppConfig.serviceUrls.appLinks,
+        {
+          cancelToken: newCancelTokenSource.token,
+          params: {
+            id: String(id),
+            active: String(normalized),
+          },
+        }
+      );
+
+      return { id: Number(id), active: normalized as 0 | 1 };
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request Canceled");
+      }
+
+      const message =
+        error?.response?.data?.message ??
+        (error?.response?.status === HttpStatusCode.InternalServerError
+          ? "Server error while updating"
+          : "Failed to update");
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message,
+          type: "error",
+        })
+      );
+      return rejectWithValue(message);
+    }
   }
 );
 
