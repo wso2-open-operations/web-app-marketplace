@@ -47,7 +47,6 @@ export default function Home() {
     );
   }
 
-  // ...existing code...
   return (
     <Box
       sx={{

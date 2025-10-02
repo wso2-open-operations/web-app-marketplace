@@ -105,7 +105,6 @@ export default function AppCard({
           {description}
         </Typography>
 
-        {/* Footer with tag and action icons */}
         <Box
           sx={{
             display: "flex",
