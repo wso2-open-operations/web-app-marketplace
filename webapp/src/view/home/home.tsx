@@ -50,31 +50,23 @@ export default function Home() {
   }
 
   return (
-    <Box
-      sx={{
-        padding: 4,
-        minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-      }}
-    >
-      <Grid container spacing={3}>
-        {apps &&
-          Array.isArray(apps) &&
-          apps.map((app) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={app.id}>
-              <AppCard
-                title={app.header}
-                description={app.description}
-                logoUrl={`/icons/${app.iconName}`}
-                logoAlt={`${app.header} Icon`}
-                category={app.tagId.toString()}
-                appUrl={app.urlName}
-                isFavourite={app.isFavourite}
-                appId={app.id}
-              />
-            </Grid>
-          ))}
-      </Grid>
-    </Box>
+    <Grid container spacing={3}>
+      {apps &&
+        Array.isArray(apps) &&
+        apps.map((app) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={app.id}>
+            <AppCard
+              title={app.header}
+              description={app.description}
+              logoUrl={`/icons/${app.iconName}`}
+              logoAlt={`${app.header} Icon`}
+              category={app.tagId.toString()}
+              appUrl={app.urlName}
+              isFavourite={app.isFavourite}
+              appId={app.id}
+            />
+          </Grid>
+        ))}
+    </Grid>
   );
 }
