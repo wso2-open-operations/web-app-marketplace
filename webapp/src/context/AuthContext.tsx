@@ -23,7 +23,6 @@ import PreLoader from "@component/common/PreLoader";
 import SessionWarningDialog from "@component/common/SessionWarningDialog";
 import LoginScreen from "@component/ui/LoginScreen";
 import { loadPrivileges, setUserAuthData } from "@slices/authSlice/auth";
-import { fetchAppConfig } from "@slices/configSlice/config";
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getUserInfo } from "@slices/userSlice/user";
 import { APIService } from "@utils/apiService";
@@ -102,7 +101,6 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
 
     await dispatch(getUserInfo());
     await dispatch(loadPrivileges());
-    await dispatch(fetchAppConfig());
   };
 
   useEffect(() => {
