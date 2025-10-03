@@ -27,6 +27,7 @@ import { fetchAppConfig } from "@slices/configSlice/config";
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getUserInfo } from "@slices/userSlice/user";
 import { APIService } from "@utils/apiService";
+import { appName } from "@config/constant";
 
 type AuthContextType = {
   appSignIn: () => void;
@@ -76,9 +77,9 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   } = useAuthContext();
 
   useEffect(() => {
-    if (!localStorage.getItem("iapm-app-redirect-url")) {
+    if (!localStorage.getItem(`${appName}-redirect-url`)) {
       localStorage.setItem(
-        "iapm-app-redirect-url",
+        `${appName}-redirect-url`,
         window.location.href.replace(window.location.origin, "")
       );
     }
@@ -134,7 +135,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
         }
       } catch (err) {
         if (mounted) {
-          auth.status = State.failed;
+          dispatch(setUserAuthData({ status: State.failed }));
         }
       }
     };
@@ -166,7 +167,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
 
   const appSignOut = async () => {
     setAppState("loading");
-    localStorage.setItem("iapm-app-state", "logout");
+    localStorage.setItem(`${appName}-state`, "logout");
     await signOut();
     setAppState("unauthenticated");
   };
@@ -174,7 +175,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   const appSignIn = async () => {
     signIn();
     setAppState("loading");
-    localStorage.setItem("iapm-app-state", "active");
+    localStorage.setItem(`${appName}-state`, "active");
   };
 
   const authContext: AuthContextType = {
