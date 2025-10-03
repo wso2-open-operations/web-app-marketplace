@@ -60,10 +60,12 @@ export default function Home() {
               description={app.description}
               logoUrl={`/icons/${app.iconName}`}
               logoAlt={`${app.header} Icon`}
-              category={app.tagId.toString()}
+              category={app.tagName}
               appUrl={app.urlName}
               isFavourite={app.isFavourite}
               appId={app.id}
+              tagId={app.tagId}
+              tagColor={app.tagColor}
             />
           </Grid>
         ))}
