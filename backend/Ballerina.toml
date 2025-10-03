@@ -1,6 +1,6 @@
 [package]
 org = "wso2"
-name = "app_store"
+name = "web_app_marketplace"
 version = "1.0.0"
 distribution = "2201.12.7"
 

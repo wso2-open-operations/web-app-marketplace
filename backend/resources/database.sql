@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS app_store;
-CREATE DATABASE app_store;
-USE app_store;
+DROP DATABASE IF EXISTS web_app_marketplace;
+CREATE DATABASE web_app_marketplace;
+USE web_app_marketplace;
 
 -- Tags table
 DROP TABLE IF EXISTS tags;
