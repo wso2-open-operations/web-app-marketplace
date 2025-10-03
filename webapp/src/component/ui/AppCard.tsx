@@ -20,6 +20,8 @@ interface AppCardProps {
   logoAlt?: string;
   isFavourite?: number;
   appId: number;
+  tagId: number;
+  tagColor: string;
 }
 
 export default function AppCard({
@@ -31,6 +33,7 @@ export default function AppCard({
   logoAlt = "App Logo",
   isFavourite = 0,
   appId,
+  tagColor,
 }: AppCardProps) {
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
   const dispatch = useAppDispatch();
