@@ -173,7 +173,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   };
 
   const appSignIn = async () => {
-    signIn();
+    await signIn();
     setAppState("loading");
     localStorage.setItem(`${appName}-state`, "active");
   };
