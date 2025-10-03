@@ -88,18 +88,30 @@ export default function SearchBar({
   });
 
   return (
-    <Box sx={{ mb: 3 }}>
+    <Box
+      sx={{
+        mb: 3,
+        maxWidth: "500px",
+        borderRadius: 2,
+        boxShadow: isOpen ? "0 2px 8px rgba(0,0,0,0.1)" : "",
+        backgroundColor: "hsla(0, 0%, 98%, 1)",
+        border: isOpen ? "1px solid #e6e6e6" : "",
+        overflow: "hidden",
+      }}
+    >
       {/* Compact Search Bar */}
       <Paper
         sx={{
           display: "flex",
           alignItems: "center",
-          px: 2,
-          py: 1,
-          borderRadius: 3,
-          boxShadow: isOpen
-            ? "0 4px 12px rgba(0,0,0,0.1)"
-            : "0 2px 8px rgba(0,0,0,0.05)",
+          paddingY: "8px",
+          paddingLeft: "12px",
+          paddingRight: "16px",
+          borderRadius: isOpen ? "0px" : "12px",
+          border: `1px solid ${isOpen ? "hsla(0, 0%, 98%, 1)" : "#e6e6e6"}`,
+          borderBottom: isOpen ? "1px solid #e6e6e6" : "1px solid #e6e6e6",
+          backgroundColor: "hsla(0, 0%, 98%, 1)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0)",
           transition: "all 0.3s ease",
         }}
       >
@@ -115,7 +127,9 @@ export default function SearchBar({
           placeholder="Search"
           value={searchTerm}
           onChange={(e) => handleSearchChange(e.target.value)}
-          onFocus={onToggle}
+          onFocus={() => {
+            !isOpen && onToggle();
+          }}
           sx={{
             flex: 1,
             fontSize: "14px",
@@ -123,71 +137,37 @@ export default function SearchBar({
           }}
         />
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 0.5,
-            color: "#a0aec0",
-            fontSize: "12px",
-            fontWeight: 500,
-          }}
-        >
-          <Box component="span">⌘</Box>
-          <Box component="span">F</Box>
-        </Box>
-      </Paper>
-
-      {/* Expanded Search with Categories */}
-      <Collapse in={isOpen}>
-        <Paper
-          sx={{
-            mt: 2,
-            p: 3,
-            borderRadius: 3,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          {/* Search Input */}
+        {!isOpen ? (
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              mb: 3,
-              pb: 2,
-              borderBottom: "1px solid #e2e8f0",
+              gap: 0.5,
+              color: "#a0aec0",
+              fontSize: "12px",
+              fontWeight: 500,
             }}
           >
-            <Search sx={{ fontSize: 24, color: "#718096", mr: 2 }} />
-            <InputBase
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              sx={{
-                flex: 1,
-                fontSize: "16px",
-                color: "#2d3748",
-              }}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 0.5,
-                color: "#a0aec0",
-                fontSize: "14px",
-                fontWeight: 500,
-                mr: 2,
-              }}
-            >
-              <Box component="span">⌘</Box>
-              <Box component="span">F</Box>
-            </Box>
-            <IconButton onClick={onToggle} size="small">
-              <Close sx={{ fontSize: 20 }} />
-            </IconButton>
+            <Box component="span">⌘</Box>
+            <Box component="span">F</Box>
           </Box>
+        ) : (
+          <IconButton onClick={onToggle} size="small" sx={{ p: 0.5 }}>
+            <Close sx={{ fontSize: 20, color: "#718096" }} />
+          </IconButton>
+        )}
+      </Paper>
 
+      {/* Expanded Categories Section */}
+      <Collapse in={isOpen}>
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: 3,
+            boxShadow: "0 4px 12px rgba(0,0,0,0)",
+            backgroundColor: "hsla(0, 0%, 98%, 1)",
+          }}
+        >
           {/* Categories Section */}
           <Box>
             <Box
