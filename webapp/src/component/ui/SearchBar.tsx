@@ -93,7 +93,7 @@ export default function SearchBar({
         mb: 3,
         maxWidth: "500px",
         borderRadius: 2,
-        boxShadow: isOpen ? "0 2px 8px rgba(0,0,0,0.1)" : "",
+        boxShadow: isOpen ? "0 2px 8px rgba(0,0,0,0)" : "",
         backgroundColor: "hsla(0, 0%, 98%, 1)",
         border: isOpen ? "1px solid #e6e6e6" : "",
         overflow: "hidden",
