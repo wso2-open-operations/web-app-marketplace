@@ -94,7 +94,7 @@ export default function SearchBar({
         maxWidth: "500px",
         borderRadius: 2,
         boxShadow: isOpen ? "0 2px 8px rgba(0,0,0,0)" : "",
-        backgroundColor: "hsla(0, 0%, 98%, 1)",
+        backgroundColor: "hsla(0, 0%, 99%, 1)",
         border: isOpen ? "1px solid #e6e6e6" : "",
         overflow: "hidden",
       }}
@@ -108,9 +108,9 @@ export default function SearchBar({
           paddingLeft: "12px",
           paddingRight: "16px",
           borderRadius: isOpen ? "0px" : "12px",
-          border: `1px solid ${isOpen ? "hsla(0, 0%, 98%, 1)" : "#e6e6e6"}`,
+          border: `1px solid ${isOpen ? "hsla(0, 0%, 99%, 1)" : "#e6e6e6"}`,
           borderBottom: isOpen ? "1px solid #e6e6e6" : "1px solid #e6e6e6",
-          backgroundColor: "hsla(0, 0%, 98%, 1)",
+          backgroundColor: "hsla(0, 0%, 99%, 1)",
           boxShadow: "0 4px 12px rgba(0,0,0,0)",
           transition: "all 0.3s ease",
         }}
@@ -165,7 +165,7 @@ export default function SearchBar({
             p: 3,
             borderRadius: 3,
             boxShadow: "0 4px 12px rgba(0,0,0,0)",
-            backgroundColor: "hsla(0, 0%, 98%, 1)",
+            backgroundColor: "hsla(0, 0%, 99%, 1)",
           }}
         >
           {/* Categories Section */}

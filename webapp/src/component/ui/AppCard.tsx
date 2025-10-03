@@ -50,6 +50,8 @@ export default function AppCard({
     window.open(appUrl, "_blank", "noopener,noreferrer");
   };
 
+  console.log(tagColor);
+
   return (
     <Card
       sx={{
@@ -59,12 +61,13 @@ export default function AppCard({
         boxShadow: "0 4px 12px rgba(0,0,0,0.0)",
         position: "relative",
         border: "0.5px solid #e6e6e6",
-        background: "linear-gradient(180deg, #FFF 60%, #F7F7F7 100%)",
+        background: "linear-gradient(180deg, #FFF 60%, #FAFAFA 100%)",
       }}
     >
       <CardContent
         sx={{
           padding: 3,
+          paddingTop: 4,
           display: "flex",
           flexDirection: "column",
           gap: 3,
@@ -129,13 +132,14 @@ export default function AppCard({
           <Chip
             label={category}
             sx={{
-              backgroundColor: "transparent",
-              border: "2px solid #ed8936",
-              color: "#ed8936",
-              fontWeight: 600,
+              backgroundColor: `#${tagColor}1A`,
+              border: `2px solid #${tagColor}80`,
+              color: `#${tagColor}`,
+              fontWeight: 500,
               fontSize: "0.9rem",
-              padding: "4px 8px",
+              padding: "4pX",
               height: "auto",
+              borderRadius: 1,
             }}
           />
           <Box sx={{ display: "flex", gap: 2 }}>
