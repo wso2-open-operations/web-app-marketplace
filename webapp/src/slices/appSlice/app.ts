@@ -29,6 +29,8 @@ export type AppLinks = {
   description: string;
   versionName: string;
   tagId: number;
+  tagName: string;
+  tagColor: string;
   iconName: string;
   addedBy: string;
   isFavourite: 0 | 1;
