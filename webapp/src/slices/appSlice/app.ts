@@ -40,7 +40,7 @@ interface AppLinksState {
   state: State;
   stateMessage: string | null;
   errorMessage: string | null;
-  apps: AppLinks | null;
+  apps: AppLinks[] | null;
 }
 
 const initialState: AppLinksState = {
@@ -61,7 +61,7 @@ export const fetchAppLinks = createAsyncThunk(
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
 
-    return new Promise<AppLinks>((resolve, reject) => {
+    return new Promise<AppLinks[]>((resolve, reject) => {
       APIService.getInstance()
         .get(AppConfig.serviceUrls.appLinks, {
           cancelToken: newCancelTokenSource.token,
@@ -164,6 +164,16 @@ export const appLinksSlice = createSlice({
       .addCase(fetchAppLinks.rejected, (state) => {
         state.state = State.failed;
         state.stateMessage = "Failed to fetch";
+      })
+
+      .addCase(updateAppFavourite.fulfilled, (state, action) => {
+        // Update the favorite status in the apps array
+        if (state.apps) {
+          const app = state.apps.find((app) => app.id === action.payload.id);
+          if (app) {
+            app.isFavourite = action.payload.active;
+          }
+        }
       });
   },
 });
