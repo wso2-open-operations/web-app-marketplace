@@ -56,8 +56,10 @@ export default function AppCard({
         maxWidth: 500,
         width: "100%",
         borderRadius: 4,
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.0)",
         position: "relative",
+        border: "0.5px solid #e6e6e6",
+        background: "linear-gradient(180deg, #FFF 60%, #F7F7F7 100%)",
       }}
     >
       <CardContent
