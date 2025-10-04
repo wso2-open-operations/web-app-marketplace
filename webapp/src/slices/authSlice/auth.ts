@@ -116,6 +116,12 @@ export const authSlice = createSlice({
       state.decodedIdToken = action.payload.decodedIdToken;
       state.status = State.success;
     },
+    setAuthError: (state) => {
+      state.status = State.failed;
+      state.userInfo = null;
+      state.decodedIdToken = null;
+      state.roles = []; 
+    }
   },
   extraReducers: (builder) => {
     builder
