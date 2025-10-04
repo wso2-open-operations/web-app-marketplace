@@ -135,7 +135,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
         }
       } catch (err) {
         if (mounted) {
-          dispatch(setUserAuthData({ status: State.failed }));
+          dispatch(setAuthError());
         }
       }
     };
@@ -230,3 +230,7 @@ const useAppAuthContext = (): AuthContextType => useContext(AuthContext);
 export { useAppAuthContext };
 
 export default AppAuthProvider;
+function setAuthError(): any {
+  throw new Error("Function not implemented.");
+}
+
