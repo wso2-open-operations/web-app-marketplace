@@ -35,7 +35,7 @@ type DatabaseConfig record {|
     sql:ConnectionPool connectionPool?;
 |};
 
-# [Database] AppLinks record 
+# [Database] AppLinks record.
 public type AppLinks record {|
     # Unique identifier of the link
     @sql:Column {name: "id"}
