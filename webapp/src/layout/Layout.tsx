@@ -18,7 +18,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { useSnackbar } from "notistack";
 import { useSelector } from "react-redux";
-import { Outlet, redirect, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmationModalContextProvider from "@context/DialogContext";
 import Header from "@layout/header";
