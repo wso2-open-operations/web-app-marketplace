@@ -28,8 +28,8 @@ final cache:Cache cache = new ({
 });
 
 @display {
-    label: "Visitor Service",
-    id: "people-ops-suite/visitor-service"
+    label: "Web_App_Marketplace Service",
+    id: "people-ops-suite/Web_App_Marketplace-service"
 }
 
 service http:InterceptableService / on new http:Listener(9090) {
@@ -44,6 +44,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     #
     # + return - User information or InternalServerError
     resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError {
+
         // User information header.
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
