@@ -27,7 +27,7 @@ import { fetchAppConfig } from "@slices/configSlice/config";
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getUserInfo } from "@slices/userSlice/user";
 import { APIService } from "@utils/apiService";
-import { appName } from "@config/constant";
+import { appName, redirectUrl } from "@config/constant";
 
 type AuthContextType = {
   appSignIn: () => void;
@@ -77,9 +77,9 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   } = useAuthContext();
 
   useEffect(() => {
-    if (!localStorage.getItem(`${appName}-redirect-url`)) {
+    if (!localStorage.getItem(redirectUrl)) {
       localStorage.setItem(
-        `${appName}-redirect-url`,
+        redirectUrl,
         window.location.href.replace(window.location.origin, "")
       );
     }
@@ -167,7 +167,6 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
 
   const appSignOut = async () => {
     setAppState("loading");
-    localStorage.setItem(`${appName}-state`, "logout");
     await signOut();
     setAppState("unauthenticated");
   };
@@ -175,7 +174,6 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   const appSignIn = async () => {
     await signIn();
     setAppState("loading");
-    localStorage.setItem(`${appName}-state`, "active");
   };
 
   const authContext: AuthContextType = {

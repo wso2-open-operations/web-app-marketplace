@@ -31,4 +31,4 @@ export const SnackMessage = {
 
 export const APP_DESC = "Internal App Product Template.";
 
-export const appName = "iam-app";
+export const redirectUrl = "web-app-marketplace-redirect-url";

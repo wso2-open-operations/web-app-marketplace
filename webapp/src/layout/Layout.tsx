@@ -18,7 +18,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { useSnackbar } from "notistack";
 import { useSelector } from "react-redux";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, redirect, useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmationModalContextProvider from "@context/DialogContext";
 import Header from "@layout/header";
@@ -29,6 +29,7 @@ import { useTheme } from "@mui/material/styles";
 import pJson from "@root/package.json";
 import { selectRoles } from "@slices/authSlice/auth";
 import { RootState, useAppSelector } from "@slices/store";
+import { redirectUrl as redirectUrlKey } from "../config/constant";
 
 export default function Layout() {
   const { enqueueSnackbar } = useSnackbar();
@@ -57,10 +58,10 @@ export default function Layout() {
 
   // Handle Redirect After Login
   useEffect(() => {
-    const redirectUrl = localStorage.getItem("people-app-redirect-url");
+    const redirectUrl = localStorage.getItem(redirectUrlKey);
     if (redirectUrl) {
       navigate(redirectUrl);
-      localStorage.removeItem("people-app-redirect-url");
+      localStorage.removeItem(redirectUrlKey);
     }
   }, [navigate]);
 
