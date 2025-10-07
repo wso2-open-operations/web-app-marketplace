@@ -15,53 +15,7 @@
 // under the License.
 import ballerina/sql;
 
-# [Database] Build query to fetch apps visible to any of the given user roles.
-# Apps with empty user_groups are visible to everyone.
-#
-# + roles - User roles to filter
-# + return - Parameterized query selecting apps for the roles
-isolated function fetchAppsByUserRolesQuery(string[] roles) returns sql:ParameterizedQuery {
-    sql:ParameterizedQuery selectClause = `
-        SELECT 
-            id,
-            header,
-            url,
-            description,
-            version_name,
-            tag_id,
-            icon,
-            added_by
-        FROM apps
-        WHERE is_active = 1`;
-
-    if roles.length() == 0 {
-        // No roles provided: show only apps with empty user_groups
-        return sql:queryConcat(selectClause, `
-          AND (user_groups IS NULL OR user_groups = '')
-        ORDER BY header`);
-    }
-
-    // Roles provided: show apps matching any role OR with empty user_groups
-    sql:ParameterizedQuery[] roleConditions = [];
-    foreach var role in roles {
-        roleConditions.push(`FIND_IN_SET(${role}, user_groups)`);
-    }
-
-    sql:ParameterizedQuery roleClause = roleConditions[0];
-    foreach int i in 1 ..< roleConditions.length() {
-        roleClause = sql:queryConcat(roleClause, ` OR `, roleConditions[i]);
-    }
-
-    sql:ParameterizedQuery whereClause = sql:queryConcat(`
-          AND ((`, roleClause, `) OR (user_groups IS NULL OR user_groups = ''))`);
-
-    return sql:queryConcat(selectClause, whereClause, `
-        ORDER BY header`);
-}
-
 # [Database] Build query to fetch apps visible to any of the given user roles, including favourite status for the user.
-# Apps with empty user_groups are visible to everyone.
-# If no roles are provided, only apps with empty user_groups are returned.
 #
 # + email - User email to check favourites
 # + roles - User roles to filter
