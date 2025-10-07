@@ -13,11 +13,11 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { BasicUserInfo, DecodedIDTokenPayload } from "@asgardeo/auth-spa";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { State } from "@/types/types";
-import { BasicUserInfo, DecodedIDTokenPayload } from "@asgardeo/auth-spa";
 import { SnackMessage } from "@config/constant";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { RootState } from "@slices/store";
 

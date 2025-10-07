@@ -14,11 +14,10 @@
 // specific language governing permissions and limitations
 // under the License.
 import { SecureApp, useAuthContext } from "@asgardeo/auth-react";
-import { useIdleTimer } from "react-idle-timer";
 
+import { useIdleTimer } from "react-idle-timer";
 import React, { useContext, useEffect, useState } from "react";
 
-import { State } from "@/types/types";
 import PreLoader from "@component/common/PreLoader";
 import SessionWarningDialog from "@component/common/SessionWarningDialog";
 import LoginScreen from "@component/ui/LoginScreen";

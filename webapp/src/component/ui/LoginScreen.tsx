@@ -24,9 +24,9 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+
 import { APP_NAME } from "@root/src/config/config";
 import { APP_DESC } from "@root/src/config/constant";
-
 import BackgroundImage from "@assets/images/expense-claims-app-login-background.png";
 import ProductLogos from "@assets/images/expense-claims-app-login-logos.png";
 import logo from "@assets/images/wso2-logo-black.png";
