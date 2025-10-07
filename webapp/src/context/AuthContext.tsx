@@ -77,6 +77,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
     isAuthenticated,
     getIDToken,
     trySignInSilently,
+    getAccessToken,
     state,
   } = useAuthContext();
 
@@ -148,11 +149,11 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
     return new Promise<{ idToken: string }>(async (resolve) => {
       const userIsAuthenticated = await isAuthenticated();
       if (userIsAuthenticated) {
-        resolve({ idToken: await getIDToken() });
+        resolve({ idToken: await getAccessToken() });
       } else {
         refreshAccessToken()
           .then(async () => {
-            const idToken = await getIDToken();
+            const idToken = await getAccessToken();
             resolve({ idToken: idToken });
           })
           .catch(() => {
