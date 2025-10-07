@@ -28,6 +28,6 @@ export const SnackMessage = {
   warning: {},
 };
 
-export const APP_DESC = "Internal App Product Template.";
+export const APP_DESC = "Web App Store for internal apps";
 
 export const redirectUrl = "web-app-marketplace-redirect-url";
