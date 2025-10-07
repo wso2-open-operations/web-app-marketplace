@@ -43,8 +43,7 @@ function SessionWarningDialog(props: SessionWarningDialogProps) {
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          It looks like you've been inactive for a while. Would you like to
-          continue?
+          It looks like you've been inactive for a while. Would you like to continue?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
