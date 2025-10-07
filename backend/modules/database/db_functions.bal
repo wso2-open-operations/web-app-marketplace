@@ -15,32 +15,23 @@
 // under the License. 
 // import ballerina/sql;
 
-# Fetch all app links visible to the given `roles` and mark whether each link
-# is a favourite for the user identified by `email`.
+# Fetch all app links visible to the given `roles`
 #
 # + email - User email used to look up favourites
 # + roles - Role names used to resolve visible links
 # + return - AppLinks[] with `isFavourite` set, or an `error?` on failure
 public isolated function fetchAppByRoles(string email, string[] roles) returns AppLinks[]|error {
-
     stream<AppLinks, error?> result = databaseClient->query(fetchAppsWithFavouritesQuery(email, roles));
-
-    AppLinks[] apps = [];
-
-    check from AppLinks app in result
-        do {
-            apps.push({
-                id: app.id,
-                header: app.header,
-                description: app.description,
-                versionName: app.versionName,
-                tagId: app.tagId,
-                iconName: app.iconName,
-                addedBy: app.addedBy,
-                isFavourite: app.isFavourite,
-                urlName: app.urlName
-            });
+    return from AppLinks appLink in result
+        select {
+            id: appLink.id,
+            header: appLink.header,
+            description: appLink.description,
+            versionName: appLink.versionName,
+            tagId: appLink.tagId,
+            iconName: appLink.iconName,
+            addedBy: appLink.addedBy,
+            isFavourite: appLink.isFavourite,
+            urlName: appLink.urlName
         };
-
-    return apps;
 }
