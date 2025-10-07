@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-
 import ballerina/sql;
 import ballerinax/mysql;
 
@@ -47,7 +46,6 @@ public type AppLinks record {|
     @sql:Column {name: "url"}
     string urlName;
     # Short description
-    @sql:Column {name: "description"}
     string description;
     # Version label of the target app
     @sql:Column {name: "version_name"}
