@@ -23,8 +23,8 @@ type UserInfo record {|
     json...;
 |};
 
-# Structure of AppLinks record.
-public type AppLinks record {|
+# Structure of App record.
+public type App record {|
     # Unique identifier of the link
     int id;
     # Display title
