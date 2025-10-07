@@ -181,20 +181,20 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
 
   const renderContent = () => {
     switch (appState) {
-      case "loading":
+      case AppState.Loading:
         return <PreLoader isLoading message="Loading..." />;
 
-      case "authenticating":
+      case AppState.Authenticating:
         return <PreLoader isLoading message="Authenticating..." />;
 
-      case "authenticated":
+      case AppState.Authenticated:
         return (
           <AuthContext.Provider value={authContext}>
             {props.children}
           </AuthContext.Provider>
         );
 
-      case "unauthenticated":
+      case AppState.Unauthenticated:
         return (
           <AuthContext.Provider value={authContext}>
             <LoginScreen />
