@@ -22,7 +22,6 @@ service class BadRequestInterceptor {
     *http:ResponseErrorInterceptor;
 
     remote function interceptResponseError(error err, http:RequestContext ctx) returns http:BadRequest|error {
-
         // Handle data-binding errors.
         if err is http:PayloadBindingError {
             log:printError("Payload binding failed!", err);
