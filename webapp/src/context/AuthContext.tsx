@@ -22,7 +22,7 @@ import { State } from "@/types/types";
 import PreLoader from "@component/common/PreLoader";
 import SessionWarningDialog from "@component/common/SessionWarningDialog";
 import LoginScreen from "@component/ui/LoginScreen";
-import { loadPrivileges, setUserAuthData } from "@slices/authSlice/auth";
+import { loadPrivileges, setUserAuthData, setAuthError } from "@slices/authSlice/auth";
 import { fetchAppConfig } from "@slices/configSlice/config";
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getUserInfo } from "@slices/userSlice/user";
@@ -228,7 +228,3 @@ const useAppAuthContext = (): AuthContextType => useContext(AuthContext);
 export { useAppAuthContext };
 
 export default AppAuthProvider;
-function setAuthError(): any {
-  throw new Error("Function not implemented.");
-}
-
