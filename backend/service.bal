@@ -103,9 +103,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Handle GET /links and return app links visible to the user.
     #
     # + ctx - Request context carrying authenticated user info
-    # + return - AppLinks[] on success, 404 when no links, or 500 on internal errors
+    # + return - App[] on success, 404 when no links, or 500 on internal errors
     resource function get apps(http:RequestContext ctx)
-        returns AppLinks[]|http:NotFound|http:InternalServerError {
+        returns App[]|http:NotFound|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo =
             ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -116,7 +116,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        AppLinks[]|error? result = database:fetchAppByRoles(userInfo.email, 
+        App[]|error? result = database:fetchAppByRoles(userInfo.email, 
         userInfo.groups);
 
         if result is error {
