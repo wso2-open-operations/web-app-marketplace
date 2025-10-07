@@ -116,7 +116,7 @@ const LoginScreen = () => {
                       Powered By
                     </Typography>
                     <Stack direction="row" spacing={2}>
-                      <img height={22} src={ProductLogos} />
+                      <img height={22} src={ProductLogos} alt="Product logos"  />
                     </Stack>
                   </Stack>
                 </Grid>
