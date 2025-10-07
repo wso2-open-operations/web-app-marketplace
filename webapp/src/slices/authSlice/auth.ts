@@ -139,6 +139,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setUserAuthData } = authSlice.actions;
+export const { setUserAuthData, setAuthError } = authSlice.actions;
 export const selectRoles = (state: RootState) => state.auth.roles;
 export default authSlice.reducer;
