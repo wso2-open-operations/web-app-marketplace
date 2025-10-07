@@ -22,7 +22,7 @@ import ballerina/http;
 import ballerina/log;
 
 final cache:Cache cache = new ({
-    capacity: 2000,
+    capacity: 200,
     defaultMaxAge: 1800.0,
     cleanupInterval: 900.0
 });
@@ -43,8 +43,8 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Fetch logged-in user's details.
     #
     # + return - User information or InternalServerError
-    resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError {
-
+    resource function get user\-info(http:RequestContext ctx) 
+        returns UserInfo|http:InternalServerError|http:NotFound {
         // User information header.
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -72,11 +72,12 @@ service http:InterceptableService / on new http:Listener(9090) {
                 body: customError
             };
         }
+
         if employee is () {
             log:printError(string `No employee information found for the user: ${userInfo.email}`);
-            return <http:InternalServerError>{
+            return <http:NotFound>{
                 body: {
-                    message: "No information found for the user!"
+                    message: "No user found!"
                 }
             };
         }
@@ -115,8 +116,8 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        AppLinks[]|error? result =
-            database:fetchAppByRoles(userInfo.email, userInfo.groups);
+        AppLinks[]|error? result = database:fetchAppByRoles(userInfo.email, 
+        userInfo.groups);
 
         if result is error {
             string customError = "Error while retrieving app links";
