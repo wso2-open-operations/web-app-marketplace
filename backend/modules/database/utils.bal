@@ -13,9 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-import ballerina/crypto;
-import ballerina/lang.regexp as regex;
-import ballerina/random;
 import ballerina/sql;
 
 # Build the database select query with dynamic filter attributes.
