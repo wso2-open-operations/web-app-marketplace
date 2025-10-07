@@ -53,7 +53,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   const auth = useAppSelector((state: RootState) => state.auth);
 
   const onPrompt = () => {
-    appState ===  AppState.Authenticating && setSessionWarningOpen(true);
+    appState ===  AppState.Authenticated && setSessionWarningOpen(true);
   };
 
   const { activate } = useIdleTimer({
@@ -123,7 +123,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
           setAppState(AppState.Authenticating);
           await setupAuthenticatedUser();
 
-          if (mounted) setAppState(AppState.Authenticating);
+          if (mounted) setAppState(AppState.Authenticated);
           
         } else {
           const silentSignInSuccess = await trySignInSilently();
