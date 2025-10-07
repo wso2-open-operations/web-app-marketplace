@@ -23,7 +23,7 @@ import ballerina/log;
 
 final cache:Cache cache = new ({
     capacity: 200,
-    defaultMaxAge: 1800.0,
+    defaultMaxAge: 86400.0,
     cleanupInterval: 900.0
 });
 
@@ -43,9 +43,8 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Fetch logged-in user's details.
     #
     # + return - User information or InternalServerError
-    resource function get user\-info(http:RequestContext ctx) 
-        returns UserInfo|http:InternalServerError|http:NotFound {
-        // User information header.
+    resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError|http:NotFound {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
@@ -100,15 +99,13 @@ service http:InterceptableService / on new http:Listener(9090) {
         return userInfoResponse;
     }
 
-    # Handle GET /links and return app links visible to the user.
+    # Handle GET /Apps and return app apps visible to the user.
     #
     # + ctx - Request context carrying authenticated user info
-    # + return - App[] on success, 404 when no links, or 500 on internal errors
-    resource function get apps(http:RequestContext ctx)
-        returns App[]|http:NotFound|http:InternalServerError {
+    # + return - App[] on success, 404 when no apps, or 500 on internal errors
+    resource function get apps(http:RequestContext ctx) returns App[]|http:NotFound|http:InternalServerError {
 
-        authorization:CustomJwtPayload|error userInfo =
-            ctx.getWithType(authorization:HEADER_USER_INFO);
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
@@ -120,7 +117,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         userInfo.groups);
 
         if result is error {
-            string customError = "Error while retrieving app links";
+            string customError = "Error while retrieving apps";
             log:printError(customError, result);
             return <http:InternalServerError>{
                 body: {message: customError}
@@ -128,7 +125,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if result is () {
-            string customError = string `No app links found for user : ${userInfo.email}`;
+            string customError = string `No apps found for user : ${userInfo.email}`;
             log:printError(customError);
             return <http:NotFound>{
                 body: {message: customError}

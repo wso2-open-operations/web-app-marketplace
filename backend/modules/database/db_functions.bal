@@ -15,10 +15,10 @@
 // under the License. 
 // import ballerina/sql;
 
-# Fetch all app links visible to the given `roles`
+# Fetch all apps visible to the given `roles`
 #
 # + email - User email used to look up favourites
-# + roles - Role names used to resolve visible links
+# + roles - Role names used to resolve visible apps
 # + return - App[] with `isFavourite` set, or an `error?` on failure
 public isolated function fetchAppByRoles(string email, string[] roles) returns App[]|error {
     stream<App, error?> result = databaseClient->query(fetchAppsWithFavouritesQuery(email, roles));
