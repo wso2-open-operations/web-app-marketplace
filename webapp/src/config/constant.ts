@@ -28,6 +28,6 @@ export const SnackMessage = {
   warning: {},
 };
 
-export const APP_DESC = "Web App Store for internal apps";
+export const APP_DESC = "Web App Store";
 
 export const redirectUrl = "web-app-marketplace-redirect-url";
