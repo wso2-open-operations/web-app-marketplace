@@ -13,23 +13,22 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { useSnackbar } from "notistack";
+import { alpha, Box, Typography } from "@mui/material";
+import CssBaseline from "@mui/material/CssBaseline";
+import { useTheme } from "@mui/material/styles";
 
 import { Suspense, useCallback, useEffect, useState } from "react";
-
-import { useSnackbar } from "notistack";
 import { useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmationModalContextProvider from "@context/DialogContext";
 import Header from "@layout/header";
 import Sidebar from "@layout/sidebar";
-import { alpha, Box, Typography } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
-import { useTheme } from "@mui/material/styles";
 import pJson from "@root/package.json";
 import { selectRoles } from "@slices/authSlice/auth";
 import { RootState, useAppSelector } from "@slices/store";
-import { redirectUrl as redirectUrlKey } from "../config/constant";
+import { redirectUrl as redirectUrlKey } from "@config/constant";
 
 export default function Layout() {
   const { enqueueSnackbar } = useSnackbar();
