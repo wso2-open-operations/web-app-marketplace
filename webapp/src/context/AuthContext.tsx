@@ -33,6 +33,13 @@ type AuthContextType = {
   appSignOut: () => void;
 };
 
+enum AppState {
+  Loading = "loading",
+  Unauthenticated = "unauthenticated",
+  Authenticating = "authenticating",
+  Authenticated = "authenticated",
+}
+
 const AuthContext = React.createContext<AuthContextType>({} as AuthContextType);
 
 const timeout = 15 * 60 * 1000;
@@ -40,15 +47,13 @@ const promptBeforeIdle = 4_000;
 
 const AppAuthProvider = (props: { children: React.ReactNode }) => {
   const [sessionWarningOpen, setSessionWarningOpen] = useState<boolean>(false);
-  const [appState, setAppState] = useState<
-    "loading" | "unauthenticated" | "authenticating" | "authenticated"
-  >("loading");
+  const [appState, setAppState] = useState<AppState>(AppState.Loading);
 
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state: RootState) => state.auth);
 
   const onPrompt = () => {
-    appState === "authenticated" && setSessionWarningOpen(true);
+    appState ===  AppState.Authenticating && setSessionWarningOpen(true);
   };
 
   const { activate } = useIdleTimer({
@@ -110,20 +115,20 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
 
     const initializeAuth = async () => {
       try {
-        setAppState("loading");
+        setAppState(AppState.Loading);
 
         if (state.isLoading) return;
 
         if (state.isAuthenticated) {
-          setAppState("authenticating");
+          setAppState(AppState.Authenticating);
           await setupAuthenticatedUser();
 
-          if (mounted) setAppState("authenticated");
+          if (mounted) setAppState(AppState.Authenticating);
           
         } else {
           const silentSignInSuccess = await trySignInSilently();
 
-          if (mounted) setAppState(silentSignInSuccess ? "authenticating" : "unauthenticated");
+          if (mounted) setAppState(silentSignInSuccess ? AppState.Authenticating : AppState.Unauthenticated);
         }
       } catch (err) {
         if (mounted) {
@@ -158,14 +163,14 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   };
 
   const appSignOut = async () => {
-    setAppState("loading");
+    setAppState(AppState.Loading);
     await signOut();
-    setAppState("unauthenticated");
+    setAppState(AppState.Unauthenticated);
   };
 
   const appSignIn = async () => {
     await signIn();
-    setAppState("loading");
+    setAppState(AppState.Loading);
   };
 
   const authContext: AuthContextType = {
