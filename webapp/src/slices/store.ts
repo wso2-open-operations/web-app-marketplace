@@ -23,6 +23,7 @@ import commonReducer from "@slices/commonSlice/common";
 import appConfigReducer from "@slices/configSlice/config";
 import employeeReducer from "@slices/employeeSlice/employee";
 import userReducer from "@slices/userSlice/user";
+import appsReduser from "@slices/appSlice/app";
 
 enableMapSet();
 
@@ -33,9 +34,9 @@ export const store = configureStore({
     common: commonReducer,
     employee: employeeReducer,
     appConfig: appConfigReducer,
+    app: appsReduser,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
