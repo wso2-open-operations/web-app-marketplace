@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 // import ballerina/sql;
+import ballerina/sql;
 
 # Fetch all apps visible to the given `roles`
 #
@@ -29,9 +30,28 @@ public isolated function fetchAppByRoles(string email, string[] roles) returns A
             description: app.description,
             versionName: app.versionName,
             tagId: app.tagId,
+            tagName: app.tagName,
+            tagColor: app.tagColor,
             iconName: app.iconName,
             addedBy: app.addedBy,
             isFavourite: app.isFavourite,
             urlName: app.urlName
         };
+}
+
+public isolated function updateFavourites(string email, int appId, int is_active) returns error|boolean {
+
+    sql:ExecutionResult result = check databaseClient->execute(updateFavouritesQuery(email, appId, is_active));
+
+    if result.affectedRowCount > 0 {
+        return true;
+    }
+
+    return false;
+}
+
+public isolated function isValidAppId(int appId) returns boolean|error {
+    ValidAppResult result = check databaseClient->queryRow(checkIfValidAppIdQuery(appId));
+
+    return result.is_valid === 1;
 }
