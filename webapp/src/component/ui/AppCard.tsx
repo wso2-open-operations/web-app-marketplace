@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useAppDispatch } from "@root/src/slices/store";
 import { updateAppFavourite } from "@root/src/slices/appSlice/app";
@@ -55,6 +55,14 @@ export default function AppCard({
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
   const dispatch = useAppDispatch();
 
+  const [imageError, setImageError] = useState(false);
+  const [isSvg, setIsSvg] = useState(false);
+
+  useEffect(() => {
+    setIsSvg(logoUrl.toLowerCase().endsWith('.svg'));
+    setImageError(false);
+  }, [logoUrl])
+
   const handleFavoriteClick = () => {
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
@@ -67,7 +75,46 @@ export default function AppCard({
     window.open(appUrl, "_blank", "noopener,noreferrer");
   };
 
-  console.log(tagColor);
+  const renderLogo = () => {
+    // Check if logoUrl contains SVG markup instead of a file path
+    const isRawSvg = logoUrl.includes('<svg') || logoUrl.includes('<rect') || logoUrl.includes('<path');
+
+    if (isRawSvg) {
+      // Handle raw SVG content
+      return (
+        <Box
+          sx={{
+            height: 40,
+            width: 40,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          dangerouslySetInnerHTML={{
+            __html: logoUrl.startsWith('<svg') ? logoUrl : `<svg width="40" height="40" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">${logoUrl}</svg>`
+          }}
+        />
+      );
+    }
+    // Handle regular image files (PNG, SVG files, etc.)
+    return (
+      <Box
+        component="img"
+        src={logoUrl}
+        alt={logoAlt}
+        onError={() => setImageError(true)}
+        sx={{
+          height: 40,
+          width: "auto",
+          maxWidth: 40,
+          objectFit: "contain",
+          ...(isSvg && {
+            filter: "none",
+          })
+        }}
+      />
+    );
+  };
 
   return (
     <Card
@@ -98,12 +145,7 @@ export default function AppCard({
             alignItems: "flex-start",
           }}
         >
-          <Box
-            component="img"
-            src={logoUrl}
-            alt={logoAlt}
-            sx={{ height: 40, objectFit: "contain" }}
-          />
+          {renderLogo()}
           <IconButton
             onClick={handleFavoriteClick}
             sx={{
@@ -177,3 +219,5 @@ export default function AppCard({
     </Card>
   );
 }
+
+
