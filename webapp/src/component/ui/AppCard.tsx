@@ -74,6 +74,7 @@ export default function AppCard({
       sx={{
         maxWidth: 500,
         width: "100%",
+        height: "100%",
         borderRadius: 4,
         boxShadow: "0 4px 12px rgba(0,0,0,0.0)",
         position: "relative",
@@ -149,9 +150,9 @@ export default function AppCard({
           <Chip
             label={category}
             sx={{
-              backgroundColor: `#${tagColor}1A`,
-              border: `2px solid #${tagColor}80`,
-              color: `#${tagColor}`,
+              backgroundColor: `${tagColor}1A`,
+              border: `2px solid ${tagColor}80`,
+              color: `${tagColor}`,
               fontWeight: 500,
               fontSize: "0.9rem",
               padding: "4pX",
