@@ -43,11 +43,11 @@ public isolated function updateFavourites(string email, int appId, int is_active
 
     sql:ExecutionResult result = check databaseClient->execute(updateFavouritesQuery(email, appId, is_active));
 
-    if result.affectedRowCount > 0 {
-        return true;
+    if result.affectedRowCount === 0 {
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 public isolated function isValidAppId(int appId) returns boolean|error {
