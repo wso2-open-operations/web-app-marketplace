@@ -114,8 +114,6 @@ export const updateAppFavourite = createAsyncThunk<
         }
       );
 
-      console.log("Res : ", res);
-
       return { id: Number(id), active: normalized as 0 | 1 };
     } catch (error: any) {
       if (axios.isCancel(error)) {
