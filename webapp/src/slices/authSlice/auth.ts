@@ -13,11 +13,11 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { BasicUserInfo, DecodedIDTokenPayload } from "@asgardeo/auth-spa";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { State } from "@/types/types";
-import { BasicUserInfo, DecodedIDTokenPayload } from "@asgardeo/auth-spa";
 import { SnackMessage } from "@config/constant";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { RootState } from "@slices/store";
 
@@ -38,7 +38,6 @@ interface AuthState {
 
 interface AuthData {
   userInfo: BasicUserInfo;
-  idToken: string;
   decodedIdToken: DecodedIDTokenPayload;
 }
 
@@ -117,6 +116,12 @@ export const authSlice = createSlice({
       state.decodedIdToken = action.payload.decodedIdToken;
       state.status = State.success;
     },
+    setAuthError: (state) => {
+      state.status = State.failed;
+      state.userInfo = null;
+      state.decodedIdToken = null;
+      state.roles = []; 
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -134,6 +139,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setUserAuthData } = authSlice.actions;
+export const { setUserAuthData, setAuthError } = authSlice.actions;
 export const selectRoles = (state: RootState) => state.auth.roles;
 export default authSlice.reducer;

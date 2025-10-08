@@ -14,8 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { fetchEmployees } from "../slices/employeeSlice/employee";
-
 export const SnackMessage = {
   success: {
     addEmployee: "Successfully created the employee",
@@ -29,3 +27,7 @@ export const SnackMessage = {
   },
   warning: {},
 };
+
+export const APP_DESC = "Web App Store";
+
+export const redirectUrl = "web-app-marketplace-redirect-url";
