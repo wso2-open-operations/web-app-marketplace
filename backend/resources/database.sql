@@ -24,7 +24,7 @@ CREATE TABLE apps (
   `description` TEXT NULL,
   version_name  VARCHAR(64) NOT NULL,
   tag_id        INT NULL,                       
-  icon          VARCHAR(255) NULL,
+  icon          LONGTEXT NULL,
   user_groups   SET('wso2-everyone','admin','app-appstore-admin','wso2-interns') NOT NULL DEFAULT '',
   `is_active`   TINYINT(1) NOT NULL DEFAULT 0,  
   added_by      VARCHAR(254) NOT NULL,
