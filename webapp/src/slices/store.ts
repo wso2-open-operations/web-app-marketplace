@@ -15,8 +15,8 @@
 // under the License.
 import { enableMapSet } from "immer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-
 import { configureStore } from "@reduxjs/toolkit";
+
 import authReducer from "@slices/authSlice/auth";
 import commonReducer from "@slices/commonSlice/common";
 import appConfigReducer from "@slices/configSlice/config";
