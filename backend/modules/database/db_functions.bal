@@ -21,7 +21,7 @@
 # + roles - Role names used to resolve visible apps
 # + return - App[] with `isFavourite` set, or an `error?` on failure
 public isolated function fetchAppByRoles(string email, string[] roles) returns App[]|error {
-    stream<App, error?> result = databaseClient->query(fetchAppsWithFavouritesQuery(email, roles));
+    stream<App, error?> result = databaseClient->query(fetchAppByRolesQuery(email, roles));
     return from App app in result
         select {
             id: app.id,

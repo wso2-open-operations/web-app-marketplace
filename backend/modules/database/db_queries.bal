@@ -20,7 +20,7 @@ import ballerina/sql;
 # + email - User email to check favourites
 # + roles - User roles to filter
 # + return - Parameterized query selecting apps with favourite status
-isolated function fetchAppsWithFavouritesQuery(string email, string[] roles) returns sql:ParameterizedQuery {
+isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery selectClause = `
         SELECT 
             a.id,
