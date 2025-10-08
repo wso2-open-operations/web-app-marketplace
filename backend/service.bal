@@ -134,8 +134,7 @@ service http:InterceptableService / on new http:Listener(9095) {
     resource function patch apps(http:RequestContext ctx, string id, string active)
         returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError|http:NotModified {
 
-        authorization:CustomJwtPayload|error userInfo =
-            ctx.getWithType(authorization:HEADER_USER_INFO);
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
@@ -197,18 +196,19 @@ service http:InterceptableService / on new http:Listener(9095) {
             };
         }
 
-        if result is true {
-            string customError = string `Successfully ${isFav == 1 ? "added to" : "removed from"} favorites`;
-            return <http:Ok>{
+        if result is false {
+            string customError = string `User ${userInfo.email} not found while trying to update favorites`;
+            log:printError(customError);
+            return <http:NotModified>{
                 body: {
                     message: customError
                 }
             };
         }
 
-        string customError = string `User ${userInfo.email} not found while trying to update favorites`;
-        log:printError(customError);
-        return <http:NotModified>{
+
+        string customError = string `Successfully ${isFav == 1 ? "added to" : "removed from"} favorites`;
+        return <http:Ok>{
             body: {
                 message: customError
             }
