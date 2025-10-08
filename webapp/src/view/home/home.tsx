@@ -23,7 +23,7 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "@slices/store";
-import { fetchAppLinks } from "@slices/appSlice/app";
+import { fetchApps } from "@slices/appSlice/app";
 import { State } from "@root/src/types/types";
 import {
   filterAndSortApps,
@@ -34,14 +34,14 @@ import SearchBar from "@component/ui/SearchBar";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { state, apps } = useAppSelector((state: RootState) => state.appLinks);
+  const { state, apps } = useAppSelector((state: RootState) => state.app);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchAppLinks());
+    dispatch(fetchApps());
   }, [dispatch]);
 
   // Extract unique tags from apps
