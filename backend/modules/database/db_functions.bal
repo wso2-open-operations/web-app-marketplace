@@ -39,8 +39,13 @@ public isolated function fetchAppByRoles(string email, string[] roles) returns A
         };
 }
 
+# Updates the favourite status of an app for a specific user.
+#
+# + email - The email address of the user
+# + appId - Id of the target app
+# + is_active - The favourite status (1 for favourite, 0 for not favourite)
+# + return - Returns `true` if the update was successful, `false` if no rows were affected, or an `error` on failure
 public isolated function updateFavourites(string email, int appId, int is_active) returns error|boolean {
-
     sql:ExecutionResult result = check databaseClient->execute(updateFavouritesQuery(email, appId, is_active));
 
     if result.affectedRowCount === 0 {
@@ -50,6 +55,10 @@ public isolated function updateFavourites(string email, int appId, int is_active
     return true;
 }
 
+# Validates whether the given application ID exists in the database.
+#
+# + appId - The unique identifier of the application to validate
+# + return - Returns `true` if the app ID is valid, `false` if invalid, or an `error` on failure
 public isolated function isValidAppId(int appId) returns boolean|error {
     ValidAppResult result = check databaseClient->queryRow(checkIfValidAppIdQuery(appId));
 
