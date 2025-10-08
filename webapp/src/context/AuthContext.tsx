@@ -41,7 +41,9 @@ enum AppState {
 
 const AuthContext = React.createContext<AuthContextType>({} as AuthContextType);
 
+// Session timeout: 15 minutes in milliseconds
 const timeout = 15 * 60 * 1000;
+// Show warning 4 seconds before session timeout
 const promptBeforeIdle = 4_000;
 
 const AppAuthProvider = (props: { children: React.ReactNode }) => {
