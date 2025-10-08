@@ -160,7 +160,10 @@ const Sidebar = (props: SidebarProps) => {
                     </IconButton>
                   )
               )}
-              <IconButton
+
+              {/* TODO: Apply dark theme styling after finalizing all the color tokens */}
+
+              {/* <IconButton
                 onClick={colorMode.toggleColorMode}
                 color="inherit"
                 sx={{
@@ -193,7 +196,8 @@ const Sidebar = (props: SidebarProps) => {
                       " mode"}
                   </Typography>
                 </span>
-              </IconButton>
+              </IconButton> */}
+
               <IconButton
                 onClick={props.handleDrawer}
                 color="inherit"
