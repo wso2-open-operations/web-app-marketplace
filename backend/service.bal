@@ -31,7 +31,7 @@ final cache:Cache cache = new ({
     id: "people-ops-suite/Web_App_Marketplace-service"
 }
 
-service http:InterceptableService / on new http:Listener(9090) {
+service http:InterceptableService / on new http:Listener(9095) {
 
     # Request interceptor.
     #
@@ -129,5 +129,89 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         return result;
+    }
+
+    resource function patch apps(http:RequestContext ctx, string id, string active)
+        returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError|http:NotModified {
+
+        authorization:CustomJwtPayload|error userInfo =
+            ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: "Authentication information not found in request. Please ensure you are logged in."}
+            };
+        }
+
+        int|error appId = int:fromString(id);
+        int|error isFav = int:fromString(active);
+
+        if appId is error || isFav is error {
+            string customError = string `Invalid request parameters. 'id' and 'isFav' should be valid numbers`;
+            return <http:BadRequest>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if isFav != 0 && isFav != 1 {
+            return <http:BadRequest>{
+                body: {
+                    message: "Invalid 'active' value. It must be 0 (to unfavorite) or 1 (to favorite)"
+                }
+            };
+        }
+
+        // Validate app_id exists
+        boolean|error isValid = database:isValidAppId(appId);
+        if isValid is error {
+            string customError = string `Invalid app_id ...`;
+            log:printError(customError, isValid);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if !isValid {
+            string customError = string `Application with ID ${id} was not found in the system`;
+            log:printInfo(customError);
+            return <http:NotFound>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        error|boolean result = database:updateFavourites(userInfo.email, appId, isFav);
+
+        if result is error {
+            string customError = string `Failed to update favorite status for application ${id}`;
+            log:printError(customError, result);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if result is true {
+            string customError = string `Successfully ${isFav == 1 ? "added to" : "removed from"} favorites`;
+            return <http:Ok>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        string customError = string `User ${userInfo.email} not found while trying to update favorites`;
+        log:printError(customError);
+        return <http:NotModified>{
+            body: {
+                message: customError
+            }
+        };
     }
 }
