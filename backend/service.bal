@@ -31,7 +31,7 @@ final cache:Cache cache = new ({
     id: "people-ops-suite/Web_App_Marketplace-service"
 }
 
-service http:InterceptableService / on new http:Listener(9095) {
+service http:InterceptableService / on new http:Listener(9090) {
 
     # Request interceptor.
     #
@@ -131,6 +131,12 @@ service http:InterceptableService / on new http:Listener(9095) {
         return result;
     }
 
+    # Update the favorite status of an application for the authenticated user.
+    #
+    # + ctx - Request context containing authenticated user information and JWT payload
+    # + id - The unique identifier of the application to update (must be a valid integer)
+    # + active - The favorite status to set: "1" to add to favorites, "0" to remove from favorites
+    # + return - Success response with confirmation message, or error responses for various failure scenarios
     resource function patch apps(http:RequestContext ctx, string id, string active)
         returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError|http:NotModified {
 
