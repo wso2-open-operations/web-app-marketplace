@@ -196,7 +196,29 @@ export default function SearchBar({
             >
               Categories
             </Box>
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+            <Box 
+              sx={{ 
+                display: "flex", 
+                gap: 1.5,
+                overflowX: "auto",
+                overflowY: "hidden",
+                paddingBottom: 2,
+                "&::-webkit-scrollbar": {
+                  height: 4,
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: "#f1f1f1",
+                  borderRadius: 3,
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#c1c1c1",
+                  borderRadius: 3,
+                  "&:hover": {
+                    backgroundColor: "#a8a8a8",
+                  },
+                },
+              }}
+            >
               {sortedTags.map((tag) => {
                 const isSelected = selectedTags.includes(tag.id);
                 return (
@@ -234,6 +256,8 @@ export default function SearchBar({
                       px: 1.5,
                       py: 2.5,
                       transition: "all 0.2s ease",
+                      flexShrink: 0, // Prevent chips from shrinking
+                      whiteSpace: "nowrap", // Prevent text wrapping
                       "&:hover": {
                         backgroundColor: "#f7fafc",
                         borderColor: "#000",
