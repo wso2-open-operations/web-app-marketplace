@@ -31,6 +31,7 @@ import {
 } from "@utils/searchUtils";
 import AppCard from "@component/ui/AppCard";
 import SearchBar from "@component/ui/SearchBar";
+import { relative } from "path";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -88,17 +89,25 @@ export default function Home() {
   }
 
   return (
-    <Box>
-      <SearchBar
-        onSearchChange={setSearchTerm}
-        onTagsChange={setSelectedTags}
-        availableTags={availableTags}
-        selectedTags={selectedTags}
-        isOpen={isSearchOpen}
-        onToggle={() => setIsSearchOpen(!isSearchOpen)}
-      />
+    <Box sx={{paddingBottom: 4, display: "relative"}}>
+      <Box 
+        sx={{ 
+          position: "sticky", 
+          top: 0, 
+          zIndex: 1000,
+        }}
+      >
+        <SearchBar
+          onSearchChange={setSearchTerm}
+          onTagsChange={setSelectedTags}
+          availableTags={availableTags}
+          selectedTags={selectedTags}
+          isOpen={isSearchOpen}
+          onToggle={() => setIsSearchOpen(!isSearchOpen)}
+        />
+      </Box>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         {filteredApps.length > 0 ? (
           filteredApps.map((app) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={app.id}>
