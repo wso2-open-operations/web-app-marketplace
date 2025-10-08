@@ -29,6 +29,8 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
             a.description,
             a.version_name,
             a.tag_id,
+            t.name,
+            t.color,
             a.icon,
             a.added_by,
             CASE WHEN uf.app_id IS NOT NULL THEN 1 ELSE 0 END AS is_favourite
@@ -36,6 +38,7 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
         LEFT JOIN user_favourites uf ON a.id = uf.app_id 
             AND uf.user_email = ${email} 
             AND uf.is_active = 1
+        LEFT JOIN tags t ON a.tag_id =t.id
         WHERE a.is_active = 1`;
 
     if roles.length() == 0 {
@@ -61,4 +64,24 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
 
     return sql:queryConcat(selectClause, whereClause, `
         ORDER BY a.header`);
+}
+
+isolated function updateFavouritesQuery(string email, int app_id, int is_active) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery query = `
+        INSERT INTO user_favourites (user_email, app_id, is_active)
+        VALUES (${email}, ${app_id}, ${is_active})
+        ON DUPLICATE KEY UPDATE
+            is_active = ${is_active}
+    `;
+    return query;
+}
+
+isolated function checkIfValidAppIdQuery(int app_id) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery query = `
+        SELECT EXISTS(
+            SELECT 1 FROM apps 
+            WHERE id = ${app_id} AND is_active = 1
+        ) AS is_valid
+    `;
+    return query;
 }
