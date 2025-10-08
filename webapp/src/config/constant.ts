@@ -24,6 +24,7 @@ export const SnackMessage = {
     insufficientPrivileges: "You don't have sufficient privileges to access this resource",
     fetchAppConfigMessage: "Error while fetching app config",
     addEmployee: "Unable to add employee",
+    fetchApps: "Unable to fetch apps",
   },
   warning: {},
 };
