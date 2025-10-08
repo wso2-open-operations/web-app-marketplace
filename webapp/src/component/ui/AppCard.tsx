@@ -197,7 +197,7 @@ export default function AppCard({
               color: `${tagColor}`,
               fontWeight: 500,
               fontSize: "0.9rem",
-              padding: "4pX",
+              padding: "4px",
               height: "auto",
               borderRadius: 1,
             }}
