@@ -31,7 +31,6 @@ import {
 } from "@utils/searchUtils";
 import AppCard from "@component/ui/AppCard";
 import SearchBar from "@component/ui/SearchBar";
-import { relative } from "path";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -55,8 +54,6 @@ export default function Home() {
     if (!apps) return [];
     return filterAndSortApps(apps, searchTerm, selectedTags);
   }, [apps, searchTerm, selectedTags]);
-
-  console.log("apps : ", apps);
 
   if (state === State.loading) {
     return (
@@ -89,7 +86,7 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{paddingBottom: 4, display: "relative"}}>
+    <Box sx={{paddingBottom: 4, position: "relative"}}>
       <Box 
         sx={{ 
           position: "sticky", 
