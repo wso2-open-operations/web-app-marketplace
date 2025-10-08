@@ -22,9 +22,8 @@ import ballerina/http;
 import ballerina/log;
 
 final cache:Cache cache = new ({
-    capacity: 200,
     defaultMaxAge: 86400.0,
-    cleanupInterval: 900.0
+    evictionFactor: 2
 });
 
 @display {
@@ -44,7 +43,6 @@ service http:InterceptableService / on new http:Listener(9090) {
     #
     # + return - User information or InternalServerError
     resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError|http:NotFound {
-
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
@@ -99,12 +97,11 @@ service http:InterceptableService / on new http:Listener(9090) {
         return userInfoResponse;
     }
 
-    # Handle GET /Apps and return app apps visible to the user.
+    # GET apps visible to the user.
     #
     # + ctx - Request context carrying authenticated user info
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
     resource function get apps(http:RequestContext ctx) returns App[]|http:NotFound|http:InternalServerError {
-
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
@@ -113,8 +110,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        App[]|error? result = database:fetchAppByRoles(userInfo.email, 
-        userInfo.groups);
+        App[]|error? result = database:fetchAppByRoles(userInfo.email, userInfo.groups);
 
         if result is error {
             string customError = "Error while retrieving apps";
