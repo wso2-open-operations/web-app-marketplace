@@ -23,7 +23,7 @@ import ballerina/log;
 
 final cache:Cache cache = new ({
     defaultMaxAge: 86400.0,
-    evictionFactor: 2
+    evictionFactor: 0.2
 });
 
 @display {
