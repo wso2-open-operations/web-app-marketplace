@@ -16,9 +16,13 @@
 import ballerina/graphql;
 
 configurable ClientAuthConfig clientAuthConfig = ?;
+configurable GraphQlRetryConfig retryConfig = ?;
 configurable string peopleEndpoint = ?;
 @display {
     label: "People GraphQL Service",
     id: "hris/entity-graphql-service"
 }
-final graphql:Client hrClient = check new (peopleEndpoint, {auth: {...clientAuthConfig}});
+final graphql:Client hrClient = check new (peopleEndpoint, {
+    auth: {...clientAuthConfig},
+    retryConfig: {...retryConfig}
+});
