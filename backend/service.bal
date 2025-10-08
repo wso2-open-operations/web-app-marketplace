@@ -97,7 +97,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         return userInfoResponse;
     }
 
-    # GET apps visible to the user.
+    # Get apps visible to the user.
     #
     # + ctx - Request context carrying authenticated user info
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
