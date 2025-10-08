@@ -24,6 +24,18 @@ public type ClientAuthConfig record {|
     string clientSecret;
 |};
 
+# Retry config for the graphql client.
+public type GraphQlRetryConfig record {|
+    # Retry count
+    int count = RETRY_COUNT;
+    # Retry interval
+    decimal interval = RETRY_INTERVAL;
+    # Retry backOff factor
+    float backOffFactor = RETRY_BACKOFF_FACTOR;
+    # Retry max interval
+    decimal maxWaitInterval = RETRY_MAX_INTERVAL;
+|};
+
 # Employee information.
 public type Employee record {|
     # Employee first name
