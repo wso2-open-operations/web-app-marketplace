@@ -13,13 +13,12 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import AppsIcon from '@mui/icons-material/Apps';
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import React from "react";
-
 import { NonIndexRouteObject, RouteObject } from "react-router-dom";
 
-import DuoIcon from "@mui/icons-material/Duo";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Role } from "@slices/authSlice/auth";
 import { isIncludedRole } from "@utils/utils";
 import { View } from "@view/index";
@@ -48,7 +47,7 @@ export const routes: RouteObjectWithRole[] = [
   {
     path: "/",
     text: "Home",
-    icon: React.createElement(DuoIcon),
+    icon: React.createElement(AppsIcon),
     element: React.createElement(View.home),
     allowRoles: [Role.ADMIN, Role.TEAM],
   },
