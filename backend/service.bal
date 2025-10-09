@@ -181,7 +181,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        error? result = database:updateFavourites(userInfo.email, appId, isFav);
+        error? result = database:upsertFavourites(userInfo.email, appId, isFav);
 
         if result is error {
             string customError = string `Failed to update favorite status for application ${id}`;
