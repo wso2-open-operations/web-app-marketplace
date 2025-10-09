@@ -71,5 +71,5 @@ public type App record {|
 |};
 
 type ValidAppResult record {|
-    int is_valid;
+    int isValid;
 |};

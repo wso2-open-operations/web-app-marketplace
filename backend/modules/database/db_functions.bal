@@ -53,5 +53,5 @@ public isolated function updateFavourites(string email, int appId, int is_active
 # + return - Returns `true` if the app ID is valid, `false` if invalid, or an `error` on failure
 public isolated function isValidAppId(int appId) returns boolean|error {
     ValidAppResult result = check databaseClient->queryRow(isValidAppIdQuery(appId));
-    return result.is_valid === 1;
+    return result.isValid === 1;
 }
