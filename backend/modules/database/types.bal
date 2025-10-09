@@ -70,6 +70,8 @@ public type App record {|
     string tagColor;
 |};
 
+# Result record for app ID validation queries
 type ValidAppResult record {|
+    # 1 if app exists and is active, 0 otherwise
     int isValid;
 |};
