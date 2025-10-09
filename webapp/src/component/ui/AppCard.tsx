@@ -68,7 +68,7 @@ export default function AppCard({
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
     dispatch(
-      updateAppFavourite({ id: appId, active: newFavoriteState ? 1 : 0 })
+      updateAppFavourite({ id: appId, active: newFavoriteState})
     );
   };
 
