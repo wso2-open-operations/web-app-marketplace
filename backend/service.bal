@@ -137,7 +137,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # + id - Application ID to update favourite status for
     # + updateApp - Record containing the favourite status to set
     # + return - Success response, or error responses for invalid app ID, missing user info, or server errors
-    resource function patch app/[int id](http:RequestContext ctx, UpdateApp updateApp)
+    resource function patch apps/[int id](http:RequestContext ctx, UpdateApp updateApp)
         returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError|http:NotModified {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -147,11 +147,10 @@ service http:InterceptableService / on new http:Listener(9090) {
                 body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
             };
         }
-
-        // Validate appId exists
+        
         boolean|error isValid = database:isValidAppId(id);
         if isValid is error {
-            string customError = string `Invalid app_id ...`;
+            string customError = string `Invalid app id`;
             log:printError(customError, isValid);
             return <http:InternalServerError>{
                 body: {
@@ -171,7 +170,6 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         error? result = database:upsertFavourites(userInfo.email, id, updateApp);
-
         if result is error {
             string customError = string `Failed to update favorite status for application ${id}`;
             log:printError(customError, result);
@@ -181,12 +179,6 @@ service http:InterceptableService / on new http:Listener(9090) {
                 }
             };
         }
-
-        string customError = string `Successfully ${updateApp.isFavourite == true ? "added to" : "removed from"} favorites`;
-        return <http:Ok>{
-            body: {
-                message: customError
-            }
-        };
+        return http:OK;
     }
 }
