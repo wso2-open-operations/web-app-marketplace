@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Fetch all apps visible to the given `roles`
+# Fetch all apps visible to the given `roles`.
 #
 # + email - User email used to look up favourites
 # + roles - Role names used to resolve visible apps
