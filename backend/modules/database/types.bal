@@ -70,13 +70,14 @@ public type App record {|
     string tagColor;
 |};
 
-# Result record for app ID validation queries
+# Result record for app ID validation queries.
 type ValidAppResult record {|
     # 1 if app exists and is active, 0 otherwise
+    @sql:Column {name: "is_valid"}
     int isValid;
 |};
 
-# Record for updating app favourite status
+# Record for updating app favourite status.
 public type UpdateApp record {|
     # Whether the app is marked as favourite
     boolean isFavourite;
