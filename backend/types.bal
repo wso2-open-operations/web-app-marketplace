@@ -49,8 +49,8 @@ public type App record {|
     int isFavourite;
 |};
 
-# Record for updating app favourite status.
+# [Database] Payload record for updating an app.  
 public type UpdateAppPayload record {|
     # Whether the app is marked as favourite
-    boolean isFavourite;
+    boolean isFavourite?;
 |};
