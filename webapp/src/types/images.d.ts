@@ -14,12 +14,27 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { lazy } from "react";
+declare module "*.svg" {
+  const content: string;
+  export default content;
+}
 
-const home = lazy(() => import("@view/home/home"));
-const help = lazy(() => import("@view/help/help"));
+declare module "*.png" {
+  const content: string;
+  export default content;
+}
 
-export const View = {
-  home,
-  help,
-};
+declare module "*.jpg" {
+  const content: string;
+  export default content;
+}
+
+declare module "*.jpeg" {
+  const content: string;
+  export default content;
+}
+
+declare module "*.gif" {
+  const content: string;
+  export default content;
+}
