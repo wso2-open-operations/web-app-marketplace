@@ -48,3 +48,9 @@ public type App record {|
     # Whether the current user has favorited this link (0 = no, 1 = yes)
     int isFavourite;
 |};
+
+# Record for updating app favourite status
+public type UpdateApp record {|
+    # Whether the app is marked as favourite
+    boolean isFavourite;
+|};
