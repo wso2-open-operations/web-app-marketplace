@@ -87,7 +87,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
         }
-
+        
         UserInfo userInfoResponse = {...employee, privileges};
 
         error? cacheError = cache.put(userInfo.email, userInfoResponse);
@@ -137,7 +137,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # + id - The unique identifier of the application to update (must be a valid integer)
     # + active - The favorite status to set: "1" to add to favorites, "0" to remove from favorites
     # + return - Success response with confirmation message, or error responses for various failure scenarios
-    resource function patch apps(http:RequestContext ctx, string id, string active)
+    resource function patch apps(http:RequestContext ctx, int id, int active)
         returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError|http:NotModified {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -148,17 +148,8 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        int|error appId = int:fromString(id);
-        int|error isFav = int:fromString(active);
-
-        if appId is error || isFav is error {
-            string customError = string `Invalid request parameters. 'id' and 'isFav' should be valid numbers`;
-            return <http:BadRequest>{
-                body: {
-                    message: customError
-                }
-            };
-        }
+        int appId = id;
+        int isFav = active;
 
         if isFav != 0 && isFav != 1 {
             return <http:BadRequest>{
