@@ -37,14 +37,15 @@ public isolated function fetchAppByRoles(string email, string[] roles) returns A
         };
 }
 
-# Updates the favourite status of an app for a specific user.
+
+# Insert or update user's favourite status for an app.
 #
-# + email - The email address of the user
-# + appId - ID of the target app
-# + isFav - The favourite status (1 for favourite, 0 for not favourite)
-# + return - Returns `true` if the update was successful, `false` if no rows were affected, or an `error` on failure
-public isolated function upsertFavourites(string email, int appId, int isFav) returns error? {
-    _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFav));
+# + email - User email to associate with the favourite
+# + appId - Application ID to mark as favourite/unfavourite
+# + updateApp - Record containing the favourite status to set
+# + return - `error?` on failure
+public isolated function upsertFavourites(string email, int appId, UpdateApp updateApp) returns error? {
+    _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, updateApp));
 }
 
 # Validates whether the given application ID exists in the database.
