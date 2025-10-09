@@ -53,7 +53,7 @@ const initialState: AppState = {
 
 interface UpdateArgs {
   id: number;
-  active: 1 | 0;
+  active: boolean;
 }
 
 export const fetchApps = createAsyncThunk(
@@ -95,27 +95,21 @@ export const updateAppFavourite = createAsyncThunk<
   UpdateArgs
 >(
   "apps/updateAppFavourite",
-  async ({ id, active }, { dispatch, rejectWithValue }) => {
+  async ( updateArgs, { dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
-
     try {
-      const normalized =
-        typeof active === "boolean" ? (active ? 1 : 0) : active;
-
       const res = await APIService.getInstance().patch(
-        AppConfig.serviceUrls.apps,
-        {},
+        `${AppConfig.serviceUrls.apps}/${updateArgs.id}`,
+        {
+          isFavourite: updateArgs.active
+        },
         {
           cancelToken: newCancelTokenSource.token,
-          params: {
-            id: id,
-            active: normalized,
-          },
+          
         }
       );
-
-      return { id: Number(id), active: normalized as 0 | 1 };
+      return { id: updateArgs.id, active: updateArgs.active};
     } catch (error: any) {
       if (axios.isCancel(error)) {
         return rejectWithValue("Request Canceled");
@@ -170,7 +164,7 @@ export const appSlice = createSlice({
         if (state.apps) {
           const app = state.apps.find((app) => app.id === action.payload.id);
           if (app) {
-            app.isFavourite = action.payload.active;
+            app.isFavourite = action.payload.active ? 1 : 0 ;
           }
         }
       });
