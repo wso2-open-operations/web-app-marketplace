@@ -179,6 +179,10 @@ service http:InterceptableService / on new http:Listener(9090) {
                 }
             };
         }
-        return http:OK;
+        return <http:Ok>{
+            body:  {
+                message: "Successfully updated"
+            }
+        };
     }
 }
