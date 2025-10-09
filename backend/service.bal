@@ -131,13 +131,13 @@ service http:InterceptableService / on new http:Listener(9090) {
         return result;
     }
 
-    # Update the favorite status of an application for the authenticated user.
+    # Update user's favourite status for a specific app.
     #
-    # + ctx - Request context containing authenticated user information and JWT payload
-    # + id - The unique identifier of the application to update (must be a valid integer)
-    # + active - The favorite status to set: "1" to add to favorites, "0" to remove from favorites
-    # + return - Success response with confirmation message, or error responses for various failure scenarios
-    resource function patch apps(http:RequestContext ctx, int id, int active)
+    # + ctx - HTTP request context containing user information
+    # + id - Application ID to update favourite status for
+    # + updateApp - Record containing the favourite status to set
+    # + return - Success response, or error responses for invalid app ID, missing user info, or server errors
+    resource function patch app/[int id](http:RequestContext ctx, UpdateApp updateApp)
         returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError|http:NotModified {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -148,19 +148,8 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        int appId = id;
-        int isFav = active;
-
-        if isFav != 0 && isFav != 1 {
-            return <http:BadRequest>{
-                body: {
-                    message: "Invalid 'active' value. It must be 0 (to unfavorite) or 1 (to favorite)"
-                }
-            };
-        }
-
-        // Validate app_id exists
-        boolean|error isValid = database:isValidAppId(appId);
+        // Validate appId exists
+        boolean|error isValid = database:isValidAppId(id);
         if isValid is error {
             string customError = string `Invalid app_id ...`;
             log:printError(customError, isValid);
@@ -181,7 +170,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        error? result = database:upsertFavourites(userInfo.email, appId, isFav);
+        error? result = database:upsertFavourites(userInfo.email, id, updateApp);
 
         if result is error {
             string customError = string `Failed to update favorite status for application ${id}`;
@@ -193,7 +182,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        string customError = string `Successfully ${isFav == 1 ? "added to" : "removed from"} favorites`;
+        string customError = string `Successfully ${updateApp.isFavourite == true ? "added to" : "removed from"} favorites`;
         return <http:Ok>{
             body: {
                 message: customError
