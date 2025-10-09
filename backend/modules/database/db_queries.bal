@@ -72,7 +72,8 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
 # + appId - Application ID to mark as favourite/unfavourite
 # + updateApp - Record containing the favourite status to set
 # + return - Parameterized SQL query for upsert operation
-isolated function upsertFavouritesQuery(string email, int appId, UpdateApp updateApp) returns sql:ParameterizedQuery =>`
+isolated function upsertFavouritesQuery(string email, int appId, UpdateApp updateApp)
+    returns sql:ParameterizedQuery => `
     INSERT INTO user_favourites (
         user_email, 
         app_id, 
@@ -88,10 +89,10 @@ isolated function upsertFavouritesQuery(string email, int appId, UpdateApp updat
 
 # Build query to check if an application ID is valid and active.
 #
-# + app_id - Application ID to validate
+# + appId - Application ID to validate
 # + return - Parameterized SQL query that returns boolean result
-isolated function isValidAppIdQuery(int app_id) returns sql:ParameterizedQuery =>`
+isolated function isValidAppIdQuery(int appId) returns sql:ParameterizedQuery => `
     SELECT EXISTS(
         SELECT 1 FROM apps 
-        WHERE id = ${app_id} AND is_active = 1
+        WHERE id = ${appId} AND is_active = 1
     ) AS is_valid`;
