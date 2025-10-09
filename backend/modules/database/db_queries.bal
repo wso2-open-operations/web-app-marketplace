@@ -84,8 +84,7 @@ isolated function upsertFavouritesQuery(string email, int appId, UpdateAppPayloa
         ${updateApp.isFavourite}
     )
     ON DUPLICATE KEY UPDATE
-        is_favourite = ${updateApp.isFavourite}
-    `;
+        is_favourite = ${updateApp.isFavourite}`;
 
 # Build query to check if an application ID is valid and active.
 #
