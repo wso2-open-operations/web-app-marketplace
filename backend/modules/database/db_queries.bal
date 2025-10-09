@@ -37,7 +37,7 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
         FROM apps a
         LEFT JOIN user_favourites uf ON a.id = uf.app_id 
             AND uf.user_email = ${email} 
-            AND uf.is_active = 1
+            AND uf.is_favourite = 1
         LEFT JOIN tags t ON a.tag_id =t.id
         WHERE a.is_active = 1`;
 
