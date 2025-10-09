@@ -87,7 +87,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
         }
-        
+
         UserInfo userInfoResponse = {...employee, privileges};
 
         error? cacheError = cache.put(userInfo.email, userInfoResponse);
@@ -137,7 +137,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # + id - Application ID to update favourite status for
     # + updateApp - Record containing the favourite status to set
     # + return - Success response, or error responses for invalid app ID, missing user info, or server errors
-    resource function patch apps/[int id](http:RequestContext ctx, UpdateApp updateApp)
+    resource function patch apps/[int id](http:RequestContext ctx, UpdateAppPayload updateApp)
         returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError|http:NotModified {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);

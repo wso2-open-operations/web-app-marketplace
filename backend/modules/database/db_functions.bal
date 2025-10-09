@@ -44,7 +44,7 @@ public isolated function fetchAppByRoles(string email, string[] roles) returns A
 # + appId - Application ID to mark as favourite/unfavourite
 # + updateApp - Record containing the favourite status to set
 # + return - `error?` on failure
-public isolated function upsertFavourites(string email, int appId, UpdateApp updateApp) returns error? {
+public isolated function upsertFavourites(string email, int appId, UpdateAppPayload updateApp) returns error? {
     _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, updateApp));
 }
 

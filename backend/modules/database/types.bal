@@ -78,7 +78,7 @@ type ValidAppResult record {|
 |};
 
 # Record for updating app favourite status.
-public type UpdateApp record {|
+public type UpdateAppPayload record {|
     # Whether the app is marked as favourite
     boolean isFavourite;
 |};
