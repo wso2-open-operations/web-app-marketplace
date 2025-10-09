@@ -144,7 +144,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if userInfo is error {
             log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
-                body: {message: "Authentication information not found in request. Please ensure you are logged in."}
+                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
             };
         }
 
@@ -190,7 +190,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        error|boolean result = database:updateFavourites(userInfo.email, appId, isFav);
+        error? result = database:updateFavourites(userInfo.email, appId, isFav);
 
         if result is error {
             string customError = string `Failed to update favorite status for application ${id}`;
@@ -201,17 +201,6 @@ service http:InterceptableService / on new http:Listener(9090) {
                 }
             };
         }
-
-        if result is false {
-            string customError = string `User ${userInfo.email} not found while trying to update favorites`;
-            log:printError(customError);
-            return <http:NotModified>{
-                body: {
-                    message: customError
-                }
-            };
-        }
-
 
         string customError = string `Successfully ${isFav == 1 ? "added to" : "removed from"} favorites`;
         return <http:Ok>{
