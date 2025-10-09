@@ -72,7 +72,7 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
 # + appId - Application ID
 # + isFav - Favorite status (1 for favorite, 0 for unfavorite)
 # + return - Parameterized SQL query for updating favorites
-isolated function upsertFavouritesQuery(string email, int appId, int isFav) returns sql:ParameterizedQuery =>`
+isolated function upsertFavouritesQuery(string email, int appId, int isFav) returns sql:ParameterizedQuery => `
     INSERT INTO user_favourites (
         user_email, 
         app_id, 
