@@ -41,10 +41,10 @@ public isolated function fetchAppByRoles(string email, string[] roles) returns A
 #
 # + email - The email address of the user
 # + appId - ID of the target app
-# + is_active - The favourite status (1 for favourite, 0 for not favourite)
+# + isFav - The favourite status (1 for favourite, 0 for not favourite)
 # + return - Returns `true` if the update was successful, `false` if no rows were affected, or an `error` on failure
-public isolated function upsertFavourites(string email, int appId, int is_active) returns error? {
-    _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, is_active));
+public isolated function upsertFavourites(string email, int appId, int isFav) returns error? {
+    _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFav));
 }
 
 # Validates whether the given application ID exists in the database.

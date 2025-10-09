@@ -69,21 +69,21 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
 # Build query to update user's favorite status for an application.
 #
 # + email - User email address
-# + app_id - Application ID
-# + is_active - Favorite status (1 for favorite, 0 for unfavorite)
+# + appId - Application ID
+# + isFav - Favorite status (1 for favorite, 0 for unfavorite)
 # + return - Parameterized SQL query for updating favorites
-isolated function upsertFavouritesQuery(string email, int app_id, int is_active) returns sql:ParameterizedQuery =>`
+isolated function upsertFavouritesQuery(string email, int appId, int isFav) returns sql:ParameterizedQuery =>`
     INSERT INTO user_favourites (
         user_email, 
         app_id, 
         is_favourite
     ) VALUES (
         ${email}, 
-        ${app_id}, 
-        ${is_active}
+        ${appId}, 
+        ${isFav}
     )
     ON DUPLICATE KEY UPDATE
-        is_favourite = ${is_active}
+        is_favourite = ${isFav}
     `;
 
 # Build query to check if an application ID is valid and active.
