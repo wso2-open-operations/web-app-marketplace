@@ -77,14 +77,14 @@ isolated function updateFavouritesQuery(string email, int app_id, int is_active)
         INSERT INTO user_favourites (
             user_email, 
             app_id, 
-            is_active
+            is_favourite
         ) VALUES (
             ${email}, 
             ${app_id}, 
             ${is_active}
         )
         ON DUPLICATE KEY UPDATE
-            is_active = ${is_active}
+            is_favourite = ${is_active}
     `;
     return query;
 }

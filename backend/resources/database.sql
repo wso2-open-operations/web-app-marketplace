@@ -41,7 +41,7 @@ DROP TABLE IF EXISTS user_favourites;
 CREATE TABLE user_favourites (
   user_email    VARCHAR(254) NOT NULL,
   app_id        INT NOT NULL,
-  `is_active`   TINYINT(1) NOT NULL DEFAULT 0,  
+  `is_favourite`   TINYINT(1) NOT NULL DEFAULT 0,  
   added_on      TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_on    TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 
