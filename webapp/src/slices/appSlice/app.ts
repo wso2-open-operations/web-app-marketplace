@@ -91,7 +91,7 @@ export const fetchApps = createAsyncThunk(
 );
 
 export const updateAppFavourite = createAsyncThunk<
-  { id: number; active: 0 | 1 },
+  UpdateArgs,
   UpdateArgs
 >(
   "apps/updateAppFavourite",
@@ -109,8 +109,8 @@ export const updateAppFavourite = createAsyncThunk<
         {
           cancelToken: newCancelTokenSource.token,
           params: {
-            id: String(id),
-            active: String(normalized),
+            id: id,
+            active: normalized,
           },
         }
       );
