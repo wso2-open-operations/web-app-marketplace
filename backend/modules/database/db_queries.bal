@@ -93,11 +93,8 @@ isolated function updateFavouritesQuery(string email, int app_id, int is_active)
 #
 # + app_id - Application ID to validate
 # + return - Parameterized SQL query that returns boolean result
-isolated function isValidAppIdQuery(int app_id) returns sql:ParameterizedQuery =>  
-    `
+isolated function isValidAppIdQuery(int app_id) returns sql:ParameterizedQuery =>  `
         SELECT EXISTS(
             SELECT 1 FROM apps 
             WHERE id = ${app_id} AND is_active = 1
-        ) AS is_valid
-    `;
-
+        ) AS is_valid`;
