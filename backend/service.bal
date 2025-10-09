@@ -86,7 +86,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
-        }
+        } 
 
         UserInfo userInfoResponse = {...employee, privileges};
 
@@ -150,7 +150,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         
         boolean|error isValid = database:isValidAppId(id);
         if isValid is error {
-            string customError = string `Invalid app id`;
+            string customError = string `Error occurred while validating the App ID`;
             log:printError(customError, isValid);
             return <http:InternalServerError>{
                 body: {
@@ -160,19 +160,18 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !isValid {
-            string customError = string `Application with ID ${id} was not found in the system`;
-            log:printInfo(customError);
+            log:printError(string `Application with ID: ${id} was not found!`);  
             return <http:NotFound>{
                 body: {
-                    message: customError
+                    message: "Application ID not found"  
                 }
             };
         }
 
         error? result = database:upsertFavourites(userInfo.email, id, updateApp);
         if result is error {
-            string customError = string `Failed to update favorite status for application ${id}`;
-            log:printError(customError, result);
+            string customError = "Error occurred while upserting the app";  
+            log:printError(customError, result, id = id);  
             return <http:InternalServerError>{
                 body: {
                     message: customError
