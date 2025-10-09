@@ -49,7 +49,7 @@ public type App record {|
     int isFavourite;
 |};
 
-# Record for updating app favourite status
+# Record for updating app favourite status.
 public type UpdateApp record {|
     # Whether the app is marked as favourite
     boolean isFavourite;
