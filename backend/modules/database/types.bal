@@ -75,3 +75,9 @@ type ValidAppResult record {|
     # 1 if app exists and is active, 0 otherwise
     int isValid;
 |};
+
+# Record for updating app favourite status
+public type UpdateApp record {|
+    # Whether the app is marked as favourite
+    boolean isFavourite;
+|};
