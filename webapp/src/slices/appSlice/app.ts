@@ -22,7 +22,6 @@ import { SnackMessage } from "@config/constant";
 import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
-import { access } from "fs";
 
 export type App = {
   id: number;
