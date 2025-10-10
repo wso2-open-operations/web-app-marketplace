@@ -49,6 +49,7 @@ public type App record {|
     int isFavourite;
 |};
 
+# Structure for Action Enum
 public enum Action {
     FAVOURITE = "favourite",
     UNFAVOURITE = "unfavourite"
