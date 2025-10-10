@@ -48,3 +48,8 @@ public type App record {|
     # Whether the current user has favorited this link (0 = no, 1 = yes)
     int isFavourite;
 |};
+
+public enum Action {
+    FAVOURITE = "favourite",
+    UNFAVOURITE = "unfavourite"
+}
