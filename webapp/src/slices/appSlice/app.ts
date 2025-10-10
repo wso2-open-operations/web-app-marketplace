@@ -22,6 +22,7 @@ import { SnackMessage } from "@config/constant";
 import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
+import { UpdateAction } from "@/types/types";
 
 export type App = {
   id: number;
@@ -51,14 +52,10 @@ const initialState: AppState = {
   apps: null,
 };
 
+
 interface UpdateArgs {
   id: number;
-  active: boolean;
-}
-
-enum UpdateAction {
-  favorite = "favourite",
-  unfavourite = "unfavourite"
+  active: UpdateAction;
 }
 
 export const fetchApps = createAsyncThunk(
@@ -167,7 +164,7 @@ export const appSlice = createSlice({
         if (state.apps) {
           const app = state.apps.find((app) => app.id === action.payload.id);
           if (app) {
-            app.isFavourite = action.payload.active ? 1 : 0 ;
+            app.isFavourite = action.payload.active === UpdateAction.favorite ? 1 : 0 ;
           }
         }
       });
