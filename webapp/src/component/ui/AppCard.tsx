@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 
 import { useAppDispatch } from "@root/src/slices/store";
 import { upsertAppFavourite } from "@root/src/slices/appSlice/app";
+import { UpdateAction } from "@root/src/types/types";
 
 interface AppCardProps {
   title: string;
@@ -68,7 +69,10 @@ export default function AppCard({
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
     dispatch(
-      upsertAppFavourite({ id: appId, active: newFavoriteState})
+      upsertAppFavourite({ 
+        id: appId, 
+        active: newFavoriteState ? UpdateAction.favorite : UpdateAction.unfavourite 
+      })
     );
   };
 
