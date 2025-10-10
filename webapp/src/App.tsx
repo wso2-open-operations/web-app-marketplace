@@ -31,24 +31,33 @@ export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 function App() {
   document.title = APP_NAME;
+  // NOTE: Auto theme detection temporarily disabled for development.
+  // Will be restored once design tokens are finalized to ensure consistent styling.
+  // const processLocalThemeMode = (): ThemeMode => {
+  //   try {
+  //     const savedTheme = localStorage.getItem("internal-app-theme");
+  //     if (savedTheme === ThemeMode.Light || savedTheme === ThemeMode.Dark) {
+  //       return savedTheme;
+  //     }
+
+  //     const prefersDark = window.matchMedia(
+  //       "(prefers-color-scheme: dark)"
+  //     ).matches;
+  //     const systemTheme = prefersDark ? ThemeMode.Dark : ThemeMode.Light;
+
+  //     localStorage.setItem("internal-app-theme", systemTheme);
+  //     return systemTheme;
+  //   } catch (err) {
+  //     console.error("Theme detection failed, defaulting to light mode.", err);
+  //     return ThemeMode.Light;
+  //   }
+  // };  
+  
+  // DEVELOPMENT ONLY: Force light mode by overriding the theme detection
   const processLocalThemeMode = (): ThemeMode => {
-    try {
-      const savedTheme = localStorage.getItem("internal-app-theme");
-      if (savedTheme === ThemeMode.Light || savedTheme === ThemeMode.Dark) {
-        return savedTheme;
-      }
-
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      const systemTheme = prefersDark ? ThemeMode.Dark : ThemeMode.Light;
-
-      localStorage.setItem("internal-app-theme", systemTheme);
-      return systemTheme;
-    } catch (err) {
-      console.error("Theme detection failed, defaulting to light mode.", err);
-      return ThemeMode.Light;
-    }
+    // Force light mode for development
+    localStorage.setItem("internal-app-theme", ThemeMode.Light);
+    return ThemeMode.Light;
   };
 
   const [mode, setMode] = useState<ThemeMode>(processLocalThemeMode());
