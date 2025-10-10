@@ -70,9 +70,9 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
 #
 # + email - User email to associate with the favourite
 # + appId - Application ID to mark as favourite/unfavourite
-# + payload - Record containing the favourite status to set
+# + isFavourite - Record containing the favourite status to set
 # + return - Parameterized SQL query for upsert operation
-isolated function upsertFavouritesQuery(string email, int appId, FavouriteUpdatePayload payload)
+isolated function upsertFavouritesQuery(string email, int appId, boolean isFavourite)
     returns sql:ParameterizedQuery => `
     INSERT INTO user_favourites (
         user_email, 
@@ -81,10 +81,10 @@ isolated function upsertFavouritesQuery(string email, int appId, FavouriteUpdate
     ) VALUES (
         ${email}, 
         ${appId}, 
-        ${payload.isFavourite}
+        ${isFavourite}
     )
     ON DUPLICATE KEY UPDATE
-        is_favourite = ${payload.isFavourite}`;
+        is_favourite = ${isFavourite}`;
 
 # Build query to check if an application ID is valid and active.
 #
