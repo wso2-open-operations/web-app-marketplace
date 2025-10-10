@@ -22,6 +22,7 @@ import { SnackMessage } from "@config/constant";
 import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
+import { access } from "fs";
 
 export type App = {
   id: number;
@@ -54,6 +55,11 @@ const initialState: AppState = {
 interface UpdateArgs {
   id: number;
   active: boolean;
+}
+
+enum UpdateAction {
+  favorite = "favourite",
+  unfavourite = "unfavourite"
 }
 
 export const fetchApps = createAsyncThunk(
@@ -99,14 +105,12 @@ export const upsertAppFavourite = createAsyncThunk<
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
     try {
-      const res = await APIService.getInstance().patch(
-        `${AppConfig.serviceUrls.favourites}/${updateArgs.id}`,
-        {
-          isFavourite: updateArgs.active
-        },
+      const action:UpdateAction = updateArgs.active ? UpdateAction.favorite : UpdateAction.unfavourite;
+      
+      const res = await APIService.getInstance().post(
+        `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${action}`,
         {
           cancelToken: newCancelTokenSource.token,
-          
         }
       );
       return { id: updateArgs.id, active: updateArgs.active};
