@@ -100,7 +100,7 @@ export const updateAppFavourite = createAsyncThunk<
     const newCancelTokenSource = APIService.updateCancelToken();
     try {
       const res = await APIService.getInstance().patch(
-        `${AppConfig.serviceUrls.apps}/${updateArgs.id}`,
+        `${AppConfig.serviceUrls.favourites}/${updateArgs.id}`,
         {
           isFavourite: updateArgs.active
         },
