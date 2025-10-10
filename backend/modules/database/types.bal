@@ -76,9 +76,3 @@ type ValidAppResult record {|
     @sql:Column {name: "is_valid"}
     int isValid;
 |};
-
-# Payload record for updating user favourites.  
-public type FavouriteUpdatePayload record {|
-    # Whether the app is marked as favourite
-    boolean isFavourite?;
-|};
