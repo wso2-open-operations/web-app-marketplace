@@ -148,7 +148,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        boolean isFavourite = toAction(action);
+        boolean isFavourite = action == FAVOURITE;
 
         boolean|error isValid = database:isValidAppId(id);
         if isValid is error {
