@@ -135,9 +135,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     #
     # + ctx - HTTP request context containing user information
     # + id - Application ID to update favourite status for
-    # + updateApp - Record containing the favourite status to set
+    # + payload - Record containing the favourite status to set
     # + return - Success response, or error responses for invalid app ID, missing user info, or server errors
-    resource function patch favourites/[int id](http:RequestContext ctx, UpdateAppPayload updateApp)
+    resource function patch favourites/[int id](http:RequestContext ctx, FavouriteUpdatePayload payload)
         returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -168,7 +168,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        error? result = database:upsertFavourites(userInfo.email, id, updateApp);
+        error? result = database:upsertFavourites(userInfo.email, id, payload);
         if result is error {
             string customError = "Error occurred while upserting the app";  
             log:printError(customError, result, id = id);  
