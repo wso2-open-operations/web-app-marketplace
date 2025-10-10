@@ -90,11 +90,11 @@ export const fetchApps = createAsyncThunk(
   }
 );
 
-export const updateAppFavourite = createAsyncThunk<
+export const upsertAppFavourite = createAsyncThunk<
   UpdateArgs,
   UpdateArgs
 >(
-  "apps/updateAppFavourite",
+  "apps/upsertAppFavourite",
   async ( updateArgs, { dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
@@ -159,7 +159,7 @@ export const appSlice = createSlice({
         state.stateMessage = "Failed to fetch";
       })
 
-      .addCase(updateAppFavourite.fulfilled, (state, action) => {
+      .addCase(upsertAppFavourite.fulfilled, (state, action) => {
         // Update the favorite status in the apps array
         if (state.apps) {
           const app = state.apps.find((app) => app.id === action.payload.id);

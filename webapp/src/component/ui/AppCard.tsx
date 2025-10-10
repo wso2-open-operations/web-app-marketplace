@@ -27,7 +27,7 @@ import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
 import { useAppDispatch } from "@root/src/slices/store";
-import { updateAppFavourite } from "@root/src/slices/appSlice/app";
+import { upsertAppFavourite } from "@root/src/slices/appSlice/app";
 
 interface AppCardProps {
   title: string;
@@ -68,7 +68,7 @@ export default function AppCard({
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
     dispatch(
-      updateAppFavourite({ id: appId, active: newFavoriteState})
+      upsertAppFavourite({ id: appId, active: newFavoriteState})
     );
   };
 
