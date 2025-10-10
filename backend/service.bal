@@ -165,7 +165,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError(string `Application with ID: ${id} was not found!`);  
             return <http:NotFound>{
                 body: {
-                    message: "Application ID not found"  
+                    message: "Application not found"  
                 }
             };
         }
