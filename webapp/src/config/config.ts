@@ -49,6 +49,5 @@ export const AppConfig = {
     employees: SERVICE_BASE_URL + "/employees",
     appConfig: SERVICE_BASE_URL + "/app-config",
     apps: SERVICE_BASE_URL + "/apps",
-    favourites: SERVICE_BASE_URL + "/favourites",
   },
 };
