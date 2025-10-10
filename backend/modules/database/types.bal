@@ -77,8 +77,8 @@ type ValidAppResult record {|
     int isValid;
 |};
 
-# Payload record for updating an app.  
-public type UpdateAppPayload record {|
+# Payload record for updating user favourites.  
+public type FavouriteUpdatePayload record {|
     # Whether the app is marked as favourite
     boolean isFavourite?;
 |};
