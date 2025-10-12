@@ -49,6 +49,34 @@ public type App record {|
     int isFavourite;
 |};
 
+# [Database] Create App record.
+public type CreateApp record {|
+    # Display title
+    string header;
+    # Target URL
+    string url;
+    # Short description
+    string description;
+    # Version label of the target app
+    string versionName;
+    # Tag id of the target app
+    int tagId;
+    # Tag name of the target app
+    string tagName;
+    # Tag color of the target app
+    string tagColor;
+    # Icon asset name or key
+    string icon;
+    # User who added the link
+    string addedBy;
+    # Whether the current user has favorited this link (0 = no, 1 = yes)
+    int isFavourite;
+    # User groups of the target app
+    string[] userGroups;
+    # Is the App is active or not
+    string isActive;
+|};
+
 # Structure for Action Enum
 public enum Action {
     FAVOURITE = "favourite",

@@ -68,6 +68,43 @@ public type App record {|
     string tagColor;
 |};
 
+# [Database] Create App record.
+public type CreateApp record {|
+    # Display title
+    @sql:Column {name: "header"}
+    string header;
+    # Target URL 
+    string url;
+    # Short description
+    string description;
+    # Version label of the target app
+    @sql:Column {name: "version_name"}
+    string versionName;
+    # Tag/category ID
+    @sql:Column {name: "tag_id"}
+    int tagId;
+    # Icon asset name/key
+    string icon;
+    # User who added the link
+    @sql:Column {name: "added_by"}
+    string addedBy;
+    # Whether the current user has favorited this link (0 = no, 1 = yes)
+    @sql:Column {name: "is_favourite"}
+    int isFavourite;
+    # Tag name of the target app
+    @sql:Column {name: "name"}
+    string tagName;
+    # Tag color of the target app
+    @sql:Column {name: "color"}
+    string tagColor;
+    # User groups of the target app
+    @sql:Column {name: "user_groups"}
+    string[] userGroups;
+    # Is the App is active or not
+    @sql:Column {name: "is_active"}
+    string isActive;
+|};
+
 # Result record for app ID validation queries.
 type ValidAppResult record {|
     # 1 if app exists and is active, 0 otherwise
