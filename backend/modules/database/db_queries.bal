@@ -155,3 +155,11 @@ isolated function checkAppExistsQuery(string name, string url) returns sql:Param
         WHERE header = ${name} AND url = ${url}
     ) AS is_valid`;
     
+# Build query to fetch active tags.
+# + return - Parameterized query for tags
+isolated function fetchTages() returns sql:ParameterizedQuery => `
+    SELECT 
+        id,
+        name
+    FROM tags
+    WHERE is_active = 1`;
