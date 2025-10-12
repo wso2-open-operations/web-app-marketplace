@@ -112,6 +112,8 @@ type ValidAppResult record {|
     int isValid;
 |};
 
+# Record for querying user groups as JSON.
 type GroupsRow record {|
+    # User groups in JSON format
     json user_groups;
 |};
