@@ -49,15 +49,24 @@ public isolated function upsertFavourites(string email, int appId, boolean isFav
     _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFavourite));
 }
 
+# Create a new app in the database.
+# + app - App data to create
+# + return - Error if creation fails
 public isolated function createApp(CreateApp app) returns error? {
     _ = check databaseClient->execute(createAppQuery(app));
 }
 
+# Check if an app exists by name and URL.
+# + name - App name
+# + url - App URL
+# + return - True if exists, false otherwise, or error
 public isolated function checkAppExists(string name, string url) returns boolean|error {
     ValidAppResult result = check databaseClient->queryRow(checkAppExistsQuery(name, url));
     return result.isValid === 1;
 }
 
+# Retrieve user groups from the database schema.
+# + return - Array of user groups or error
 public isolated function validatingUserGroups() returns string[]|error? {
     GroupsRow|error result = databaseClient->queryRow(validatingUserGroupsQuery());
 
