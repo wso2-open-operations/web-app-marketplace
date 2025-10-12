@@ -117,3 +117,13 @@ type GroupsRow record {|
     # User groups in JSON format
     json user_groups;
 |};
+
+# [Database] Tag record.
+public type Tag record {|
+    # Unique identifier of the tag
+    @sql:Column {name: "id"}
+    int id;
+    # Display name of the tag
+    @sql:Column {name: "name"}
+    string name;
+|};
