@@ -48,6 +48,10 @@ public isolated function upsertFavourites(string email, int appId, boolean isFav
     _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFavourite));
 }
 
+public isolated function createApp(CreateApp app) returns error? {
+    _ = check databaseClient->execute(createAppQuery(app));
+}
+
 # Validates whether the given application ID exists in the database.
 #
 # + appId - The unique identifier of the application to validate
