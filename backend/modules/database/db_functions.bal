@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
+import ballerina/sql;
 
 # Fetch all apps visible to the given `roles`.
 #
@@ -55,6 +56,21 @@ public isolated function createApp(CreateApp app) returns error? {
 public isolated function checkAppExists(string name, string url) returns boolean|error {
     ValidAppResult result = check databaseClient->queryRow(checkAppExistsQuery(name, url));
     return result.isValid === 1;
+}
+
+public isolated function validatingUserGroups() returns string[]|error? {
+    GroupsRow|error result = databaseClient->queryRow(validatingUserGroupsQuery());
+
+    if result is sql:NoRowsError {
+        return;
+    }
+
+    if result is error {
+        return result;
+    }
+    
+    string[] userGroups = check result.user_groups.cloneWithType();
+    return  userGroups;
 }
 
 # Validates whether the given application ID exists in the database.
