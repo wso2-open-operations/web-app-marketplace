@@ -77,6 +77,14 @@ public type CreateApp record {|
     string isActive;
 |};
 
+# [Database] Tag record.
+public type Tag record {|
+    # Unique identifier of the tag
+    int id;
+    # Display name of the tag
+    string name;
+|};
+
 # Structure for Action Enum
 public enum Action {
     FAVOURITE = "favourite",
