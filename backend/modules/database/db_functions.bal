@@ -67,8 +67,8 @@ public isolated function checkAppExists(string name, string url) returns boolean
 
 # Retrieve user groups from the database schema.
 # + return - Array of user groups or error
-public isolated function validatingUserGroups() returns string[]|error? {
-    GroupsRow|error result = databaseClient->queryRow(validatingUserGroupsQuery());
+public isolated function fetchValidUserGroups() returns string[]|error? {
+    GroupsRow|error result = databaseClient->queryRow(fetchValidUserGroupsQuery());
 
     if result is sql:NoRowsError {
         return;

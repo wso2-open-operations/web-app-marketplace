@@ -177,7 +177,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        string[]|error? validUserGroups = database:validatingUserGroups();
+        string[]|error? validUserGroups = database:fetchValidUserGroups();
 
         if validUserGroups is error {
             string customError = "`Error occured while validating app";
