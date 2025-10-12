@@ -229,6 +229,54 @@ service http:InterceptableService / on new http:Listener(9090) {
         };
     }
 
+
+    # Get valid user groups.
+    # 
+    # + ctx - Request context
+    # + return - Array of user groups, or Forbidden/InternalServerError
+    resource function get userGroups(http:RequestContext ctx) returns string[]|http:Forbidden|http:InternalServerError {
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+            };
+        }
+
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
+            log:printWarn(string `${UNAUTHORIZED_REQUEST} email: ${userInfo.email} groups: ${
+                    userInfo.groups.toString()}`);
+            return <http:Forbidden>{
+                body: {
+                    message: UNAUTHORIZED_REQUEST
+                }
+            };
+        }
+
+        string[]|error? validUserGroups = database:fetchValidUserGroups();
+        if validUserGroups is error {
+            string customError = "`Error occured while validating app";
+            log:printError(customError, validUserGroups);
+            return<http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if validUserGroups is () {
+            string message = "There are no user groups. Before adding usergroups you have to create new user groups";
+            log:printError(message);
+            return<http:InternalServerError>{
+                body: {
+                    message: message
+                }
+            };
+        }
+
+        return validUserGroups;
+    }
+
     # Update user's favourite status for a specific app.
     #
     # + ctx - HTTP request context containing user information
