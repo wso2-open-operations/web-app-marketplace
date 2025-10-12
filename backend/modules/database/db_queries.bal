@@ -96,26 +96,33 @@ isolated function isValidAppIdQuery(int appId) returns sql:ParameterizedQuery =>
         WHERE id = ${appId} AND is_active = 1
     ) AS is_valid`;
 
+isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
+    string userGroupsCsv = app.userGroups.length() > 0 ? string:'join(",", ...app.userGroups) : "";
 
-isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery => `
-    INSERT INTO apps (
-        header,
-        url,
-        description,
-        version_name,
-        tag_id,
-        icon,
-        user_groups,
-        is_active,
-        added_by,
-    ) VALUES (
-        ${app.header},
-        ${app.url},
-        ${app.description},
-        ${app.versionName},
-        ${app.tagId},
-        ${app.icon},
-        ${app.userGroups},
-        ${app.isActive},
-        ${app.addedBy},
-    )`;
+    sql:ParameterizedQuery query = sql:queryConcat(
+        `INSERT INTO apps (
+            header,
+            url,
+            description,
+            version_name,
+            tag_id,
+            icon,
+            user_groups,
+            is_active,
+            added_by,
+            updated_by
+        ) VALUES (
+            ${app.header},
+            ${app.url},
+            ${app.description},
+            ${app.versionName},
+            ${app.tagId},
+            ${app.icon},
+            ${userGroupsCsv},
+            ${app.isActive},
+            ${app.addedBy},
+            ${app.addedBy} 
+        )`
+    );
+    return query;
+}
