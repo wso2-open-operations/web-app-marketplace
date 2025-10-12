@@ -15,4 +15,6 @@
 // under the License. 
 public const USER_INFO_HEADER_NOT_FOUND_ERROR = "User information header not found!";
 
+public const UNAUTHORIZED_REQUEST = "Access denied: Only administrators can add new apps.";
+
 public final string:RegExp WSO2_EMAIL = re `^[a-zA-Z0-9._%+-]+@wso2\.com$`;
