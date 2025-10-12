@@ -90,3 +90,14 @@ public isolated function isValidAppId(int appId) returns boolean|error {
     ValidAppResult result = check databaseClient->queryRow(isValidAppIdQuery(appId));
     return result.isValid === 1;
 }
+
+# Fetch all active tags.
+# + return - Array of tags or error
+public isolated function fetchTags() returns Tag[]|error? {
+    stream<Tag, error?> result = databaseClient->query(fetchTages());
+    return from Tag tag in result
+        select {
+            id: tag.id,
+            name: tag.name
+        };
+}
