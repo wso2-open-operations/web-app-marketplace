@@ -52,6 +52,11 @@ public isolated function createApp(CreateApp app) returns error? {
     _ = check databaseClient->execute(createAppQuery(app));
 }
 
+public isolated function checkAppExists(string name, string url) returns boolean|error {
+    ValidAppResult result = check databaseClient->queryRow(checkAppExistsQuery(name, url));
+    return result.isValid === 1;
+}
+
 # Validates whether the given application ID exists in the database.
 #
 # + appId - The unique identifier of the application to validate
