@@ -111,3 +111,7 @@ type ValidAppResult record {|
     @sql:Column {name: "is_valid"}
     int isValid;
 |};
+
+type GroupsRow record {|
+    json user_groups;
+|};
