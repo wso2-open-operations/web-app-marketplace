@@ -131,6 +131,99 @@ service http:InterceptableService / on new http:Listener(9090) {
         return result;
     }
 
+    resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|http:Forbidden|http:InternalServerError {
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+            };
+        }
+
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
+            log:printWarn(string `${UNAUTHORIZED_REQUEST} email: ${userInfo.email} groups: ${
+                    userInfo.groups.toString()}`);
+            return <http:Forbidden>{
+                body: {
+                    message: UNAUTHORIZED_REQUEST
+                }
+            };
+        }
+
+        boolean|error isAppExist = database:checkAppExists(app.header, app.url);
+
+        if isAppExist is error {
+            string customError = string `Error occured while validating app`;
+            log:printError(customError, isAppExist);
+            return <http:InternalServerError>{
+                body:  {
+                    message: customError
+                }
+            };
+        }
+
+        if isAppExist {
+            string customError = string `Application with app name : ${app.header} and url : ${app.url} is already exists`;
+            log:printError(customError);
+            return <http:InternalServerError>{
+                body:  {
+                    message: customError
+                }
+            };
+        }
+
+        string[]|error? validUserGroups = database:validatingUserGroups();
+
+        if validUserGroups is error {
+            string customError = "`Error occured while validating app";
+            log:printError(customError, validUserGroups);
+            return<http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if validUserGroups is () {
+            string message = "There are no user groups. Before adding usergroups you have to create new user groups";
+            log:printError(message);
+            return<http:InternalServerError>{
+                body: {
+                    message: message
+                }
+            };
+        }
+
+        boolean isValidUseGroups = checkUserGroups(app.userGroups, validUserGroups);
+
+        if !isValidUseGroups {
+            log:printError(string `Invalid usergroups ${app.userGroups.toString()}`);
+            return <http:BadRequest>{
+                body:  {
+                    message: "Invalid usergroups"
+                }
+            };
+        }
+
+        error? appError = database:createApp(app);
+
+        if appError is error {
+            string customError = string `Error occured while adding app : ${app.header}`;
+            log:printError(customError, appError);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        return <http:Created>{
+            body: {
+                message: string `Successfully added ${app.header} app to the store`
+            }
+        };
+    }
+
     # Update user's favourite status for a specific app.
     #
     # + ctx - HTTP request context containing user information
