@@ -95,3 +95,27 @@ isolated function isValidAppIdQuery(int appId) returns sql:ParameterizedQuery =>
         SELECT 1 FROM apps 
         WHERE id = ${appId} AND is_active = 1
     ) AS is_valid`;
+
+
+isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery => `
+    INSERT INTO apps (
+        header,
+        url,
+        description,
+        version_name,
+        tag_id,
+        icon,
+        user_groups,
+        is_active,
+        added_by,
+    ) VALUES (
+        ${app.header},
+        ${app.url},
+        ${app.description},
+        ${app.versionName},
+        ${app.tagId},
+        ${app.icon},
+        ${app.userGroups},
+        ${app.isActive},
+        ${app.addedBy},
+    )`;
