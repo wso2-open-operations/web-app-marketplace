@@ -277,6 +277,52 @@ service http:InterceptableService / on new http:Listener(9090) {
         return validUserGroups;
     }
 
+    # Get tags.
+    # + ctx - Request context
+    # + return - Array of tags, or Forbidden/InternalServerError
+    resource function get tags(http:RequestContext ctx) returns Tag[]|http:Forbidden|http:InternalServerError {
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+            };
+        }
+
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
+            log:printWarn(string `${UNAUTHORIZED_REQUEST} email: ${userInfo.email} groups: ${
+                    userInfo.groups.toString()}`);
+            return <http:Forbidden>{
+                body: {
+                    message: UNAUTHORIZED_REQUEST
+                }
+            };
+        }
+
+        Tag[]|error? tags = database:fetchTags();
+
+        if tags is error {
+            string customError = string ``;
+            log:printError(customError, tags);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if tags is () {
+            log:printError("dfs");
+            return <http:InternalServerError>{
+                body: {
+                    message: "customError"
+                }
+            };
+        }
+
+        return tags;
+    }
+
     # Update user's favourite status for a specific app.
     #
     # + ctx - HTTP request context containing user information
