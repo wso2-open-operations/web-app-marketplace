@@ -43,8 +43,7 @@ public type App record {|
     @sql:Column {name: "header"}
     string header;
     # Target URL 
-    @sql:Column {name: "url"}
-    string urlName;
+    string url;
     # Short description
     string description;
     # Version label of the target app
@@ -54,8 +53,7 @@ public type App record {|
     @sql:Column {name: "tag_id"}
     int tagId;
     # Icon asset name/key
-    @sql:Column {name: "icon"}
-    string iconName;
+    string icon;
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;

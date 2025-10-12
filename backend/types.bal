@@ -30,7 +30,7 @@ public type App record {|
     # Display title
     string header;
     # Target URL
-    string urlName;
+    string url;
     # Short description
     string description;
     # Version label of the target app
@@ -42,7 +42,7 @@ public type App record {|
     # Tag color of the target app
     string tagColor;
     # Icon asset name or key
-    string iconName;
+    string icon;
     # User who added the link
     string addedBy;
     # Whether the current user has favorited this link (0 = no, 1 = yes)

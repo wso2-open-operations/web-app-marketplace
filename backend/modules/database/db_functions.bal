@@ -30,10 +30,10 @@ public isolated function fetchAppByRoles(string email, string[] roles) returns A
             tagId: app.tagId,
             tagName: app.tagName,
             tagColor: app.tagColor,
-            iconName: app.iconName,
+            icon: app.icon,
             addedBy: app.addedBy,
             isFavourite: app.isFavourite,
-            urlName: app.urlName
+            url: app.url
         };
 }
 
