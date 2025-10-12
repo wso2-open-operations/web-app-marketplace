@@ -131,6 +131,11 @@ service http:InterceptableService / on new http:Listener(9090) {
         return result;
     }
 
+    # Add a new app.
+    # 
+    # + ctx - Request context
+    # + app - App data to create
+    # + return - Created on success, or BadRequest/Forbidden/InternalServerError on failure
     resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
