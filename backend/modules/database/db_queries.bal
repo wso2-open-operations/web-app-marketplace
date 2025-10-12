@@ -126,3 +126,16 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
     );
     return query;
 }
+
+isolated  function validatingUserGroupsQuery() returns sql:ParameterizedQuery => `
+    SELECT CAST(
+         CONCAT(
+           '[',
+           REPLACE(SUBSTRING(COLUMN_TYPE, 5, CHAR_LENGTH(COLUMN_TYPE) - 5), '''', '"'),
+           ']'
+         ) AS JSON
+       ) AS user_groups
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME   = 'apps'
+        AND COLUMN_NAME  = 'user_groups'`;
