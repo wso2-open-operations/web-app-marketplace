@@ -139,3 +139,10 @@ isolated  function validatingUserGroupsQuery() returns sql:ParameterizedQuery =>
     WHERE TABLE_SCHEMA = DATABASE()
         AND TABLE_NAME   = 'apps'
         AND COLUMN_NAME  = 'user_groups'`;
+
+isolated function checkAppExistsQuery(string name, string url) returns sql:ParameterizedQuery => `
+    SELECT EXISTS(
+        SELECT 1 FROM apps
+        WHERE header = ${name} AND url = ${url}
+    ) AS is_valid`;
+    
