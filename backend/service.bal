@@ -234,7 +234,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # 
     # + ctx - Request context
     # + return - Array of user groups, or Forbidden/InternalServerError
-    resource function get userGroups(http:RequestContext ctx) returns string[]|http:Forbidden|http:InternalServerError {
+    resource function get user\-groups(http:RequestContext ctx) returns string[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
