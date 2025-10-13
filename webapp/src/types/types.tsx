@@ -34,6 +34,6 @@ export interface CommonCardProps {
 }
 
 export enum UpdateAction {
-  favorite = "favourite",
-  unfavourite = "unfavourite"
+  Favorite = "favourite",
+  Unfavourite = "unfavourite"
 }

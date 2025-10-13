@@ -102,7 +102,7 @@ export const upsertAppFavourite = createAsyncThunk<
     const newCancelTokenSource = APIService.updateCancelToken();
 
     try {
-      const action:UpdateAction = updateArgs.active ? UpdateAction.favorite : UpdateAction.unfavourite;
+      const action:UpdateAction = updateArgs.active ? UpdateAction.Favorite : UpdateAction.Unfavourite;
       
       const res = await APIService.getInstance().post(
         `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${action}`,
@@ -166,7 +166,7 @@ export const appSlice = createSlice({
         if (state.apps) {
           const app = state.apps.find((app) => app.id === action.payload.id);
           if (app) {
-            app.isFavourite = action.payload.active === UpdateAction.favorite ? 1 : 0 ;
+            app.isFavourite = action.payload.active === UpdateAction.Favorite ? 1 : 0 ;
           }
         }
       });
