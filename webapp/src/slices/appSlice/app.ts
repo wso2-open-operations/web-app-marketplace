@@ -22,6 +22,7 @@ import { SnackMessage } from "@config/constant";
 import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
+import { UpdateAction } from "@/types/types";
 
 export type App = {
   id: number;
@@ -51,9 +52,10 @@ const initialState: AppState = {
   apps: null,
 };
 
+
 interface UpdateArgs {
   id: number;
-  active: boolean;
+  active: UpdateAction;
 }
 
 export const fetchApps = createAsyncThunk(
@@ -90,26 +92,26 @@ export const fetchApps = createAsyncThunk(
   }
 );
 
-export const updateAppFavourite = createAsyncThunk<
+export const upsertAppFavourite = createAsyncThunk<
   UpdateArgs,
   UpdateArgs
 >(
-  "apps/updateAppFavourite",
+  "apps/upsertAppFavourite",
   async ( updateArgs, { dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
+
     try {
-      const res = await APIService.getInstance().patch(
-        `${AppConfig.serviceUrls.apps}/${updateArgs.id}`,
-        {
-          isFavourite: updateArgs.active
-        },
+      const action:UpdateAction = updateArgs.active ? UpdateAction.favorite : UpdateAction.unfavourite;
+      
+      const res = await APIService.getInstance().post(
+        `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${action}`,
         {
           cancelToken: newCancelTokenSource.token,
-          
         }
       );
       return { id: updateArgs.id, active: updateArgs.active};
+      
     } catch (error: any) {
       if (axios.isCancel(error)) {
         return rejectWithValue("Request Canceled");
@@ -159,12 +161,12 @@ export const appSlice = createSlice({
         state.stateMessage = "Failed to fetch";
       })
 
-      .addCase(updateAppFavourite.fulfilled, (state, action) => {
+      .addCase(upsertAppFavourite.fulfilled, (state, action) => {
         // Update the favorite status in the apps array
         if (state.apps) {
           const app = state.apps.find((app) => app.id === action.payload.id);
           if (app) {
-            app.isFavourite = action.payload.active ? 1 : 0 ;
+            app.isFavourite = action.payload.active === UpdateAction.favorite ? 1 : 0 ;
           }
         }
       });

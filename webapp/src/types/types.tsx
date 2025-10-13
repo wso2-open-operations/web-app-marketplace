@@ -32,3 +32,8 @@ export interface CommonCardProps {
   actions: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
   dataCardIndex: number;
 }
+
+export enum UpdateAction {
+  favorite = "favourite",
+  unfavourite = "unfavourite"
+}

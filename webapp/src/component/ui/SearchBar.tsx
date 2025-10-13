@@ -21,6 +21,7 @@ import {
   IconButton,
   Chip,
   Collapse,
+  Hidden,
 } from "@mui/material";
 import { Search, Close } from "@mui/icons-material";
 
@@ -205,18 +206,7 @@ export default function SearchBar({
                 overflowY: "hidden",
                 paddingBottom: 2,
                 "&::-webkit-scrollbar": {
-                  height: 4,
-                },
-                "&::-webkit-scrollbar-track": {
-                  backgroundColor: "#f1f1f1",
-                  borderRadius: 3,
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: "#c1c1c1",
-                  borderRadius: 3,
-                  "&:hover": {
-                    backgroundColor: "#a8a8a8",
-                  },
+                  height: 0,
                 },
               }}
             >
