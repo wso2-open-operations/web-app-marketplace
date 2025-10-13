@@ -56,9 +56,6 @@ export default function Home() {
     dispatch(fetchGroups());
   }, [dispatch]);
 
-  console.log("Tags : ", tags)
-  console.log("Groups : ", groups)
-
   // Extract unique tags from apps
   const availableTags = useMemo(() => {
     return apps ? extractUniqueTags(apps) : [];
@@ -136,7 +133,7 @@ export default function Home() {
               <AppCard
                 title={app.header}
                 description={app.description}
-                logoUrl={`/icons/${app.iconName}`}
+                logoUrl={app.icon || `/icons/${app.iconName}`}
                 logoAlt={`${app.header} Icon`}
                 category={app.tagName}
                 appUrl={app.urlName}
