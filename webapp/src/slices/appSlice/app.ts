@@ -33,19 +33,21 @@ export type App = {
   tagName: string;
   tagColor: string;
   iconName: string;
+  icon?: string; // Base64 encoded icon
   addedBy: string;
   isFavourite: 0 | 1;
 };
 
 export type CreateAppPayload = {
-  title: string;
+  header: string;
+  url: string;
   description: string;
-  link: string;
   versionName: string;
   tagId: number;
+  tagName: string;
   tagColor: string;
-  groupIds: string[];
-  icon: File;
+  icon: string;
+  userGroups: string[];
 };
 
 interface AppState {
@@ -148,45 +150,46 @@ export const upsertAppFavourite = createAsyncThunk<
   }
 );
 
-export const createApp = createAsyncThunk<App, CreateAppPayload>(
+export const createApp = createAsyncThunk<void, {payload: CreateAppPayload, userEmail: string}>(
   "apps/createApp",
-  async (payload, { dispatch, rejectWithValue }) => {
+  async ({payload, userEmail}, { dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
 
     try {
-      const formData = new FormData();
-      formData.append("title", payload.title);
-      formData.append("description", payload.description);
-      formData.append("link", payload.link);
-      formData.append("versionName", payload.versionName);
-      formData.append("tagId", payload.tagId.toString());
-      formData.append("tagColor", payload.tagColor);
-      // Append each group ID as a separate entry or as a JSON array
-      payload.groupIds.forEach((groupId, index) => {
-        formData.append(`groupIds[${index}]`, groupId);
-      });
-      formData.append("icon", payload.icon);
+      const requestBody = {
+        header: payload.header,
+        url: payload.url,
+        description: payload.description,
+        versionName: payload.versionName,
+        tagId: payload.tagId,
+        tagName: payload.tagName,
+        tagColor: payload.tagColor,
+        icon: payload.icon,
+        addedBy: userEmail,
+        userGroups: payload.userGroups,
+        isActive: true
+      };
 
       const res = await APIService.getInstance().post(
         AppConfig.serviceUrls.apps,
-        formData,
+        requestBody,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
           cancelToken: newCancelTokenSource.token,
         }
       );
 
       dispatch(
         enqueueSnackbarMessage({
-          message: "Application created successfully",
+          message: res.data.message || "Application created successfully",
           type: "success",
         })
       );
 
-      return res.data;
+      // Refetch apps list to get the newly created app
+      dispatch(fetchApps());
+      
+      return;
     } catch (error: any) {
       if (axios.isCancel(error)) {
         return rejectWithValue("Request Canceled");
@@ -255,15 +258,9 @@ export const appSlice = createSlice({
         state.createError = null;
       })
 
-      .addCase(createApp.fulfilled, (state, action) => {
+      .addCase(createApp.fulfilled, (state) => {
         state.createState = State.success;
         state.createError = null;
-        // Add the newly created app to the apps array
-        if (state.apps) {
-          state.apps.push(action.payload);
-        } else {
-          state.apps = [action.payload];
-        }
       })
 
       .addCase(createApp.rejected, (state, action) => {
