@@ -100,6 +100,7 @@ export const upsertAppFavourite = createAsyncThunk<
   async ( updateArgs, { dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
+
     try {
       const action:UpdateAction = updateArgs.active ? UpdateAction.favorite : UpdateAction.unfavourite;
       
@@ -110,6 +111,7 @@ export const upsertAppFavourite = createAsyncThunk<
         }
       );
       return { id: updateArgs.id, active: updateArgs.active};
+      
     } catch (error: any) {
       if (axios.isCancel(error)) {
         return rejectWithValue("Request Canceled");
