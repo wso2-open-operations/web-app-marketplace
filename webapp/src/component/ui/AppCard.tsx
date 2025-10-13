@@ -71,7 +71,7 @@ export default function AppCard({
     dispatch(
       upsertAppFavourite({ 
         id: appId, 
-        active: newFavoriteState ? UpdateAction.favorite : UpdateAction.unfavourite 
+        active: newFavoriteState ? UpdateAction.Favorite : UpdateAction.Unfavourite 
       })
     );
   };
@@ -81,8 +81,29 @@ export default function AppCard({
   };
 
   const renderLogo = () => {
+    // Check if logoUrl is a base64 string
+    const isBase64 = logoUrl.startsWith('data:image/');
+    
     // Check if logoUrl contains SVG markup instead of a file path
     const isRawSvg = logoUrl.includes('<svg') || logoUrl.includes('<rect') || logoUrl.includes('<path');
+
+    if (isBase64) {
+      // Handle base64 encoded images (including SVGs)
+      return (
+        <Box
+          component="img"
+          src={logoUrl}
+          alt={logoAlt}
+          onError={() => setImageError(true)}
+          sx={{
+            height: 40,
+            width: "auto",
+            maxWidth: 40,
+            objectFit: "contain",
+          }}
+        />
+      );
+    }
 
     if (isRawSvg) {
       // Handle raw SVG content
@@ -101,6 +122,7 @@ export default function AppCard({
         />
       );
     }
+    
     // Handle regular image files (PNG, SVG files, etc.)
     return (
       <Box
