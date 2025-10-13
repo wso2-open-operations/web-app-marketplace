@@ -69,8 +69,6 @@ public type CreateApp record {|
     string icon;
     # User who added the link
     string addedBy;
-    # Whether the current user has favorited this link (0 = no, 1 = yes)
-    int isFavourite;
     # User groups of the target app
     string[] userGroups;
     # Is the App is active or not

@@ -88,9 +88,6 @@ public type CreateApp record {|
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
-    # Whether the current user has favorited this link (0 = no, 1 = yes)
-    @sql:Column {name: "is_favourite"}
-    int isFavourite;
     # Tag name of the target app
     @sql:Column {name: "name"}
     string tagName;
