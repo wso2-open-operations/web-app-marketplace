@@ -24,6 +24,8 @@ import appConfigReducer from "@slices/configSlice/config";
 import employeeReducer from "@slices/employeeSlice/employee";
 import userReducer from "@slices/userSlice/user";
 import appsReducer from "@slices/appSlice/app";
+import tagRecuder from "@slices/tagSlice/tag"
+import groupReducer from "@slices/groupsSlice/groups"
 
 enableMapSet();
 
@@ -35,6 +37,8 @@ export const store = configureStore({
     employee: employeeReducer,
     appConfig: appConfigReducer,
     app: appsReducer,
+    tag: tagRecuder,
+    group: groupReducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
