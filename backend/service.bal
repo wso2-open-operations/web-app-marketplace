@@ -229,7 +229,6 @@ service http:InterceptableService / on new http:Listener(9090) {
         };
     }
 
-
     # Get valid user groups.
     # 
     # + ctx - Request context
