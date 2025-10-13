@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Typography, Button } from "@mui/material";
 
 import { useEffect, useState, useMemo } from "react";
 
@@ -32,18 +32,32 @@ import {
 } from "@utils/searchUtils";
 import AppCard from "@component/ui/AppCard";
 import SearchBar from "@component/ui/SearchBar";
+import AddAppModal from "@component/ui/AddAppModal";
+import { fetchTags } from "@root/src/slices/tagSlice/tag";
+import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const { state, apps } = useAppSelector((state: RootState) => state.app);
+  const tags = useAppSelector((state: RootState) => state.tag);
+  const groups = useAppSelector((state: RootState) => state.group);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     dispatch(fetchApps());
+    dispatch(fetchTags());
+    dispatch(fetchGroups());
   }, [dispatch]);
+
+  console.log("Tags : ", tags)
+  console.log("Groups : ", groups)
 
   // Extract unique tags from apps
   const availableTags = useMemo(() => {
@@ -87,12 +101,18 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{paddingBottom: 4, position: "relative"}}>
-      <Box 
-        sx={{ 
-          position: "sticky", 
-          top: 0, 
+    <Box sx={{ paddingBottom: 4, position: "relative" }}>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          flexDirection: "row",
+          position: "sticky",
+          top: 0,
           zIndex: 1000,
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 2,
         }}
       >
         <SearchBar
@@ -103,7 +123,11 @@ export default function Home() {
           isOpen={isSearchOpen}
           onToggle={() => setIsSearchOpen(!isSearchOpen)}
         />
+
+       <Button variant="contained" onClick={handleOpenModal}>Add New Card</Button>
       </Box>
+
+      <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
 
       <Grid container spacing={2}>
         {filteredApps.length > 0 ? (
