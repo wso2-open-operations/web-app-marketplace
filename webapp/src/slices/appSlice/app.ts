@@ -17,12 +17,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { HttpStatusCode } from "axios";
 
-import { State } from "@/types/types";
 import { SnackMessage } from "@config/constant";
 import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
-import { UpdateAction } from "@/types/types";
+import { UpdateAction, State } from "@/types/types";
 
 export type App = {
   id: number;
@@ -38,11 +37,24 @@ export type App = {
   isFavourite: 0 | 1;
 };
 
+export type CreateAppPayload = {
+  title: string;
+  description: string;
+  link: string;
+  versionName: string;
+  tagId: number;
+  tagColor: string;
+  groupIds: string[];
+  icon: File;
+};
+
 interface AppState {
   state: State;
   stateMessage: string | null;
   errorMessage: string | null;
   apps: App[] | null;
+  createState: State;
+  createError: string | null;
 }
 
 const initialState: AppState = {
@@ -50,6 +62,8 @@ const initialState: AppState = {
   stateMessage: null,
   errorMessage: null,
   apps: null,
+  createState: State.idle,
+  createError: null,
 };
 
 
@@ -134,12 +148,77 @@ export const upsertAppFavourite = createAsyncThunk<
   }
 );
 
+export const createApp = createAsyncThunk<App, CreateAppPayload>(
+  "apps/createApp",
+  async (payload, { dispatch, rejectWithValue }) => {
+    APIService.getCancelToken().cancel();
+    const newCancelTokenSource = APIService.updateCancelToken();
+
+    try {
+      const formData = new FormData();
+      formData.append("title", payload.title);
+      formData.append("description", payload.description);
+      formData.append("link", payload.link);
+      formData.append("versionName", payload.versionName);
+      formData.append("tagId", payload.tagId.toString());
+      formData.append("tagColor", payload.tagColor);
+      // Append each group ID as a separate entry or as a JSON array
+      payload.groupIds.forEach((groupId, index) => {
+        formData.append(`groupIds[${index}]`, groupId);
+      });
+      formData.append("icon", payload.icon);
+
+      const res = await APIService.getInstance().post(
+        AppConfig.serviceUrls.apps,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          cancelToken: newCancelTokenSource.token,
+        }
+      );
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message: "Application created successfully",
+          type: "success",
+        })
+      );
+
+      return res.data;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request Canceled");
+      }
+
+      const message =
+        error?.response?.data?.message ??
+        (error?.response?.status === HttpStatusCode.InternalServerError
+          ? "Server error while creating application"
+          : "Failed to create application");
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message,
+          type: "error",
+        })
+      );
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const appSlice = createSlice({
   name: "apps",
   initialState,
   reducers: {
     resetSubmitState(state) {
       state.state = State.idle;
+    },
+    resetCreateState(state) {
+      state.createState = State.idle;
+      state.createError = null;
     },
   },
 
@@ -169,9 +248,30 @@ export const appSlice = createSlice({
             app.isFavourite = action.payload.active === UpdateAction.Favorite ? 1 : 0 ;
           }
         }
+      })
+
+      .addCase(createApp.pending, (state) => {
+        state.createState = State.loading;
+        state.createError = null;
+      })
+
+      .addCase(createApp.fulfilled, (state, action) => {
+        state.createState = State.success;
+        state.createError = null;
+        // Add the newly created app to the apps array
+        if (state.apps) {
+          state.apps.push(action.payload);
+        } else {
+          state.apps = [action.payload];
+        }
+      })
+
+      .addCase(createApp.rejected, (state, action) => {
+        state.createState = State.failed;
+        state.createError = action.payload as string;
       });
   },
 });
 
-export const { resetSubmitState } = appSlice.actions;
+export const { resetSubmitState, resetCreateState } = appSlice.actions;
 export default appSlice.reducer;
