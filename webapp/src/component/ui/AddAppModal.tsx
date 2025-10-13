@@ -27,13 +27,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+
+import { useEffect, useState } from "react";
+
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { createApp, resetCreateState } from "@slices/appSlice/app";
 import { State } from "@root/src/types/types";
-import { useEffect, useState } from "react";
 
 interface AddAppModalProps {
   open: boolean;
@@ -97,11 +98,21 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
   const dispatch = useAppDispatch();
   const tags = useAppSelector((state: RootState) => state.tag.tags);
   const groups = useAppSelector((state: RootState) => state.group.groups);
+  const userInfo = useAppSelector((state: RootState) => state.user.userInfo)
   const createState = useAppSelector((state: RootState) => state.app.createState);
   const createError = useAppSelector((state: RootState) => state.app.createError);
 
   const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
   const [dragActive, setDragActive] = useState(false);
+
+  const userEmail = userInfo?.workEmail ?? ""
+
+  // Reset create state when modal opens
+  useEffect(() => {
+    if (open) {
+      dispatch(resetCreateState());
+    }
+  }, [open, dispatch]);
 
   const formik = useFormik({
     initialValues: {
@@ -118,22 +129,37 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
     onSubmit: async (values) => {
       if (!values.icon) return;
 
-      const payload = {
-        title: values.title.trim(),
-        description: values.description.trim(),
-        link: values.link.trim(),
-        versionName: values.versionName.trim(),
-        tagId: values.tagId,
-        tagColor: values.tagColor.trim().toUpperCase(),
-        groupIds: values.groupIds,
-        icon: values.icon,
-      };
+      // Convert icon file to base64 string
+      const reader = new FileReader();
+      reader.readAsDataURL(values.icon);
+      reader.onload = async () => {
+        const base64Icon = reader.result as string;
+        
+        // Get tag name from tags array
+        const selectedTag = tags?.find((t) => t.id === values.tagId);
+        
+        const payload = {
+          header: values.title.trim(),
+          url: values.link.trim(),
+          description: values.description.trim(),
+          versionName: values.versionName.trim(),
+          tagId: values.tagId,
+          tagName: selectedTag?.name || "",
+          tagColor: values.tagColor.trim().toUpperCase(),
+          icon: base64Icon,
+          userGroups: values.groupIds,
+        };
 
-      const result = await dispatch(createApp(payload));
+        const result = await dispatch(createApp({payload, userEmail}));
+        
+        if (createApp.fulfilled.match(result)) {
+          handleClose();
+        }
+      };
       
-      if (createApp.fulfilled.match(result)) {
-        handleClose();
-      }
+      reader.onerror = () => {
+        formik.setFieldError("icon", "Failed to read icon file");
+      };
     },
   });
 
@@ -205,13 +231,6 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
     formik.setFieldValue("icon", null);
     setFilePreview(null);
   };
-
-  // Reset create state when modal opens
-  useEffect(() => {
-    if (open) {
-      dispatch(resetCreateState());
-    }
-  }, [open, dispatch]);
 
   return (
     <Modal
