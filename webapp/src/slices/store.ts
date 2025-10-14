@@ -23,7 +23,7 @@ import commonReducer from "@slices/commonSlice/common";
 import appConfigReducer from "@slices/configSlice/config";
 import userReducer from "@slices/userSlice/user";
 import appsReducer from "@slices/appSlice/app";
-import tagRecuder from "@slices/tagSlice/tag"
+import tagReducer from "@slices/tagSlice/tag"
 import groupReducer from "@slices/groupsSlice/groups"
 
 enableMapSet();
@@ -35,7 +35,7 @@ export const store = configureStore({
     common: commonReducer,
     appConfig: appConfigReducer,
     app: appsReducer,
-    tag: tagRecuder,
+    tag: tagReducer,
     group: groupReducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
