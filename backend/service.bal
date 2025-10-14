@@ -156,7 +156,6 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         boolean|error isAppExist = database:checkAppExists(app.header, app.url);
-
         if isAppExist is error {
             string customError = string `Error occured while validating app`;
             log:printError(customError, isAppExist);
@@ -178,7 +177,6 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         string[]|error? validUserGroups = database:fetchValidUserGroups();
-
         if validUserGroups is error {
             string customError = "`Error occured while validating app";
             log:printError(customError, validUserGroups);
@@ -200,7 +198,6 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         boolean isValidUseGroups = checkUserGroups(app.userGroups, validUserGroups);
-
         if !isValidUseGroups {
             log:printError(string `Invalid usergroups ${app.userGroups.toString()}`);
             return <http:BadRequest>{
@@ -211,7 +208,6 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         error? appError = database:createApp(app);
-
         if appError is error {
             string customError = string `Error occured while adding app : ${app.header}`;
             log:printError(customError, appError);
