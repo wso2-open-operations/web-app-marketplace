@@ -91,6 +91,26 @@ public isolated function isValidAppId(int appId) returns boolean|error {
     return result.isValid === 1;
 }
 
+public isolated function fetchApp(AppFilters filters) returns AppFilter[]|error {
+    stream<AppFilter, error?> result =  databaseClient->query(fetchAppQuery(filters));
+    return from AppFilter app in result
+        select {
+            id: app.id,
+            header: app.header,
+            description: app.description,
+            versionName: app.versionName,
+            tagId: app.tagId,
+            tagName: app.tagName,
+            tagColor: app.tagColor,
+            icon: app.icon,
+            addedBy: app.addedBy,
+            isActive: app.isActive,
+            updatedBy: app.updatedBy,
+            isFavourite: app.isFavourite,
+            url: app.url
+        };
+}
+
 # Fetch all active tags.
 # + return - Array of tags or error
 public isolated function fetchTags() returns Tag[]|error? {
