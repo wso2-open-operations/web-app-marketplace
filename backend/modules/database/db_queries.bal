@@ -86,6 +86,10 @@ isolated function upsertFavouritesQuery(string email, int appId, boolean isFavou
     ON DUPLICATE KEY UPDATE
         is_favourite = ${isFavourite}`;
 
+# Build query to fetch app details with filters for validation and admin operations.
+#
+# + filters - Filter criteria to apply when querying apps
+# + return - Parameterized SQL query with applied filters
 isolated function fetchAppByFilterQuery(AppFilters filters) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery mainQuery = `
         SELECT 
