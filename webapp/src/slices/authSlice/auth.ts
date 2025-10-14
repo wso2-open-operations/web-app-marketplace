@@ -88,7 +88,7 @@ export const loadPrivileges = createAsyncThunk(
     const userPrivileges = userInfo?.privileges || [];
     const roles: Role[] = [];
 
-    if (userPrivileges.includes(762)) {
+    if (userPrivileges.includes(789)) {
       roles.push(Role.ADMIN);
     }
     if (userPrivileges.includes(987)) {
