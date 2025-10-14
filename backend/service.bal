@@ -63,7 +63,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         people:Employee|error? employee = people:fetchEmployee(userInfo.email);
         if employee is error {
-            string customError = string `Error occurred while fetching user information: ${userInfo.email}`;
+            string customError = string `${ERROR_FETCHING_USER_INFO}: ${userInfo.email}`;
             log:printError(customError, employee);
             return <http:InternalServerError>{
                 body: customError
@@ -74,7 +74,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError(string `No employee information found for the user: ${userInfo.email}`);
             return <http:NotFound>{
                 body: {
-                    message: "No user found!"
+                    message: NO_USER_FOUND
                 }
             };
         }
@@ -111,15 +111,14 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         App[]|error? result = database:fetchApps(userInfo.email, userInfo.groups);
         if result is error {
-            string customError = "Error while retrieving apps";
-            log:printError(customError, result);
+            log:printError(ERROR_RETRIEVING_APPS, result);
             return <http:InternalServerError>{
-                body: {message: customError}
+                body: {message: ERROR_RETRIEVING_APPS}
             };
         }
 
         if result is () {
-            string customError = string `No apps found for user : ${userInfo.email}`;
+            string customError = string `${NO_APPS_FOUND} : ${userInfo.email}`;
             log:printError(customError);
             return <http:NotFound>{
                 body: {message: customError}
@@ -154,41 +153,37 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         ExtendedApp[]|error validApp = database:fetchApp({header: app.header, url: app.url});
         if validApp is error {
-            string customError = string `Error occurred while validating the App ID`;
-            log:printError(customError, validApp);
+            log:printError(ERROR_VALIDATING_APP, validApp);
             return <http:InternalServerError>{
                 body: {
-                    message: customError
+                    message: ERROR_VALIDATING_APP
                 }
             };
         }
 
         if validApp.length() === 0 {
-            string customError = string `Application with app name : ${app.header} and url : ${app.url} is already exists`;
             return <http:InternalServerError>{
                 body: {
-                    message: customError
+                    message: APP_ALREADY_EXISTS
                 }
             };
         }
 
         string[]|error? validUserGroups = database:fetchValidUserGroups();
         if validUserGroups is error {
-            string customError = "`Error occured while validating app";
-            log:printError(customError, validUserGroups);
+            log:printError(ERROR_RETRIEVING_USER_GROUPS, validUserGroups);
             return<http:InternalServerError>{
                 body: {
-                    message: customError
+                    message: ERROR_RETRIEVING_USER_GROUPS
                 }
             };
         }
 
         if validUserGroups is () {
-            string message = "There are no user groups. Before adding usergroups you have to create new user groups";
-            log:printError(message);
+            log:printError(NO_USER_GROUPS);
             return<http:InternalServerError>{
                 body: {
-                    message: message
+                    message: NO_USER_GROUPS
                 }
             };
         }
@@ -198,14 +193,14 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError(string `Invalid usergroups ${app.userGroups.toString()}`);
             return <http:BadRequest>{
                 body:  {
-                    message: "Invalid usergroups"
+                    message: INVALID_USER_GROUPS
                 }
             };
         }
 
         error? appError = database:createApp(app);
         if appError is error {
-            string customError = string `Error occured while adding app : ${app.header}`;
+            string customError = string `${ERROR_ADDING_APP} : ${app.header}`;
             log:printError(customError, appError);
             return <http:InternalServerError>{
                 body: {
@@ -216,7 +211,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         return <http:Created>{
             body: {
-                message: string `Successfully added ${app.header} app to the store`
+                message: string `${SUCCESS_APP_ADDED}`
             }
         };
     }
@@ -245,21 +240,19 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         string[]|error? validUserGroups = database:fetchValidUserGroups();
         if validUserGroups is error {
-            string customError = "`Error occured while validating app";
-            log:printError(customError, validUserGroups);
+            log:printError(ERROR_RETRIEVING_USER_GROUPS, validUserGroups);
             return<http:InternalServerError>{
                 body: {
-                    message: customError
+                    message: ERROR_RETRIEVING_USER_GROUPS
                 }
             };
         }
 
         if validUserGroups is () {
-            string message = "There are no user groups. Before adding usergroups you have to create new user groups";
-            log:printError(message);
+            log:printError(NO_USER_GROUPS);
             return<http:InternalServerError>{
                 body: {
-                    message: message
+                    message: NO_USER_GROUPS
                 }
             };
         }
@@ -290,20 +283,19 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         Tag[]|error? tags = database:fetchTags();
         if tags is error {
-            string customError = string ``;
-            log:printError(customError, tags);
+            log:printError(ERROR_RETRIEVING_TAGS, tags);
             return <http:InternalServerError>{
                 body: {
-                    message: customError
+                    message: ERROR_RETRIEVING_TAGS
                 }
             };
         }
 
         if tags is () {
-            log:printError("dfs");
+            log:printError(ERROR_RETRIEVING_TAGS);
             return <http:InternalServerError>{
                 body: {
-                    message: "customError"
+                    message: ERROR_RETRIEVING_TAGS
                 }
             };
         }
@@ -331,11 +323,10 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         ExtendedApp[]|error app = database:fetchApp({id: id});
         if app is error {
-            string customError = string `Error occurred while validating the App ID`;
-            log:printError(customError, app);
+            log:printError(ERROR_VALIDATING_APP_ID, app);
             return <http:InternalServerError>{
                 body: {
-                    message: customError
+                    message: ERROR_VALIDATING_APP_ID
                 }
             };
         }
@@ -344,24 +335,23 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError(string `Application with ID: ${id} was not found!`);  
             return <http:NotFound>{
                 body: {
-                    message: "Application not found"  
+                    message: APP_NOT_FOUND  
                 }
             };
         }
 
         error? upsertError = database:upsertFavourites(userInfo.email, id, isFavourite);
         if upsertError is error {
-            string customError = "Error occurred while upserting the app";  
-            log:printError(customError, upsertError, id = id);  
+            log:printError(ERROR_UPSERTING_APP, upsertError, id = id);  
             return <http:InternalServerError>{
                 body: {
-                    message: customError
+                    message: ERROR_UPSERTING_APP
                 }
             };
         }
         return <http:Ok>{
             body:  {
-                message: "Successfully updated"
+                message: SUCCESS_FAVOURITE_UPDATED
             }
         };
     }
