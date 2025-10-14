@@ -74,6 +74,11 @@ public isolated function fetchValidUserGroups() returns string[]|error? {
     return  userGroups;
 }
 
+# Fetch app details by applying filters for validation and admin operations.
+# Used to retrieve extended app information including audit fields like `updatedBy` and `isActive`.
+#
+# + filters - Filter criteria to query apps (id, header, url, addedBy, isActive)
+# + return - Array of extended app records with full details, or error on failure
 public isolated function fetchAppByFilter(AppFilters filters) returns ExtendedApp[]|error {
     stream<ExtendedApp, error?> result =  databaseClient->query(fetchAppByFilterQuery(filters));
     return from ExtendedApp app in result
