@@ -108,7 +108,7 @@ export default function Home() {
           top: 0,
           zIndex: 1000,
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: "start",
           gap: 2,
         }}
       >
@@ -121,7 +121,7 @@ export default function Home() {
           onToggle={() => setIsSearchOpen(!isSearchOpen)}
         />
 
-       <Button variant="contained" onClick={handleOpenModal}>Add New Card</Button>
+       <Button variant="contained" sx={{mt: 1}} onClick={handleOpenModal}>Add New Card</Button>
       </Box>
 
       <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
