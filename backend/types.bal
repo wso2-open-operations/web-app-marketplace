@@ -124,3 +124,9 @@ public type AppFilters record {|
     string? isActive = ();
     string? userGroups = ();
 |};
+
+public type ExtendedApp record {|
+    *App;
+    string updatedBy;
+    string isActive;
+|};
