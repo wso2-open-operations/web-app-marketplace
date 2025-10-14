@@ -124,20 +124,29 @@ public type Tag record {|
     string name;
 |};
 
+# Filter criteria for querying apps with optional conditions.
 public type AppFilters record {|
-    # Unique identifier of the link
+    # Unique identifier of the app to filter by
     int? id = ();
-    # Display title
+    # Display title/header to filter by
     string? header = ();
-    # Target URL
+    # Target URL to filter by
     string? url = ();
+    # Email of the user who added the app
     string? addedBy = ();
+    # Active status filter 
     string? isActive = ();
+    # Comma-separated user groups associated with the app 
     string? userGroups = ();
 |};
 
+# [Database] Extended app record containing all app fields 
 public type ExtendedApp record {|
     *App;
+    # Email of the user who last updated the app
+    @sql:Column {name: "updated_by"}
     string updatedBy;
+    # Active status of the app - "1" for active, "0" for inactive
+    @sql:Column {name: "is_active"}
     string isActive;
 |};

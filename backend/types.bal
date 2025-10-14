@@ -107,26 +107,35 @@ public type Tag record {|
     string name;
 |};
 
-# Structure for Action Enum
+# User action for marking/unmarking apps as favourites.
 public enum Action {
+    # Mark an app as favourite
     FAVOURITE = "favourite",
+    # Remove an app from favourites
     UNFAVOURITE = "unfavourite"
 }
 
+# Filter criteria for querying apps with optional conditions.
 public type AppFilters record {|
-    # Unique identifier of the link
+    # Unique identifier of the app to filter by
     int? id = ();
-    # Display title
+    # Display title/header to filter by
     string? header = ();
-    # Target URL 
+    # Target URL to filter by 
     string? url = ();
+    # Email of the user who added the app
     string? addedBy = ();
+    # Active status filter
     string? isActive = ();
+    # Comma-separated user groups associated with the app
     string? userGroups = ();
 |};
 
+# Extended app record containing all app fields plus
 public type ExtendedApp record {|
     *App;
+    # Email of the user who last updated the app
     string updatedBy;
+    # Active status of the app - "1" for active, "0" for inactive
     string isActive;
 |};
