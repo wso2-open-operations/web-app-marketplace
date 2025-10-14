@@ -71,7 +71,6 @@ public type App record {|
 # [Database] Create App record.
 public type CreateApp record {|
     # Display title
-    @sql:Column {name: "header"}
     string header;
     # Target URL 
     string url;
