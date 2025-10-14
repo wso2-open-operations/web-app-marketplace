@@ -73,7 +73,7 @@ export const fetchGroups = createAsyncThunk(
 )
 
 export const groupSlice = createSlice({
-    name: "tags",
+    name: "groups",
     initialState,
     reducers: {
         resetSubmitState(state) {
