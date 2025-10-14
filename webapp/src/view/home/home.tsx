@@ -35,12 +35,13 @@ import SearchBar from "@component/ui/SearchBar";
 import AddAppModal from "@component/ui/AddAppModal";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
+import { Role } from "@root/src/slices/authSlice/auth";
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const { state, apps } = useAppSelector((state: RootState) => state.app);
-  const tags = useAppSelector((state: RootState) => state.tag);
-  const groups = useAppSelector((state: RootState) => state.group);
+  const roles = useAppSelector((state: RootState) => state.auth.roles)
+  const isAdmin = roles.includes(Role.ADMIN);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
@@ -120,8 +121,7 @@ export default function Home() {
           isOpen={isSearchOpen}
           onToggle={() => setIsSearchOpen(!isSearchOpen)}
         />
-
-       <Button variant="contained" sx={{mt: 1}} onClick={handleOpenModal}>Add New Card</Button>
+        {isAdmin && <Button variant="contained" onClick={handleOpenModal}>Add New Card</Button>}
       </Box>
 
       <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
