@@ -40,7 +40,7 @@ import { Role } from "@root/src/slices/authSlice/auth";
 export default function Home() {
   const dispatch = useAppDispatch();
   const { state, apps } = useAppSelector((state: RootState) => state.app);
-  const roles = useAppSelector((state: RootState) => state.auth.roles)
+  const roles = useAppSelector((state: RootState) => state.auth.roles);
   const isAdmin = roles.includes(Role.ADMIN);
 
   const [searchTerm, setSearchTerm] = useState("");
