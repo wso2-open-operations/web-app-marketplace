@@ -192,3 +192,4 @@ isolated function fetchTages() returns sql:ParameterizedQuery => `
         name
     FROM tags
     WHERE is_active = 1`;
+    
