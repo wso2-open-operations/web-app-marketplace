@@ -88,7 +88,6 @@ export default function AppCard({
     const isRawSvg = logoUrl.includes('<svg') || logoUrl.includes('<rect') || logoUrl.includes('<path');
 
     if (isBase64) {
-      // Handle base64 encoded images (including SVGs)
       return (
         <Box
           component="img"
