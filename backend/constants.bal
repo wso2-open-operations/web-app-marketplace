@@ -18,3 +18,6 @@ public const USER_INFO_HEADER_NOT_FOUND_ERROR = "User information header not fou
 public const UNAUTHORIZED_REQUEST = "Access denied: Only administrators can add new apps.";
 
 public final string:RegExp WSO2_EMAIL = re `^[a-zA-Z0-9._%+-]+@wso2\.com$`;
+public final string:RegExp NON_EMPTY_URL = re `^https?://\S+$`;
+public final string:RegExp NON_EMPTY_HEX_VALUE = re `^#(?:[0-9a-fA-F]{3}){1,2}$`;
+public final string:RegExp NON_EMPTY_BASR64_STRING = re `^(?:data:image/svg\+xml;base64,)?(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$`;
