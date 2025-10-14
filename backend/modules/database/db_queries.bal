@@ -86,16 +86,6 @@ isolated function upsertFavouritesQuery(string email, int appId, boolean isFavou
     ON DUPLICATE KEY UPDATE
         is_favourite = ${isFavourite}`;
 
-# Build query to check if an application ID is valid and active.
-#
-# + appId - Application ID to validate
-# + return - Parameterized SQL query that returns boolean result
-isolated function isValidAppIdQuery(int appId) returns sql:ParameterizedQuery => `
-    SELECT EXISTS(
-        SELECT 1 FROM apps 
-        WHERE id = ${appId} AND is_active = 1
-    ) AS is_valid`;
-
 isolated function fetchAppByFilterQuery(AppFilters filters) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery mainQuery = `
         SELECT 
@@ -190,16 +180,6 @@ isolated  function fetchValidUserGroupsQuery() returns sql:ParameterizedQuery =>
         AND TABLE_NAME   = 'apps'
         AND COLUMN_NAME  = 'user_groups'`;
 
-# Build query to check if an app exists by name and URL.
-# + name - App name to check
-# + url - App URL to check
-# + return - Parameterized query returning existence status
-isolated function checkAppExistsQuery(string name, string url) returns sql:ParameterizedQuery => `
-    SELECT EXISTS(
-        SELECT 1 FROM apps
-        WHERE header = ${name} AND url = ${url}
-    ) AS is_valid`;
-    
 # Build query to fetch active tags.
 # + return - Parameterized query for tags
 isolated function fetchTages() returns sql:ParameterizedQuery => `

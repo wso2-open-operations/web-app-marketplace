@@ -56,14 +56,6 @@ public isolated function createApp(CreateApp app) returns error? {
     _ = check databaseClient->execute(createAppQuery(app));
 }
 
-# Check if an app exists by name and URL.
-# + name - App name
-# + url - App URL
-# + return - True if exists, false otherwise, or error
-public isolated function checkAppExists(string name, string url) returns boolean|error {
-    ValidAppResult result = check databaseClient->queryRow(checkAppExistsQuery(name, url));
-    return result.isValid === 1;
-}
 
 # Retrieve user groups from the database schema.
 # + return - Array of user groups or error
@@ -80,15 +72,6 @@ public isolated function fetchValidUserGroups() returns string[]|error? {
     
     string[] userGroups = check result.user_groups.cloneWithType();
     return  userGroups;
-}
-
-# Validates whether the given application ID exists in the database.
-#
-# + appId - The unique identifier of the application to validate
-# + return - Returns `true` if the app ID is valid, `false` if invalid, or an `error` on failure
-public isolated function isValidAppId(int appId) returns boolean|error {
-    ValidAppResult result = check databaseClient->queryRow(isValidAppIdQuery(appId));
-    return result.isValid === 1;
 }
 
 public isolated function fetchAppByFilter(AppFilters filters) returns ExtendedApp[]|error {
