@@ -102,7 +102,7 @@ public isolated function fetchAppByFilter(AppFilters filters) returns ExtendedAp
 # Fetch all active tags.
 # + return - Array of tags or error
 public isolated function fetchTags() returns Tag[]|error? {
-    stream<Tag, error?> result = databaseClient->query(fetchTages());
+    stream<Tag, error?> result = databaseClient->query(fetchTagsQuery());
     return from Tag tag in result
         select {
             id: tag.id,

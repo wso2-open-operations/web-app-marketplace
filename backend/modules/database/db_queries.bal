@@ -186,7 +186,7 @@ isolated  function fetchValidUserGroupsQuery() returns sql:ParameterizedQuery =>
 
 # Build query to fetch active tags.
 # + return - Parameterized query for tags
-isolated function fetchTages() returns sql:ParameterizedQuery => `
+isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
     SELECT 
         id,
         name
