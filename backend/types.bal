@@ -85,7 +85,7 @@ public type CreateApp record {|
     # Icon asset name or key
     @constraint:String{
         pattern: {
-            value: NON_EMPTY_BASR64_STRING,
+            value: NON_EMPTY_BASE64_STRING,
             message: "icon must be base64 (optionally prefixed with data:image/svg+xml;base64"
         }
     }
