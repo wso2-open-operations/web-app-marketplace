@@ -99,7 +99,6 @@ service http:InterceptableService / on new http:Listener(9090) {
 
     # Get apps visible to the user.
     #
-    # + ctx - Request context carrying authenticated user info
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
     resource function get apps(http:RequestContext ctx) returns App[]|http:NotFound|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -132,7 +131,6 @@ service http:InterceptableService / on new http:Listener(9090) {
 
     # Add a new app.
     # 
-    # + ctx - Request context
     # + app - App data to create
     # + return - Created on success, or BadRequest/Forbidden/InternalServerError on failure
     resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|http:Forbidden|http:InternalServerError {
@@ -226,7 +224,6 @@ service http:InterceptableService / on new http:Listener(9090) {
 
     # Get valid user groups.
     # 
-    # + ctx - Request context
     # + return - Array of user groups, or Forbidden/InternalServerError
     resource function get user\-groups(http:RequestContext ctx) returns string[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -272,7 +269,6 @@ service http:InterceptableService / on new http:Listener(9090) {
     }
 
     # Get tags.
-    # + ctx - Request context
     # + return - Array of tags, or Forbidden/InternalServerError
     resource function get tags(http:RequestContext ctx) returns Tag[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -318,7 +314,6 @@ service http:InterceptableService / on new http:Listener(9090) {
 
     # Update user's favourite status for a specific app.
     #
-    # + ctx - HTTP request context containing user information
     # + id - Application ID to update favourite status for
     # + action - Enum containing the favourite status to set
     # + return - Success response, or error responses for invalid app ID, missing user info, or server errors
