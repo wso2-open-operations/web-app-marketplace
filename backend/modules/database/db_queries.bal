@@ -96,6 +96,51 @@ isolated function isValidAppIdQuery(int appId) returns sql:ParameterizedQuery =>
         WHERE id = ${appId} AND is_active = 1
     ) AS is_valid`;
 
+isolated function fetchAppQuery(AppFilters filters) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery mainQuery = `
+        SELECT 
+            a.id,
+            a.header,
+            a.url,
+            a.description,
+            a.version_name AS versionName,
+            a.tag_id AS tagId,
+            a.icon,
+            a.added_by AS addedBy,
+            a.updated_by AS updatedBy,
+            t.name AS tagName,
+            t.color as tagColor,
+            t.is_active AS isActive
+        FROM apps a
+        LEFT JOIN tags t ON a.tag_id = t.id
+    `;
+
+    sql:ParameterizedQuery[] filterQueries = [];
+    if filters.header is string {
+        filterQueries.push(` a.header = ${filters.header}`);
+    }
+
+    if filters.id is int {
+        filterQueries.push(` a.id = ${filters.id}`);
+    }
+
+    if filters.url is string {
+        filterQueries.push(` a.url = ${filters.url}`);
+    }
+
+    if filters.addedBy is string {
+        filterQueries.push(` a.addedBy = ${filters.addedBy}`);
+    }
+
+    if filters.isActive is string {
+        filterQueries.push(` a.isActive = ${filters.isActive}`);
+    }
+
+    mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
+
+    return mainQuery;
+}
+
 # Build query to create a new app.
 # + app - App data to insert
 # + return - Parameterized query for app creation
