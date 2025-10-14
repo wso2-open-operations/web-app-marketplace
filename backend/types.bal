@@ -112,3 +112,15 @@ public enum Action {
     FAVOURITE = "favourite",
     UNFAVOURITE = "unfavourite"
 }
+
+public type AppFilters record {|
+    # Unique identifier of the link
+    int? id = ();
+    # Display title
+    string? header = ();
+    # Target URL 
+    string? url = ();
+    string? addedBy = ();
+    string? isActive = ();
+    string? userGroups = ();
+|};
