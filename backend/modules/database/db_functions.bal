@@ -20,8 +20,8 @@ import ballerina/sql;
 # + email - User email used to look up favourites
 # + roles - Role names used to resolve visible apps
 # + return - App[] with `isFavourite` set, or an `error?` on failure
-public isolated function fetchAppByRoles(string email, string[] roles) returns App[]|error {
-    stream<App, error?> result = databaseClient->query(fetchAppByRolesQuery(email, roles));
+public isolated function fetchApps(string email, string[] roles) returns App[]|error {
+    stream<App, error?> result = databaseClient->query(fetchAppsQuery(email, roles));
     return from App app in result
         select {
             id: app.id,

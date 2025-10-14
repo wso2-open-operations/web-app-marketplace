@@ -110,7 +110,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        App[]|error? result = database:fetchAppByRoles(userInfo.email, userInfo.groups);
+        App[]|error? result = database:fetchApps(userInfo.email, userInfo.groups);
         if result is error {
             string customError = "Error while retrieving apps";
             log:printError(customError, result);
