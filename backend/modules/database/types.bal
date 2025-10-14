@@ -129,14 +129,14 @@ public type AppFilters record {|
     int? id = ();
     # Display title
     string? header = ();
-    # Target URL 
+    # Target URL
     string? url = ();
     string? addedBy = ();
     string? isActive = ();
     string? userGroups = ();
 |};
 
-public type AppFilter record {|
+public type ExtendedApp record {|
     *App;
     string updatedBy;
     string isActive;
