@@ -12,7 +12,16 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
-// under the License. 
-public const USER_INFO_HEADER_NOT_FOUND_ERROR = "User information header not found!";
+// under the License.
 
-public final string:RegExp WSO2_EMAIL = re `^[a-zA-Z0-9._%+-]+@wso2\.com$`;
+# client retry configuration for max retry attempts.
+public const int RETRY_COUNT = 3;
+
+# client retry configuration for wait interval in seconds.
+public const decimal RETRY_INTERVAL = 3.0;
+
+# client retry configuration for interval increment in seconds.
+public const float RETRY_BACKOFF_FACTOR = 2.0;
+
+# client retry configuration for maximum wait interval in seconds.
+public const decimal RETRY_MAX_INTERVAL = 20.0;

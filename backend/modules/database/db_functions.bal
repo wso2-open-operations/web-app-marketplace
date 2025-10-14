@@ -13,9 +13,8 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-// import ballerina/sql;
 
-# Fetch all apps visible to the given `roles`
+# Fetch all apps visible to the given `roles`.
 #
 # + email - User email used to look up favourites
 # + roles - Role names used to resolve visible apps
@@ -29,9 +28,31 @@ public isolated function fetchAppByRoles(string email, string[] roles) returns A
             description: app.description,
             versionName: app.versionName,
             tagId: app.tagId,
+            tagName: app.tagName,
+            tagColor: app.tagColor,
             iconName: app.iconName,
             addedBy: app.addedBy,
             isFavourite: app.isFavourite,
             urlName: app.urlName
         };
+}
+
+
+# Insert or update user's favourite status for an app.
+#
+# + email - User email to associate with the favourite
+# + appId - Application ID to mark as favourite/unfavourite
+# + isFavourite - favourite status to set
+# + return - `error?` on failure
+public isolated function upsertFavourites(string email, int appId, boolean isFavourite) returns error? {
+    _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFavourite));
+}
+
+# Validates whether the given application ID exists in the database.
+#
+# + appId - The unique identifier of the application to validate
+# + return - Returns `true` if the app ID is valid, `false` if invalid, or an `error` on failure
+public isolated function isValidAppId(int appId) returns boolean|error {
+    ValidAppResult result = check databaseClient->queryRow(isValidAppIdQuery(appId));
+    return result.isValid === 1;
 }

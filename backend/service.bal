@@ -86,7 +86,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
-        }
+        } 
 
         UserInfo userInfoResponse = {...employee, privileges};
 
@@ -129,5 +129,61 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         return result;
+    }
+
+    # Update user's favourite status for a specific app.
+    #
+    # + ctx - HTTP request context containing user information
+    # + id - Application ID to update favourite status for
+    # + action - Enum containing the favourite status to set
+    # + return - Success response, or error responses for invalid app ID, missing user info, or server errors
+    resource function post apps/[int id]/[Action action](http:RequestContext ctx)
+        returns http:Ok|http:NotFound|http:BadRequest|http:InternalServerError {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+            };
+        }
+
+        boolean isFavourite = action == FAVOURITE;
+
+        boolean|error isValid = database:isValidAppId(id);
+        if isValid is error {
+            string customError = string `Error occurred while validating the App ID`;
+            log:printError(customError, isValid);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if !isValid {
+            log:printError(string `Application with ID: ${id} was not found!`);  
+            return <http:NotFound>{
+                body: {
+                    message: "Application not found"  
+                }
+            };
+        }
+
+        error? result = database:upsertFavourites(userInfo.email, id, isFavourite);
+        if result is error {
+            string customError = "Error occurred while upserting the app";  
+            log:printError(customError, result, id = id);  
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+        return <http:Ok>{
+            body:  {
+                message: "Successfully updated"
+            }
+        };
     }
 }

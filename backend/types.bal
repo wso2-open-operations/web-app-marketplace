@@ -37,6 +37,10 @@ public type App record {|
     string versionName;
     # Tag id of the target app
     int tagId;
+    # Tag name of the target app
+    string tagName;
+    # Tag color of the target app
+    string tagColor;
     # Icon asset name or key
     string iconName;
     # User who added the link
@@ -44,3 +48,9 @@ public type App record {|
     # Whether the current user has favorited this link (0 = no, 1 = yes)
     int isFavourite;
 |};
+
+# Structure for Action Enum
+public enum Action {
+    FAVOURITE = "favourite",
+    UNFAVOURITE = "unfavourite"
+}

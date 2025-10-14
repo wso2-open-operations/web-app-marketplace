@@ -24,7 +24,7 @@ CREATE TABLE apps (
   `description` TEXT NULL,
   version_name  VARCHAR(64) NOT NULL,
   tag_id        INT NULL,                       
-  icon          VARCHAR(255) NULL,
+  icon          LONGTEXT NULL,
   user_groups   SET('wso2-everyone','admin','app-appstore-admin','wso2-interns') NOT NULL DEFAULT '',
   `is_active`   TINYINT(1) NOT NULL DEFAULT 0,  
   added_by      VARCHAR(254) NOT NULL,
@@ -41,7 +41,7 @@ DROP TABLE IF EXISTS user_favourites;
 CREATE TABLE user_favourites (
   user_email    VARCHAR(254) NOT NULL,
   app_id        INT NOT NULL,
-  `is_active`   TINYINT(1) NOT NULL DEFAULT 0,  
+  `is_favourite`   TINYINT(1) NOT NULL DEFAULT 0,  
   added_on      TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_on    TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 

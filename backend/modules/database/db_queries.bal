@@ -29,13 +29,16 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
             a.description,
             a.version_name,
             a.tag_id,
+            t.name,
+            t.color,
             a.icon,
             a.added_by,
             CASE WHEN uf.app_id IS NOT NULL THEN 1 ELSE 0 END AS is_favourite
         FROM apps a
         LEFT JOIN user_favourites uf ON a.id = uf.app_id 
             AND uf.user_email = ${email} 
-            AND uf.is_active = 1
+            AND uf.is_favourite = 1
+        LEFT JOIN tags t ON a.tag_id =t.id
         WHERE a.is_active = 1`;
 
     if roles.length() == 0 {
@@ -62,3 +65,33 @@ isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql
     return sql:queryConcat(selectClause, whereClause, `
         ORDER BY a.header`);
 }
+
+# Build query to insert or update user's favourite status for an app.
+#
+# + email - User email to associate with the favourite
+# + appId - Application ID to mark as favourite/unfavourite
+# + isFavourite - Record containing the favourite status to set
+# + return - Parameterized SQL query for upsert operation
+isolated function upsertFavouritesQuery(string email, int appId, boolean isFavourite)
+    returns sql:ParameterizedQuery => `
+    INSERT INTO user_favourites (
+        user_email, 
+        app_id, 
+        is_favourite
+    ) VALUES (
+        ${email}, 
+        ${appId}, 
+        ${isFavourite}
+    )
+    ON DUPLICATE KEY UPDATE
+        is_favourite = ${isFavourite}`;
+
+# Build query to check if an application ID is valid and active.
+#
+# + appId - Application ID to validate
+# + return - Parameterized SQL query that returns boolean result
+isolated function isValidAppIdQuery(int appId) returns sql:ParameterizedQuery => `
+    SELECT EXISTS(
+        SELECT 1 FROM apps 
+        WHERE id = ${appId} AND is_active = 1
+    ) AS is_valid`;

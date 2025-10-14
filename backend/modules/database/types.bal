@@ -62,4 +62,17 @@ public type App record {|
     # Whether the current user has favorited this link (0 = no, 1 = yes)
     @sql:Column {name: "is_favourite"}
     int isFavourite;
+    # Tag name of the target app
+    @sql:Column {name: "name"}
+    string tagName;
+    # Tag color of the target app
+    @sql:Column {name: "color"}
+    string tagColor;
+|};
+
+# Result record for app ID validation queries.
+type ValidAppResult record {|
+    # 1 if app exists and is active, 0 otherwise
+    @sql:Column {name: "is_valid"}
+    int isValid;
 |};
