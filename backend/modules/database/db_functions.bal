@@ -91,8 +91,8 @@ public isolated function isValidAppId(int appId) returns boolean|error {
     return result.isValid === 1;
 }
 
-public isolated function fetchApp(AppFilters filters) returns ExtendedApp[]|error {
-    stream<ExtendedApp, error?> result =  databaseClient->query(fetchAppQuery(filters));
+public isolated function fetchAppByFilter(AppFilters filters) returns ExtendedApp[]|error {
+    stream<ExtendedApp, error?> result =  databaseClient->query(fetchAppByFilterQuery(filters));
     return from ExtendedApp app in result
         select {
             id: app.id,

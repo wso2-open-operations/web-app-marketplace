@@ -96,7 +96,7 @@ isolated function isValidAppIdQuery(int appId) returns sql:ParameterizedQuery =>
         WHERE id = ${appId} AND is_active = 1
     ) AS is_valid`;
 
-isolated function fetchAppQuery(AppFilters filters) returns sql:ParameterizedQuery {
+isolated function fetchAppByFilterQuery(AppFilters filters) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery mainQuery = `
         SELECT 
             a.id,

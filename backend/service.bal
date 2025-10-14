@@ -151,7 +151,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        ExtendedApp[]|error validApp = database:fetchApp({header: app.header, url: app.url});
+        ExtendedApp[]|error validApp = database:fetchAppByFilter({header: app.header, url: app.url});
         if validApp is error {
             log:printError(ERROR_VALIDATING_APP, validApp);
             return <http:InternalServerError>{
@@ -321,7 +321,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         boolean isFavourite = action == FAVOURITE;
 
-        ExtendedApp[]|error app = database:fetchApp({id: id});
+        ExtendedApp[]|error app = database:fetchAppByFilter({id: id});
         if app is error {
             log:printError(ERROR_VALIDATING_APP_ID, app);
             return <http:InternalServerError>{
