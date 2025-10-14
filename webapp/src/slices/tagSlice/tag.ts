@@ -90,7 +90,7 @@ export const tagSlice = createSlice({
         builder
             .addCase(fetchTags.pending, (state) => {
                 state.state = State.loading;
-                state.stateMessage = "Fetching app links...";
+                state.stateMessage = "Fetching tags...";
             })
 
             .addCase(fetchTags.fulfilled, (state, action) => {
