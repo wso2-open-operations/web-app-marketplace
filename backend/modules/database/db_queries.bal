@@ -101,10 +101,10 @@ isolated function fetchAppByFilterQuery(AppFilters filters) returns sql:Paramete
             a.tag_id AS tagId,
             a.icon,
             a.added_by AS addedBy,
-            a.updated_by AS updatedBy,
+            a.updated_by,
             t.name AS tagName,
             t.color as tagColor,
-            t.is_active AS isActive
+            t.is_active
         FROM apps a
         LEFT JOIN tags t ON a.tag_id = t.id
     `;
@@ -192,4 +192,3 @@ isolated function fetchTages() returns sql:ParameterizedQuery => `
         name
     FROM tags
     WHERE is_active = 1`;
-    
