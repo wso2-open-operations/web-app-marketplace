@@ -331,7 +331,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if app.length() === 0 {
+        if !(app.length() === 0) {
             log:printError(string `Application with ID: ${id} was not found!`);  
             return <http:NotFound>{
                 body: {
