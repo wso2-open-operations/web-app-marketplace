@@ -85,7 +85,7 @@ export const groupSlice = createSlice({
         builder
             .addCase(fetchGroups.pending, (state) => {
                 state.state = State.loading;
-                state.stateMessage = "Fetching app links...";
+                state.stateMessage = "Fetching user groups...";
             })
 
             .addCase(fetchGroups.fulfilled, (state, action) => {
