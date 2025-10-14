@@ -161,7 +161,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if validApp.length() === 0 {
+        if !(validApp.length() === 0) {
             return <http:InternalServerError>{
                 body: {
                     message: APP_ALREADY_EXISTS
