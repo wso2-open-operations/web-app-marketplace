@@ -123,3 +123,21 @@ public type Tag record {|
     @sql:Column {name: "name"}
     string name;
 |};
+
+public type AppFilters record {|
+    # Unique identifier of the link
+    int? id = ();
+    # Display title
+    string? header = ();
+    # Target URL 
+    string? url = ();
+    string? addedBy = ();
+    string? isActive = ();
+    string? userGroups = ();
+|};
+
+public type AppFilter record {|
+    *App;
+    string updatedBy;
+    string isActive;
+|};
