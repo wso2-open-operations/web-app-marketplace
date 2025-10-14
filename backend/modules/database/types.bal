@@ -99,7 +99,7 @@ public type CreateApp record {|
     string[] userGroups;
     # Is the App is active or not
     @sql:Column {name: "is_active"}
-    string isActive;
+    boolean isActive;
 |};
 
 # Result record for app ID validation queries.
