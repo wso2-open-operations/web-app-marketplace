@@ -152,22 +152,21 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        boolean|error isAppExist = database:checkAppExists(app.header, app.url);
-        if isAppExist is error {
-            string customError = string `Error occured while validating app`;
-            log:printError(customError, isAppExist);
+        ExtendedApp[]|error validApp = database:fetchApp({header: app.header, url: app.url});
+        if validApp is error {
+            string customError = string `Error occurred while validating the App ID`;
+            log:printError(customError, validApp);
             return <http:InternalServerError>{
-                body:  {
+                body: {
                     message: customError
                 }
             };
         }
 
-        if isAppExist {
+        if validApp.length() === 0 {
             string customError = string `Application with app name : ${app.header} and url : ${app.url} is already exists`;
-            log:printError(customError);
             return <http:InternalServerError>{
-                body:  {
+                body: {
                     message: customError
                 }
             };
@@ -330,10 +329,10 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         boolean isFavourite = action == FAVOURITE;
 
-        boolean|error isValid = database:isValidAppId(id);
-        if isValid is error {
+        ExtendedApp[]|error app = database:fetchApp({id: id});
+        if app is error {
             string customError = string `Error occurred while validating the App ID`;
-            log:printError(customError, isValid);
+            log:printError(customError, app);
             return <http:InternalServerError>{
                 body: {
                     message: customError
@@ -341,7 +340,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if !isValid {
+        if app.length() === 0 {
             log:printError(string `Application with ID: ${id} was not found!`);  
             return <http:NotFound>{
                 body: {
@@ -350,10 +349,10 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        error? result = database:upsertFavourites(userInfo.email, id, isFavourite);
-        if result is error {
+        error? upsertError = database:upsertFavourites(userInfo.email, id, isFavourite);
+        if upsertError is error {
             string customError = "Error occurred while upserting the app";  
-            log:printError(customError, result, id = id);  
+            log:printError(customError, upsertError, id = id);  
             return <http:InternalServerError>{
                 body: {
                     message: customError
