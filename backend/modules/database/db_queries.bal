@@ -123,11 +123,11 @@ isolated function fetchAppByFilterQuery(AppFilters filters) returns sql:Paramete
     }
 
     if filters.addedBy is string {
-        filterQueries.push(` a.addedBy = ${filters.addedBy}`);
+        filterQueries.push(` a.added_by = ${filters.addedBy}`);
     }
 
     if filters.isActive is string {
-        filterQueries.push(` a.isActive = ${filters.isActive}`);
+        filterQueries.push(` a.is_active = ${filters.isActive}`);
     }
 
     mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
