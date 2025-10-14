@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 import web_app_marketplace.people;
+import ballerina/constraint;
 
 # Response for fetching user information.
 type UserInfo record {|
@@ -53,8 +54,16 @@ public type App record {|
 public type CreateApp record {|
     # Display title
     string header;
+
     # Target URL
+    @constraint:String{
+        pattern: {
+            value: NON_EMPTY_URL,
+            message: "The URL should be non empty and valid URL"
+        }
+    }
     string url;
+    
     # Short description
     string description;
     # Version label of the target app
@@ -63,16 +72,31 @@ public type CreateApp record {|
     int tagId;
     # Tag name of the target app
     string tagName;
+
     # Tag color of the target app
+    @constraint:String {
+        pattern: {
+            value: NON_EMPTY_HEX_VALUE,
+            message: "Color value should be a valid  hex value"
+        }
+    }
     string tagColor;
+
     # Icon asset name or key
+    @constraint:String{
+        pattern: {
+            value: NON_EMPTY_BASR64_STRING,
+            message: "icon must be base64 (optionally prefixed with data:image/svg+xml;base64"
+        }
+    }
     string icon;
+
     # User who added the link
     string addedBy;
     # User groups of the target app
     string[] userGroups;
     # Is the App is active or not
-    string isActive;
+    boolean isActive;
 |};
 
 # [Database] Tag record.
