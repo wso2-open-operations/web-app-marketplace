@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 import web_app_marketplace.people;
+
 import ballerina/constraint;
 
 # Response for fetching user information.
@@ -54,7 +55,6 @@ public type App record {|
 public type CreateApp record {|
     # Display title
     string header;
-
     # Target URL
     @constraint:String{
         pattern: {
@@ -63,7 +63,6 @@ public type CreateApp record {|
         }
     }
     string url;
-    
     # Short description
     string description;
     # Version label of the target app
@@ -72,7 +71,6 @@ public type CreateApp record {|
     int tagId;
     # Tag name of the target app
     string tagName;
-
     # Tag color of the target app
     @constraint:String {
         pattern: {
@@ -81,7 +79,6 @@ public type CreateApp record {|
         }
     }
     string tagColor;
-
     # Icon asset name or key
     @constraint:String{
         pattern: {
@@ -90,7 +87,6 @@ public type CreateApp record {|
         }
     }
     string icon;
-
     # User who added the link
     string addedBy;
     # User groups of the target app
