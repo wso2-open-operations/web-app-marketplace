@@ -13,6 +13,12 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
+
+# Validates whether all provided user groups exist in the list of valid user groups.
+#
+# + userGroups - Array of user group names to validate
+# + validUserGroups - Array of allowed user group names from the database
+# + return - true if all provided groups are valid or if no groups provided, false if any group is invalid
 public isolated function checkUserGroups(string[] userGroups, string[] validUserGroups) returns boolean {
     if userGroups.length() === 0 {
         return true;
