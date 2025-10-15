@@ -50,6 +50,7 @@ public isolated function upsertFavourites(string email, int appId, boolean isFav
 }
 
 # Create a new app in the database.
+# 
 # + app - App data to create
 # + return - Error if creation fails
 public isolated function createApp(CreateApp app) returns error? {
@@ -58,6 +59,7 @@ public isolated function createApp(CreateApp app) returns error? {
 
 
 # Retrieve user groups from the database schema.
+# 
 # + return - Array of user groups or error
 public isolated function fetchValidUserGroups() returns string[]|error? {
     GroupsRow|error result = databaseClient->queryRow(fetchValidUserGroupsQuery());
@@ -75,7 +77,6 @@ public isolated function fetchValidUserGroups() returns string[]|error? {
 }
 
 # Fetch app details by applying filters for validation and admin operations.
-# Used to retrieve extended app information including audit fields like `updatedBy` and `isActive`.
 #
 # + filters - Filter criteria to query apps (id, header, url, addedBy, isActive)
 # + return - Array of extended app records with full details, or error on failure
@@ -100,6 +101,7 @@ public isolated function fetchAppByFilter(AppFilters filters) returns ExtendedAp
 }
 
 # Fetch all active tags.
+# 
 # + return - Array of tags or error
 public isolated function fetchTags() returns Tag[]|error? {
     stream<Tag, error?> result = databaseClient->query(fetchTagsQuery());

@@ -136,10 +136,11 @@ isolated function fetchAppByFilterQuery(AppFilters filters) returns sql:Paramete
 }
 
 # Build query to create a new app.
+# 
 # + app - App data to insert
 # + return - Parameterized query for app creation
 isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
-    string userGroupsCsv = app.userGroups.length() > 0 ? string:'join(",", ...app.userGroups) : "";
+    string userGroups = app.userGroups.length() > 0 ? string:'join(",", ...app.userGroups) : "";
 
     sql:ParameterizedQuery query = sql:queryConcat(
         `INSERT INTO apps (
@@ -160,7 +161,7 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
             ${app.versionName},
             ${app.tagId},
             ${app.icon},
-            ${userGroupsCsv},
+            ${userGroups},
             ${app.isActive},
             ${app.addedBy},
             ${app.addedBy} 
@@ -185,6 +186,7 @@ isolated  function fetchValidUserGroupsQuery() returns sql:ParameterizedQuery =>
         AND COLUMN_NAME  = 'user_groups'`;
 
 # Build query to fetch active tags.
+# 
 # + return - Parameterized query for tags
 isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
     SELECT 
