@@ -26,7 +26,6 @@ public isolated function fetchApps(string email, string[] roles) returns App[]|e
         select app;
 }
 
-
 # Insert or update user's favourite status for an app.
 #
 # + email - User email to associate with the favourite
