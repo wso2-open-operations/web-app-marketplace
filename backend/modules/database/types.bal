@@ -53,7 +53,7 @@ public type App record {|
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
-    # Tag/category ID
+    # Tag ID of the target app
     @sql:Column {name: "tag_id"}
     int tagId;
     # Tag name of the target app
@@ -91,7 +91,7 @@ public type CreateApp record {|
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
-    # Tag/category ID
+    # Tag ID of the target app
     @sql:Column {name: "tag_id"}
     int tagId;
     # Tag name of the target app
