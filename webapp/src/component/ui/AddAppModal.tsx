@@ -139,7 +139,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
         const selectedTag = tags?.find((t) => t.id === values.tagId);
         
         const payload = {
-          header: values.title.trim(),
+          name: values.title.trim(),
           url: values.link.trim(),
           description: values.description.trim(),
           versionName: values.versionName.trim(),
