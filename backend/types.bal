@@ -79,14 +79,6 @@ public type CreateApp record {|
     int tagId;
     # Tag name of the target app
     string tagName;
-    # Tag color of the target app
-    @constraint:String {
-        pattern: {
-            value: NON_EMPTY_HEX_VALUE,
-            message: "Color value should be a valid  hex value"
-        }
-    }
-    string tagColor;
     # User groups of the target app
     string[] userGroups;
     # Is the App is active or not

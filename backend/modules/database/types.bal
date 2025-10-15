@@ -97,9 +97,6 @@ public type CreateApp record {|
     # Tag name of the target app
     @sql:Column {name: "name"}
     string tagName;
-    # Tag color of the target app
-    @sql:Column {name: "color"}
-    string tagColor;
     # User groups of the target app
     @sql:Column {name: "user_groups"}
     string[] userGroups;
