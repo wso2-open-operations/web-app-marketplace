@@ -40,8 +40,7 @@ public type App record {|
     @sql:Column {name: "id"}
     int id;
     # Display title
-    @sql:Column {name: "header"}
-    string header;
+    string name;
     # Target URL 
     string url;
     # Short description
@@ -49,29 +48,37 @@ public type App record {|
     # Version label of the target app
     @sql:Column {name: "version_name"}
     string versionName;
-    # Tag/category ID
-    @sql:Column {name: "tag_id"}
-    int tagId;
     # Icon asset name/key
     string icon;
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
-    # Whether the current user has favorited this link (0 = no, 1 = yes)
-    @sql:Column {name: "is_favourite"}
-    int isFavourite;
+    # Tag/category ID
+    @sql:Column {name: "tag_id"}
+    int tagId;
     # Tag name of the target app
-    @sql:Column {name: "name"}
+    @sql:Column {name: "tag_name"}
     string tagName;
     # Tag color of the target app
     @sql:Column {name: "color"}
     string tagColor;
 |};
 
+# [Database] Extended app record containing all app fields.
+public type ExtendedApp record {|
+    *App;
+    # Email of the user who last updated the app
+    @sql:Column {name: "is_favourite"}
+    string isFavourite;
+    # Active status of the app - "1" for active, "0" for inactive
+    @sql:Column {name: "is_active"}
+    string isActive;
+|};
+
 # [Database] Create App record.
 public type CreateApp record {|
     # Display title
-    string header;
+    string name;
     # Target URL 
     string url;
     # Short description
@@ -79,14 +86,14 @@ public type CreateApp record {|
     # Version label of the target app
     @sql:Column {name: "version_name"}
     string versionName;
-    # Tag/category ID
-    @sql:Column {name: "tag_id"}
-    int tagId;
     # Icon asset name/key
     string icon;
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
+    # Tag/category ID
+    @sql:Column {name: "tag_id"}
+    int tagId;
     # Tag name of the target app
     @sql:Column {name: "name"}
     string tagName;
@@ -119,11 +126,11 @@ public type Tag record {|
 |};
 
 # Filter criteria for querying apps with optional conditions.
-public type AppFilters record {|
+public type AppsFilter record {|
     # Unique identifier of the app to filter by
     int? id = ();
-    # Display title/header to filter by
-    string? header = ();
+    # Display title/App name to filter by
+    string? name = ();
     # Target URL to filter by
     string? url = ();
     # Email of the user who added the app
@@ -131,16 +138,5 @@ public type AppFilters record {|
     # Active status filter 
     string? isActive = ();
     # Comma-separated user groups associated with the app 
-    string? userGroups = ();
-|};
-
-# [Database] Extended app record containing all app fields.
-public type ExtendedApp record {|
-    *App;
-    # Email of the user who last updated the app
-    @sql:Column {name: "updated_by"}
-    string updatedBy;
-    # Active status of the app - "1" for active, "0" for inactive
-    @sql:Column {name: "is_active"}
-    string isActive;
+    string[]? userGroups = ();
 |};
