@@ -171,6 +171,7 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
 }
 
 # Build query to retrieve user groups as JSON from the database schema.
+# 
 # + return - Parameterized query for user groups
 isolated  function fetchValidUserGroupsQuery() returns sql:ParameterizedQuery => `
     SELECT CAST(
