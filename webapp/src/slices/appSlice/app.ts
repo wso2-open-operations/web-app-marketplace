@@ -22,12 +22,11 @@ import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { UpdateAction, State } from "@/types/types";
-import { RootState, useAppSelector } from "../store";
 import { UserState } from "../authSlice/auth";
 
 export type App = {
   id: number;
-  header: string;
+  name: string;
   urlName: string;
   description: string;
   versionName: string;
@@ -41,7 +40,7 @@ export type App = {
 };
 
 export type CreateAppPayload = {
-  header: string;
+  name: string;
   url: string;
   description: string;
   versionName: string;
@@ -158,7 +157,7 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
 
     try {
       const requestBody = {
-        header: payload.header,
+        name: payload.name,
         url: payload.url,
         description: payload.description,
         versionName: payload.versionName,
