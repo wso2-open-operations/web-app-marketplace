@@ -15,9 +15,9 @@
 // under the License. 
 import ballerina/sql;
 
-# Fetch all apps visible to the given `roles`.
+# Fetch all apps visible to the given roles.
 #
-# + return - App[] or an `error?` on failure
+# + return - App[] or an error? on failure
 public isolated function fetchApps() returns App[]|error {
     stream<App, error?> result = databaseClient->query(fetchAppsQuery());
     return from App app in result
@@ -55,7 +55,7 @@ public isolated function fetchApp(AppFilter filters) returns ExtendedApp|error? 
 # + email - User email to associate with the favourite
 # + appId - Application ID to mark as favourite/unfavourite
 # + isFavourite - favourite status to set
-# + return - `error?` on failure
+# + return - error? on failure
 public isolated function upsertFavourites(string email, int appId, boolean isFavourite) returns error? {
     _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFavourite));
 }
