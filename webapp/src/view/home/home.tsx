@@ -30,9 +30,9 @@ import {
   filterAndSortApps,
   extractUniqueTags,
 } from "@utils/searchUtils";
-import AppCard from "@component/ui/AppCard";
+import AppCard from "@root/src/view/home/components/AppCard";
 import SearchBar from "@component/ui/SearchBar";
-import AddAppModal from "@component/ui/AddAppModal";
+import AddAppModal from "@root/src/view/home/components/AddAppModal";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import { Role } from "@root/src/slices/authSlice/auth";
