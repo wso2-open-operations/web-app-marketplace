@@ -169,7 +169,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        string[]|error? validUserGroups = database:fetchValidUserGroups();
+        string[]|error? validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
             log:printError(ERROR_RETRIEVING_USER_GROUPS, validUserGroups);
             return<http:InternalServerError>{
@@ -238,7 +238,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        string[]|error? validUserGroups = database:fetchValidUserGroups();
+        string[]|error? validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
             log:printError(ERROR_RETRIEVING_USER_GROUPS, validUserGroups);
             return<http:InternalServerError>{

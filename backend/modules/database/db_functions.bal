@@ -47,8 +47,8 @@ public isolated function createApp(CreateApp app) returns error? {
 # Retrieve user groups from the database schema.
 # 
 # + return - Array of user groups or error
-public isolated function fetchValidUserGroups() returns string[]|error? {
-    string|error result = databaseClient->queryRow(fetchValidUserGroupsQuery());
+public isolated function fetchUserGroups() returns string[]|error? {
+    string|error result = databaseClient->queryRow(fetchUserGroupsQuery());
 
     if result is error {
         if result is sql:NoRowsError {
