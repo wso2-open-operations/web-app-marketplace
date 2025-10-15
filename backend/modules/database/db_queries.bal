@@ -20,7 +20,7 @@ import ballerina/sql;
 # + email - User email to check favourites
 # + roles - User roles to filter
 # + return - Parameterized query selecting apps with favourite status
-isolated function fetchAppByRolesQuery(string email, string[] roles) returns sql:ParameterizedQuery {
+isolated function fetchAppsQuery(string email, string[] roles) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery selectClause = `
         SELECT 
             a.id,
@@ -86,12 +86,112 @@ isolated function upsertFavouritesQuery(string email, int appId, boolean isFavou
     ON DUPLICATE KEY UPDATE
         is_favourite = ${isFavourite}`;
 
-# Build query to check if an application ID is valid and active.
+# Build query to fetch app details with filters for validation and admin operations.
 #
-# + appId - Application ID to validate
-# + return - Parameterized SQL query that returns boolean result
-isolated function isValidAppIdQuery(int appId) returns sql:ParameterizedQuery => `
-    SELECT EXISTS(
-        SELECT 1 FROM apps 
-        WHERE id = ${appId} AND is_active = 1
-    ) AS is_valid`;
+# + filters - Filter criteria to apply when querying apps
+# + return - Parameterized SQL query with applied filters
+isolated function fetchAppByFilterQuery(AppFilters filters) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery mainQuery = `
+        SELECT 
+            a.id,
+            a.header,
+            a.url,
+            a.description,
+            a.version_name AS versionName,
+            a.tag_id AS tagId,
+            a.icon,
+            a.added_by AS addedBy,
+            a.updated_by,
+            t.name AS tagName,
+            t.color as tagColor,
+            t.is_active
+        FROM apps a
+        LEFT JOIN tags t ON a.tag_id = t.id
+    `;
+
+    sql:ParameterizedQuery[] filterQueries = [];
+    if filters.header is string {
+        filterQueries.push(` a.header = ${filters.header}`);
+    }
+
+    if filters.id is int {
+        filterQueries.push(` a.id = ${filters.id}`);
+    }
+
+    if filters.url is string {
+        filterQueries.push(` a.url = ${filters.url}`);
+    }
+
+    if filters.addedBy is string {
+        filterQueries.push(` a.added_by = ${filters.addedBy}`);
+    }
+
+    if filters.isActive is string {
+        filterQueries.push(` a.is_active = ${filters.isActive}`);
+    }
+
+    mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
+
+    return mainQuery;
+}
+
+# Build query to create a new app.
+# 
+# + app - App data to insert
+# + return - Parameterized query for app creation
+isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
+    string userGroups = app.userGroups.length() > 0 ? string:'join(",", ...app.userGroups) : "";
+
+    sql:ParameterizedQuery query = sql:queryConcat(
+        `INSERT INTO apps (
+            header,
+            url,
+            description,
+            version_name,
+            tag_id,
+            icon,
+            user_groups,
+            is_active,
+            added_by,
+            updated_by
+        ) VALUES (
+            ${app.header},
+            ${app.url},
+            ${app.description},
+            ${app.versionName},
+            ${app.tagId},
+            ${app.icon},
+            ${userGroups},
+            ${app.isActive},
+            ${app.addedBy},
+            ${app.addedBy} 
+        )`
+    );
+    return query;
+}
+
+# Build query to retrieve user groups as JSON from the database schema.
+# 
+# + return - Parameterized query for user groups
+isolated  function fetchUserGroupsQuery() returns sql:ParameterizedQuery => `
+    SELECT CAST(
+         CONCAT(
+           '[',
+           REPLACE(SUBSTRING(COLUMN_TYPE, 5, CHAR_LENGTH(COLUMN_TYPE) - 5), '''', '"'),
+           ']'
+         ) AS JSON
+       ) AS user_groups
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME   = 'apps'
+        AND COLUMN_NAME  = 'user_groups'`;
+
+# Build query to fetch active tags.
+# 
+# + return - Parameterized query for tags
+isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
+    SELECT 
+        id,
+        name
+    FROM tags
+    WHERE is_active = 1`;

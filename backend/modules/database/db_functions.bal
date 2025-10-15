@@ -13,30 +13,18 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
+import ballerina/sql;
 
 # Fetch all apps visible to the given `roles`.
 #
 # + email - User email used to look up favourites
 # + roles - Role names used to resolve visible apps
 # + return - App[] with `isFavourite` set, or an `error?` on failure
-public isolated function fetchAppByRoles(string email, string[] roles) returns App[]|error {
-    stream<App, error?> result = databaseClient->query(fetchAppByRolesQuery(email, roles));
+public isolated function fetchApps(string email, string[] roles) returns App[]|error {
+    stream<App, error?> result = databaseClient->query(fetchAppsQuery(email, roles));
     return from App app in result
-        select {
-            id: app.id,
-            header: app.header,
-            description: app.description,
-            versionName: app.versionName,
-            tagId: app.tagId,
-            tagName: app.tagName,
-            tagColor: app.tagColor,
-            iconName: app.iconName,
-            addedBy: app.addedBy,
-            isFavourite: app.isFavourite,
-            urlName: app.urlName
-        };
+        select app;
 }
-
 
 # Insert or update user's favourite status for an app.
 #
@@ -48,11 +36,49 @@ public isolated function upsertFavourites(string email, int appId, boolean isFav
     _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFavourite));
 }
 
-# Validates whether the given application ID exists in the database.
+# Create a new app in the database.
+# 
+# + app - App data to create
+# + return - Error if creation fails
+public isolated function createApp(CreateApp app) returns error? {
+    _ = check databaseClient->execute(createAppQuery(app));
+}
+
+# Retrieve user groups from the database schema.
+# 
+# + return - Array of user groups or error
+public isolated function fetchUserGroups() returns string[]|error? {
+    string|error result = databaseClient->queryRow(fetchUserGroupsQuery());
+
+    if result is error {
+        if result is sql:NoRowsError {
+            return;
+        }
+        return result;
+    }
+    
+    string[] userGroups = check result.fromJsonStringWithType();
+    return  userGroups;
+}
+
+# Fetch app details by applying filters for validation and admin operations.
 #
-# + appId - The unique identifier of the application to validate
-# + return - Returns `true` if the app ID is valid, `false` if invalid, or an `error` on failure
-public isolated function isValidAppId(int appId) returns boolean|error {
-    ValidAppResult result = check databaseClient->queryRow(isValidAppIdQuery(appId));
-    return result.isValid === 1;
+# + filters - Filter criteria to query apps (id, header, url, addedBy, isActive)
+# + return - Array of extended app records with full details, or error on failure
+public isolated function fetchAppByFilter(AppFilters filters) returns ExtendedApp[]|error {
+    stream<ExtendedApp, error?> result =  databaseClient->query(fetchAppByFilterQuery(filters));
+    return from ExtendedApp app in result
+        select app;
+}
+
+# Fetch all active tags.
+# 
+# + return - Array of tags or error
+public isolated function fetchTags() returns Tag[]|error? {
+    stream<Tag, error?> result = databaseClient->query(fetchTagsQuery());
+    return from Tag tag in result
+        select {
+            id: tag.id,
+            name: tag.name
+        };
 }
