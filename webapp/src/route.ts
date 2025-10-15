@@ -16,6 +16,7 @@
 
 import AppsIcon from '@mui/icons-material/Apps';
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 import React from "react";
 import { NonIndexRouteObject, RouteObject } from "react-router-dom";
@@ -53,13 +54,20 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [Role.ADMIN, Role.EMPLOYEE],
   },
   {
+    path: "/favourites",
+    text: "Favourites",
+    icon: React.createElement(FavoriteBorderIcon),
+    element: React.createElement(View.favourites),
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
+  },
+  {
     path: "/help",
     text: "Help",
     icon: React.createElement(HelpOutlineIcon),
     element: React.createElement(View.help),
     allowRoles: [Role.ADMIN, Role.EMPLOYEE],
     bottomNav: true,
-  },
+  }
 ];
 export const getActiveRoutesV2 = (
   routes: RouteObjectWithRole[] | undefined,
