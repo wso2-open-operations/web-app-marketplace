@@ -1,0 +1,137 @@
+openapi: 3.0.1
+info:
+  title: Service Openapi Yaml
+  version: 1.0.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9090"
+paths:
+  /user-info:
+    get:
+      summary: Fetch logged-in user's details.
+      operationId: getUserInfo
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        "500":
+          description: InternalServerError
+        "404":
+          description: NotFound
+  /apps:
+    get:
+      summary: GET apps visible to the user.
+      operationId: getApps
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/App'
+        "500":
+          description: InternalServerError
+        "404":
+          description: NotFound
+components:
+  schemas:
+    App:
+      required:
+      - addedBy
+      - description
+      - header
+      - iconName
+      - id
+      - isFavourite
+      - tagId
+      - urlName
+      - versionName
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the link
+          format: int64
+        header:
+          type: string
+          description: Display title
+        urlName:
+          type: string
+          description: Target URL
+        description:
+          type: string
+          description: Short description
+        versionName:
+          type: string
+          description: Version label of the target app
+        tagId:
+          type: integer
+          description: Tag id of the target app
+          format: int64
+        iconName:
+          type: string
+          description: Icon asset name or key
+        addedBy:
+          type: string
+          description: User who added the link
+        isFavourite:
+          type: integer
+          description: "Whether the current user has favorited this link (0 = no,\
+            \ 1 = yes)"
+          format: int64
+      additionalProperties: false
+      description: Structure of App record.
+    Employee:
+      required:
+      - employeeId
+      - firstName
+      - jobRole
+      - lastName
+      - workEmail
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Employee first name
+        lastName:
+          type: string
+          description: Employee last name
+        employeeId:
+          type: string
+          description: Employee ID
+        employeeThumbnail:
+          type: string
+          description: Employee thumbnail
+          nullable: true
+        workEmail:
+          type: string
+          description: Employee work emails
+        jobRole:
+          type: string
+          description: Employee job role
+      additionalProperties: false
+      description: Employee information.
+    UserInfo:
+      type: object
+      description: Response for fetching user information.
+      allOf:
+      - $ref: '#/components/schemas/Employee'
+      - required:
+        - privileges
+        type: object
+        properties:
+          privileges:
+            type: array
+            description: Array of privileges assigned to the user
+            items:
+              type: integer
+              format: int64
