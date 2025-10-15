@@ -57,7 +57,6 @@ public isolated function createApp(CreateApp app) returns error? {
     _ = check databaseClient->execute(createAppQuery(app));
 }
 
-
 # Retrieve user groups from the database schema.
 # 
 # + return - Array of user groups or error
