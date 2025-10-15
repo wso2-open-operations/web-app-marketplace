@@ -33,7 +33,7 @@ import * as Yup from "yup";
 import { useEffect, useState } from "react";
 
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
-import { createApp, resetCreateState } from "@slices/appSlice/app";
+import { createApp, CreateAppPayload, resetCreateState } from "@slices/appSlice/app";
 import { State } from "@root/src/types/types";
 
 interface AddAppModalProps {
@@ -133,14 +133,13 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
         // Get tag name from tags array
         const selectedTag = tags?.find((t) => t.id === values.tagId);
         
-        const payload = {
+        const payload:CreateAppPayload = {
           name: values.title.trim(),
           url: values.link.trim(),
           description: values.description.trim(),
           versionName: values.versionName.trim(),
           tagId: values.tagId,
           tagName: selectedTag?.name || "",
-          tagColor: "#1976d2", // Default color
           icon: base64Icon,
           userGroups: values.groupIds,
         };
