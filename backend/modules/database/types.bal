@@ -140,7 +140,7 @@ public type AppFilters record {|
     string? userGroups = ();
 |};
 
-# [Database] Extended app record containing all app fields 
+# [Database] Extended app record containing all app fields.
 public type ExtendedApp record {|
     *App;
     # Email of the user who last updated the app
