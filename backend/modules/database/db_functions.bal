@@ -50,11 +50,10 @@ public isolated function createApp(CreateApp app) returns error? {
 public isolated function fetchValidUserGroups() returns string[]|error? {
     GroupsRow|error result = databaseClient->queryRow(fetchValidUserGroupsQuery());
 
-    if result is sql:NoRowsError {
-        return;
-    }
-
     if result is error {
+        if result is sql:NoRowsError {
+            return;
+        }
         return result;
     }
     
