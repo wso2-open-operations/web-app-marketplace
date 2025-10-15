@@ -24,7 +24,7 @@ import { RootState } from "@slices/store";
 
 export enum Role {
   ADMIN = "ADMIN",
-  TEAM = "TEAM",
+  EMPLOYEE = "EMPLOYEE",
 }
 
 interface AuthState {
@@ -92,7 +92,7 @@ export const loadPrivileges = createAsyncThunk(
       roles.push(Role.ADMIN);
     }
     if (userPrivileges.includes(987)) {
-      roles.push(Role.TEAM);
+      roles.push(Role.EMPLOYEE);
     }
 
     if (roles.length === 0) {
