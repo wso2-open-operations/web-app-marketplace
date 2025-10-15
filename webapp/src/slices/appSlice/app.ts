@@ -17,12 +17,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { HttpStatusCode } from "axios";
 
-import { State } from "@/types/types";
 import { SnackMessage } from "@config/constant";
 import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
-import { UpdateAction } from "@/types/types";
+import { UpdateAction, State } from "@/types/types";
 
 export type App = {
   id: number;
@@ -34,8 +33,21 @@ export type App = {
   tagName: string;
   tagColor: string;
   iconName: string;
+  icon?: string; // Base64 encoded icon
   addedBy: string;
   isFavourite: 0 | 1;
+};
+
+export type CreateAppPayload = {
+  header: string;
+  url: string;
+  description: string;
+  versionName: string;
+  tagId: number;
+  tagName: string;
+  tagColor: string;
+  icon: string;
+  userGroups: string[];
 };
 
 interface AppState {
@@ -43,6 +55,7 @@ interface AppState {
   stateMessage: string | null;
   errorMessage: string | null;
   apps: App[] | null;
+  submitState: State
 }
 
 const initialState: AppState = {
@@ -50,6 +63,7 @@ const initialState: AppState = {
   stateMessage: null,
   errorMessage: null,
   apps: null,
+  submitState: State.idle
 };
 
 
@@ -97,21 +111,21 @@ export const upsertAppFavourite = createAsyncThunk<
   UpdateArgs
 >(
   "apps/upsertAppFavourite",
-  async ( updateArgs, { dispatch, rejectWithValue }) => {
+  async (updateArgs, { dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
 
     try {
-      const action:UpdateAction = updateArgs.active ? UpdateAction.Favorite : UpdateAction.Unfavourite;
-      
+      const action: UpdateAction = updateArgs.active ? UpdateAction.Favorite : UpdateAction.Unfavourite;
+
       const res = await APIService.getInstance().post(
         `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${action}`,
         {
           cancelToken: newCancelTokenSource.token,
         }
       );
-      return { id: updateArgs.id, active: updateArgs.active};
-      
+      return { id: updateArgs.id, active: updateArgs.active };
+
     } catch (error: any) {
       if (axios.isCancel(error)) {
         return rejectWithValue("Request Canceled");
@@ -134,12 +148,78 @@ export const upsertAppFavourite = createAsyncThunk<
   }
 );
 
+export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, userEmail: string }>(
+  "apps/createApp",
+  async ({ payload, userEmail }, { dispatch, rejectWithValue }) => {
+    APIService.getCancelToken().cancel();
+    const newCancelTokenSource = APIService.updateCancelToken();
+
+    try {
+      const requestBody = {
+        header: payload.header,
+        url: payload.url,
+        description: payload.description,
+        versionName: payload.versionName,
+        tagId: payload.tagId,
+        tagName: payload.tagName,
+        tagColor: payload.tagColor,
+        icon: payload.icon,
+        addedBy: userEmail,
+        userGroups: payload.userGroups,
+        isActive: true
+      };
+
+      const res = await APIService.getInstance().post(
+        AppConfig.serviceUrls.apps,
+        requestBody,
+        {
+          cancelToken: newCancelTokenSource.token,
+        }
+      );
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message: res.data.message || "Application created successfully",
+          type: "success",
+        })
+      );
+
+      // Refetch apps list to get the newly created app
+      dispatch(fetchApps());
+
+      return;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request Canceled");
+      }
+
+      const message =
+        error?.response?.data?.message ??
+        (error?.response?.status === HttpStatusCode.InternalServerError
+          ? "Server error while creating application"
+          : "Failed to create application");
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message,
+          type: "error",
+        })
+      );
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const appSlice = createSlice({
   name: "apps",
   initialState,
   reducers: {
     resetSubmitState(state) {
       state.state = State.idle;
+    },
+    resetCreateState(state) {
+      state.submitState = State.idle;
+      state.stateMessage = null;
     },
   },
 
@@ -166,12 +246,29 @@ export const appSlice = createSlice({
         if (state.apps) {
           const app = state.apps.find((app) => app.id === action.payload.id);
           if (app) {
-            app.isFavourite = action.payload.active === UpdateAction.Favorite ? 1 : 0 ;
+            app.isFavourite = action.payload.active === UpdateAction.Favorite ? 1 : 0;
           }
         }
+      })
+
+      .addCase(createApp.pending, (state) => {
+        state.submitState = State.loading;
+        state.stateMessage = null;
+      })
+
+      .addCase(createApp.fulfilled, (state) => {
+
+        state.submitState = State.success;
+        state.stateMessage = null;
+      })
+
+      .addCase(createApp.rejected, (state, action) => {
+
+        state.submitState = State.failed;
+        state.stateMessage = action.payload as string;
       });
   },
 });
 
-export const { resetSubmitState } = appSlice.actions;
+export const { resetSubmitState, resetCreateState } = appSlice.actions;
 export default appSlice.reducer;

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Typography, Button } from "@mui/material";
 
 import { useEffect, useState, useMemo } from "react";
 
@@ -32,17 +32,29 @@ import {
 } from "@utils/searchUtils";
 import AppCard from "@component/ui/AppCard";
 import SearchBar from "@component/ui/SearchBar";
+import AddAppModal from "@component/ui/AddAppModal";
+import { fetchTags } from "@root/src/slices/tagSlice/tag";
+import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
+import { Role } from "@root/src/slices/authSlice/auth";
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const { state, apps } = useAppSelector((state: RootState) => state.app);
+  const roles = useAppSelector((state: RootState) => state.auth.roles);
+  const isAdmin = roles.includes(Role.ADMIN);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     dispatch(fetchApps());
+    dispatch(fetchTags());
+    dispatch(fetchGroups());
   }, [dispatch]);
 
   // Extract unique tags from apps
@@ -87,12 +99,18 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{paddingBottom: 4, position: "relative"}}>
-      <Box 
-        sx={{ 
-          position: "sticky", 
-          top: 0, 
+    <Box sx={{ paddingBottom: 4, position: "relative" }}>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          flexDirection: "row",
+          position: "sticky",
+          top: 0,
           zIndex: 1000,
+          justifyContent: "space-between",
+          alignItems: "start",
+          gap: 2,
         }}
       >
         <SearchBar
@@ -103,7 +121,10 @@ export default function Home() {
           isOpen={isSearchOpen}
           onToggle={() => setIsSearchOpen(!isSearchOpen)}
         />
+        {isAdmin && <Button variant="contained" onClick={handleOpenModal}>Add New Card</Button>}
       </Box>
+
+      <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
 
       <Grid container spacing={2}>
         {filteredApps.length > 0 ? (
@@ -112,7 +133,7 @@ export default function Home() {
               <AppCard
                 title={app.header}
                 description={app.description}
-                logoUrl={`/icons/${app.iconName}`}
+                logoUrl={app.icon || `/icons/${app.iconName}`}
                 logoAlt={`${app.header} Icon`}
                 category={app.tagName}
                 appUrl={app.urlName}

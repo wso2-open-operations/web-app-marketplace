@@ -50,14 +50,14 @@ export const routes: RouteObjectWithRole[] = [
     text: "Home",
     icon: React.createElement(AppsIcon),
     element: React.createElement(View.home),
-    allowRoles: [Role.ADMIN, Role.TEAM],
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
   },
   {
     path: "/help",
     text: "Help",
     icon: React.createElement(HelpOutlineIcon),
     element: React.createElement(View.help),
-    allowRoles: [Role.ADMIN, Role.TEAM],
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
     bottomNav: true,
   },
 ];
