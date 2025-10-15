@@ -128,7 +128,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         return result;
     }
 
-        # Get apps visible to the user.
+    # Get apps visible to the user.
     #
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
     resource function get apps/[string email](http:RequestContext ctx) returns ExtendedApp[]|http:NotFound|http:BadRequest|http:InternalServerError {
@@ -301,6 +301,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     }
 
     # Get tags.
+    # 
     # + return - Array of tags, or Forbidden/InternalServerError
     resource function get tags(http:RequestContext ctx) returns Tag[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
