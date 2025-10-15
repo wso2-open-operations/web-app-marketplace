@@ -48,7 +48,7 @@ public isolated function createApp(CreateApp app) returns error? {
 # 
 # + return - Array of user groups or error
 public isolated function fetchValidUserGroups() returns string[]|error? {
-    GroupsRow|error result = databaseClient->queryRow(fetchValidUserGroupsQuery());
+    string|error result = databaseClient->queryRow(fetchValidUserGroupsQuery());
 
     if result is error {
         if result is sql:NoRowsError {
@@ -57,7 +57,7 @@ public isolated function fetchValidUserGroups() returns string[]|error? {
         return result;
     }
     
-    string[] userGroups = check result.user_groups.cloneWithType();
+    string[] userGroups = check result.fromJsonStringWithType();
     return  userGroups;
 }
 
