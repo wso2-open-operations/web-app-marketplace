@@ -202,6 +202,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !(validApp is ()) {
+            log:printError(string `Application with app name : ${app.name} or url : ${app.url} is already exists`);
             return <http:InternalServerError>{
                 body: {
                     message: "Application with app name and url already exists"
