@@ -140,3 +140,13 @@ public type AppsFilter record {|
     # Comma-separated user groups associated with the app 
     string[]? userGroups = ();
 |};
+
+# Filter criteria for querying a app with optional conditions.
+public type AppFilter record {|
+    # Unique identifier of the app to filter by
+    int? id = ();
+    # Display title/App name to filter by
+    string? name = ();
+    # Target URL to filter by
+    string? url = ();
+|};
