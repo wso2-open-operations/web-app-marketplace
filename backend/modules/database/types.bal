@@ -108,12 +108,6 @@ type ValidAppResult record {|
     int isValid;
 |};
 
-# Record for querying user groups as JSON.
-type GroupsRow record {|
-    # User groups in JSON format
-    json user_groups;
-|};
-
 # [Database] Tag record.
 public type Tag record {|
     # Unique identifier of the tag
