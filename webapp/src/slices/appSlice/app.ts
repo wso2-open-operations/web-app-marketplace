@@ -22,6 +22,8 @@ import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { UpdateAction, State } from "@/types/types";
+import { RootState, useAppSelector } from "../store";
+import { UserState } from "../authSlice/auth";
 
 export type App = {
   id: number;
@@ -29,11 +31,11 @@ export type App = {
   urlName: string;
   description: string;
   versionName: string;
+  icon?: string;
   tagId: number;
   tagName: string;
   tagColor: string;
   iconName: string;
-  icon?: string; // Base64 encoded icon
   addedBy: string;
   isFavourite: 0 | 1;
 };
@@ -66,7 +68,6 @@ const initialState: AppState = {
   submitState: State.idle
 };
 
-
 interface UpdateArgs {
   id: number;
   active: UpdateAction;
@@ -74,13 +75,14 @@ interface UpdateArgs {
 
 export const fetchApps = createAsyncThunk(
   "app/fetchApps",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { getState, dispatch, rejectWithValue }) => {
+    const {userInfo, state} = (getState() as {user: UserState}).user;
+
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
-
     return new Promise<App[]>((resolve, reject) => {
       APIService.getInstance()
-        .get(AppConfig.serviceUrls.apps, {
+        .get(`${AppConfig.serviceUrls.apps}/${userInfo?.workEmail}`, {
           cancelToken: newCancelTokenSource.token,
         })
         .then((response) => {
