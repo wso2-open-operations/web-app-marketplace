@@ -131,10 +131,10 @@ export default function Home() {
           filteredApps.map((app) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={app.id}>
               <AppCard
-                title={app.header}
+                title={app.name}
                 description={app.description}
                 logoUrl={app.icon || `/icons/${app.iconName}`}
-                logoAlt={`${app.header} Icon`}
+                logoAlt={`${app.name} Icon`}
                 category={app.tagName}
                 appUrl={app.urlName}
                 isFavourite={app.isFavourite}
