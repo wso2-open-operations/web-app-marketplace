@@ -83,21 +83,7 @@ public isolated function fetchValidUserGroups() returns string[]|error? {
 public isolated function fetchAppByFilter(AppFilters filters) returns ExtendedApp[]|error {
     stream<ExtendedApp, error?> result =  databaseClient->query(fetchAppByFilterQuery(filters));
     return from ExtendedApp app in result
-        select {
-            id: app.id,
-            header: app.header,
-            description: app.description,
-            versionName: app.versionName,
-            tagId: app.tagId,
-            tagName: app.tagName,
-            tagColor: app.tagColor,
-            icon: app.icon,
-            addedBy: app.addedBy,
-            isActive: app.isActive,
-            updatedBy: app.updatedBy,
-            isFavourite: app.isFavourite,
-            url: app.url
-        };
+        select app;
 }
 
 # Fetch all active tags.
