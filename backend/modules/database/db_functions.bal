@@ -23,19 +23,7 @@ import ballerina/sql;
 public isolated function fetchApps(string email, string[] roles) returns App[]|error {
     stream<App, error?> result = databaseClient->query(fetchAppsQuery(email, roles));
     return from App app in result
-        select {
-            id: app.id,
-            header: app.header,
-            description: app.description,
-            versionName: app.versionName,
-            tagId: app.tagId,
-            tagName: app.tagName,
-            tagColor: app.tagColor,
-            icon: app.icon,
-            addedBy: app.addedBy,
-            isFavourite: app.isFavourite,
-            url: app.url
-        };
+        select app;
 }
 
 
