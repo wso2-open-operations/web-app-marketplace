@@ -98,14 +98,14 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
   const dispatch = useAppDispatch();
   const tags = useAppSelector((state: RootState) => state.tag.tags);
   const groups = useAppSelector((state: RootState) => state.group.groups);
-  const userInfo = useAppSelector((state: RootState) => state.user.userInfo)
-  const createState = useAppSelector((state: RootState) => state.app.createState);
-  const createError = useAppSelector((state: RootState) => state.app.createError);
+  const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
+  const submitState = useAppSelector((state: RootState) => state.app.submitState);
+  const stateMessage = useAppSelector((state: RootState) => state.app.stateMessage);
 
   const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
-  const userEmail = userInfo?.workEmail ?? ""
+  const userEmail = userInfo?.workEmail ?? "";
 
   // Reset create state when modal opens
   useEffect(() => {
@@ -287,9 +287,9 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
             </Typography>
 
             {/* Show general error */}
-            {createState === State.failed && createError && (
+            {submitState === State.failed && stateMessage && (
               <Alert severity="error" sx={{ mb: 3 }}>
-                {createError}
+                {stateMessage}
               </Alert>
             )}
 
@@ -307,7 +307,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                 onBlur={formik.handleBlur}
                 error={formik.touched.title && Boolean(formik.errors.title)}
                 helperText={formik.touched.title && formik.errors.title}
-                disabled={createState === State.loading}
+                disabled={submitState === State.loading}
               />
             </Box>
 
@@ -326,7 +326,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                   onBlur={formik.handleBlur}
                   error={formik.touched.link && Boolean(formik.errors.link)}
                   helperText={formik.touched.link && formik.errors.link}
-                  disabled={createState === State.loading}
+                  disabled={submitState === State.loading}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -342,7 +342,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                   onBlur={formik.handleBlur}
                   error={formik.touched.versionName && Boolean(formik.errors.versionName)}
                   helperText={formik.touched.versionName && formik.errors.versionName}
-                  disabled={createState === State.loading}
+                  disabled={submitState === State.loading}
                 />
               </Box>
             </Box>
@@ -368,7 +368,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                 helperText={
                   formik.touched.description && formik.errors.description
                 }
-                disabled={createState === State.loading}
+                disabled={submitState === State.loading}
               />
             </Box>
 
@@ -386,7 +386,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                     formik.setFieldValue("tagId", newValue?.id || "");
                   }}
                   onBlur={formik.handleBlur}
-                  disabled={createState === State.loading}
+                  disabled={submitState === State.loading}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -411,7 +411,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                   onBlur={formik.handleBlur}
                   error={formik.touched.tagColor && Boolean(formik.errors.tagColor)}
                   helperText={formik.touched.tagColor && formik.errors.tagColor}
-                  disabled={createState === State.loading}
+                  disabled={submitState === State.loading}
                   InputProps={{
                     startAdornment: formik.values.tagColor && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(formik.values.tagColor) ? (
                       <Box
@@ -445,7 +445,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                   formik.setFieldValue("groupIds", newValue);
                 }}
                 onBlur={formik.handleBlur}
-                disabled={createState === State.loading}
+                disabled={submitState === State.loading}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -582,7 +582,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                     </Box>
                     <IconButton
                       onClick={handleRemoveFile}
-                      disabled={createState === State.loading}
+                      disabled={submitState === State.loading}
                     >
                       <CloseIcon />
                     </IconButton>
@@ -638,16 +638,16 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
           >
             <Button
               onClick={handleClose}
-              disabled={createState === State.loading}
+              disabled={submitState === State.loading}
             >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="contained"
-              disabled={createState === State.loading || !formik.isValid}
+              disabled={submitState === State.loading || !formik.isValid}
             >
-              {createState === State.loading ? "Creating..." : "Create App"}
+              {submitState === State.loading ? "Creating..." : "Create App"}
             </Button>
           </Box>
         </form>
