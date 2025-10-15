@@ -46,7 +46,6 @@ export type CreateAppPayload = {
   versionName: string;
   tagId: number;
   tagName: string;
-  tagColor: string;
   icon: string;
   userGroups: string[];
 };
@@ -163,7 +162,6 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         versionName: payload.versionName,
         tagId: payload.tagId,
         tagName: payload.tagName,
-        tagColor: payload.tagColor,
         icon: payload.icon,
         addedBy: userEmail,
         userGroups: payload.userGroups,
