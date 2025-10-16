@@ -28,8 +28,8 @@ import Typography from "@mui/material/Typography";
 
 import { APP_NAME } from "@root/src/config/config";
 import { APP_DESC } from "@root/src/config/constant";
-import BackgroundImage from "@assets/images/expense-claims-app-login-background.png";
-import ProductLogos from "@assets/images/expense-claims-app-login-logos.png";
+import BackgroundImage from "@assets/images/app-store-login-logos.png";
+import ProductLogos from "@assets/images/app-store-login-background.png";
 import logo from "@assets/images/wso2-logo-black.png";
 import { useAppAuthContext } from "@context/AuthContext";
 

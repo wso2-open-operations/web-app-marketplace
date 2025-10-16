@@ -3,6 +3,7 @@ import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/stor
 import AppCard from "../home/components/AppCard";
 import { useEffect } from "react";
 import { fetchApps } from "@root/src/slices/appSlice/app";
+import ErrorHandler from "@component/common/ErrorHandler";
 
 function Favourites() {
     const dispatch = useAppDispatch()
@@ -34,18 +35,7 @@ function Favourites() {
                 ))
             ) : (
                 <Grid item xs={12}>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            minHeight: "40vh",
-                        }}
-                    >
-                        <Typography color="text.secondary">
-                            No favourite applications were found
-                        </Typography>
-                    </Box>
+                    <ErrorHandler message="No favourite applications were found" />
                 </Grid>
             )}
         </Grid>

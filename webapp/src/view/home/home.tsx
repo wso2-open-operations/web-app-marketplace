@@ -24,6 +24,7 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "@slices/store";
+import ErrorHandler from "@component/common/ErrorHandler";
 import { fetchApps } from "@slices/appSlice/app";
 import { State } from "@root/src/types/types";
 import {
@@ -84,18 +85,7 @@ export default function Home() {
   }
 
   if (state === State.failed) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
-      >
-        <Typography color="error">Failed to load applications</Typography>
-      </Box>
-    );
+    return <ErrorHandler message="Failed to load applications. Please try again later." />;
   }
 
   return (
