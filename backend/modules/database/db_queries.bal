@@ -204,6 +204,9 @@ isolated function upsertFavouritesQuery(string email, int appId, boolean isFavou
     ON DUPLICATE KEY UPDATE
         is_favourite = ${isFavourite}`;
 
+# Build query to fetch active user groups.
+# 
+# + return - Parameterized query for user groups
 isolated function fetchUserGroupsQuery() returns sql:ParameterizedQuery {
     sql:ParameterizedQuery query = `
         SELECT 
