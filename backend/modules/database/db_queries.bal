@@ -39,7 +39,7 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
 # + email - User email to check favourite status
 # + filters - Filter criteria to apply when querying apps
 # + return - Parameterized SQL query with applied filters
-isolated function fetchAppsByFilterQuery(string email, AppsFilter filters) returns sql:ParameterizedQuery {
+isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery mainQuery = `
         SELECT 
             a.id,
@@ -49,7 +49,7 @@ isolated function fetchAppsByFilterQuery(string email, AppsFilter filters) retur
             a.version_name AS versionName,
             a.icon,
             a.added_by AS addedBy,
-            t.is_active,
+            a.is_active,
             t.id as tagId,
             t.name as tagName,
             t.color as tagColor,
@@ -204,21 +204,17 @@ isolated function upsertFavouritesQuery(string email, int appId, boolean isFavou
     ON DUPLICATE KEY UPDATE
         is_favourite = ${isFavourite}`;
 
-# Build query to retrieve user groups as JSON from the database schema.
+# Build query to fetch active user groups.
 # 
 # + return - Parameterized query for user groups
-isolated  function fetchUserGroupsQuery() returns sql:ParameterizedQuery => `
-    SELECT CAST(
-         CONCAT(
-           '[',
-           REPLACE(SUBSTRING(COLUMN_TYPE, 5, CHAR_LENGTH(COLUMN_TYPE) - 5), '''', '"'),
-           ']'
-         ) AS JSON
-       ) AS user_groups
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-        AND TABLE_NAME   = 'apps'
-        AND COLUMN_NAME  = 'user_groups'`;
+isolated function fetchUserGroupsQuery() returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery query = `
+        SELECT 
+            name
+        FROM user_groups
+        WHERE is_active = 1`;
+    return query;
+}
 
 # Build query to fetch active tags.
 # 

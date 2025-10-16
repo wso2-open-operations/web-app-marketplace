@@ -87,7 +87,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
         } 
-
+        
         UserInfo userInfoResponse = {...employee, privileges};
 
         error? cacheError = cache.put(userInfo.email, userInfoResponse);
@@ -131,7 +131,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get apps visible to the user.
     #
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
-    resource function get apps/[string email](http:RequestContext ctx) returns ExtendedApp[]|http:NotFound|http:BadRequest|http:InternalServerError {
+    resource function get apps/[string email](http:RequestContext ctx) returns UserApps[]|http:NotFound|http:BadRequest|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError("User information header not found!", userInfo);
@@ -149,7 +149,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        ExtendedApp[]|error? result = database:fetchAppsByFilter(email, {userGroups: userInfo.groups});
+        UserApps[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups});
         if result is error {
             log:printError("Error while retrieving apps", result);
             return <http:InternalServerError>{
@@ -157,7 +157,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if result is () {
+        if result.length() === 0 {
             string customError = string `No apps found for user: ${email}`;
             log:printError(customError);
             return <http:NotFound>{
@@ -191,7 +191,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        ExtendedApp|error? validApp = database:fetchApp({name: app.name, url: app.url});
+        UserApps|error? validApp = database:fetchApp({name: app.name, url: app.url});
         if validApp is error {
             log:printError("Error occurred while validating app", validApp);
             return <http:InternalServerError>{
@@ -202,7 +202,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !(validApp is ()) {
-            log:printError(string `Application with app name : ${app.name} or url : ${app.url} is already exists`);
+            log:printError(string `Application with app name : ${app.name} or url : ${app.url} already exists`);  
             return <http:InternalServerError>{
                 body: {
                     message: "Application with app name and url already exists"
@@ -210,7 +210,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        string[]|error? validUserGroups = database:fetchUserGroups();
+        string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
             log:printError("Error occurred while retrieving user groups", validUserGroups);
             return<http:InternalServerError>{
@@ -220,7 +220,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if validUserGroups is () {
+        if validUserGroups.length() == 0 {
             log:printError("There are no user groups. Before adding usergroups you have to create new user groups");
             return<http:InternalServerError>{
                 body: {
@@ -279,7 +279,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        string[]|error? validUserGroups = database:fetchUserGroups();
+        string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
             log:printError("Error occurred while retrieving user groups", validUserGroups);
             return<http:InternalServerError>{
@@ -289,7 +289,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if validUserGroups is () {
+        if validUserGroups.length() == 0 {
             log:printError("There are no user groups. Before adding usergroups you have to create new user groups");
             return<http:InternalServerError>{
                 body: {
@@ -363,7 +363,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         boolean isFavourite = action == FAVOURITE;
 
-        ExtendedApp|error? app = database:fetchApp({id: id});
+        UserApps|error? app = database:fetchApp({id: id});
         if app is error {
             log:printError("Error occurred while validating the App ID", app);
             return <http:InternalServerError>{

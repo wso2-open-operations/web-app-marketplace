@@ -31,22 +31,31 @@ public type App record {|
     int id;
     # Display title
     string name;
-    # Target URL
+    # Target URL 
     string url;
     # Short description
     string description;
     # Version label of the target app
     string versionName;
-    # Icon asset name or key
+    # Icon asset name/key
     string icon;
     # User who added the link
     string addedBy;
-    # Tag id of the target app
+    # Tag ID of the target app
     int tagId;
     # Tag name of the target app
     string tagName;
     # Tag color of the target app
     string tagColor;
+|};
+
+# [Database] Extended app record containing all app fields.
+public type UserApps record {|
+    *App;
+    # Email of the user who last updated the app
+    int isFavourite;
+    # Active status of the app - "1" for active, "0" for inactive
+    string isActive;
 |};
 
 # [Database] Create App record.
@@ -100,12 +109,3 @@ public enum Action {
     # Remove an app from favourites
     UNFAVOURITE = "unfavourite"
 }
-
-# Extended app record containing all app fields plus.
-public type ExtendedApp record {|
-    *App;
-    # Email of the user who last updated the app
-    string isFavourite;
-    # Active status of the app - "1" for active, "0" for inactive
-    string isActive;
-|};
