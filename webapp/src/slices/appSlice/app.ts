@@ -27,7 +27,7 @@ import { UserState } from "../authSlice/auth";
 export type App = {
   id: number;
   name: string;
-  urlName: string;
+  url: string;
   description: string;
   versionName: string;
   icon?: string;
