@@ -16,7 +16,7 @@ CREATE TABLE `tags` (
   `updated_on` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 -- Apps table
 DROP TABLE IF EXISTS apps;
@@ -25,19 +25,18 @@ CREATE TABLE `apps` (
   `name` varchar(150) NOT NULL,
   `url` text,
   `description` text,
-  `version_name` varchar(64) NOT NULL,
-  `tag_id` int DEFAULT NULL,
-  `icon` longtext,
-  `user_groups` text NOT NULL,
+  `version_name` varchar(64) DEFAULT NULL,
+  `tags` text,
+  `icon` longtext NOT NULL,
+  `user_groups` text,
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
   `added_by` varchar(254) NOT NULL,
   `added_on` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updated_by` varchar(254) NOT NULL,
   `updated_on` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (`id`),
-  KEY `fk_apps_tag` (`tag_id`),
-  CONSTRAINT `fk_apps_tag` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`)
+) ;
+
 
 -- User favourite table
 DROP TABLE IF EXISTS user_favourites;
@@ -50,7 +49,7 @@ CREATE TABLE `user_favourites` (
   PRIMARY KEY (`user_email`,`app_id`),
   KEY `fk_fav_app` (`app_id`),
   CONSTRAINT `fk_fav_app` FOREIGN KEY (`app_id`) REFERENCES `apps` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 -- User groups table
 DROP TABLE IF EXISTS user_groups;
@@ -63,4 +62,4 @@ CREATE TABLE `user_groups` (
   `created_on` timestamp(6) NOT NULL,
   `updated_on` timestamp(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
