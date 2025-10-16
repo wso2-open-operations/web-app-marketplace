@@ -24,6 +24,12 @@ import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { UpdateAction, State } from "@/types/types";
 import { UserState } from "../authSlice/auth";
 
+export type Tag = {
+  id: number;
+  name: string;
+  color: string;
+};
+
 export type App = {
   id: number;
   name: string;
@@ -31,12 +37,11 @@ export type App = {
   description: string;
   versionName: string;
   icon?: string;
-  tagId: number;
-  tagName: string;
-  tagColor: string;
+  tags: Tag[];
   iconName: string;
   addedBy: string;
   isFavourite: 0 | 1;
+  isActive?: string;
 };
 
 export type CreateAppPayload = {
@@ -44,8 +49,7 @@ export type CreateAppPayload = {
   url: string;
   description: string;
   versionName: string;
-  tagId: number;
-  tagName: string;
+  tags: number[];
   icon: string;
   userGroups: string[];
 };
@@ -158,8 +162,7 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         url: payload.url,
         description: payload.description,
         versionName: payload.versionName,
-        tagId: payload.tagId,
-        tagName: payload.tagName,
+        tags: payload.tags,
         icon: payload.icon,
         addedBy: userEmail,
         userGroups: payload.userGroups,
