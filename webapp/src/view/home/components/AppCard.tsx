@@ -77,7 +77,14 @@ export default function AppCard({
   };
 
   const handleLaunchClick = () => {
-    window.open(appUrl, "_blank", "noopener,noreferrer");
+    if (!appUrl) return; // Guard against undefined/null/empty URLs
+    
+    // Add https:// if URL doesn't have a protocol
+    const url = appUrl.startsWith('http://') || appUrl.startsWith('https://') 
+      ? appUrl 
+      : `https://${appUrl}`;
+    
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const renderLogo = () => {
