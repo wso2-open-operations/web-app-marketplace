@@ -74,7 +74,7 @@ interface UpdateArgs {
 export const fetchApps = createAsyncThunk(
   "app/fetchApps",
   async (_, { getState, dispatch, rejectWithValue }) => {
-    const {userInfo, state} = (getState() as {user: UserState}).user;
+    const {userInfo} = (getState() as {user: UserState}).user;
 
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
@@ -111,15 +111,13 @@ export const upsertAppFavourite = createAsyncThunk<
   UpdateArgs
 >(
   "apps/upsertAppFavourite",
-  async (updateArgs, { dispatch, rejectWithValue }) => {
+  async (updateArgs, {dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
 
     try {
-      const action: UpdateAction = updateArgs.active ? UpdateAction.Favorite : UpdateAction.Unfavourite;
-
       const res = await APIService.getInstance().post(
-        `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${action}`,
+        `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${updateArgs.active}`,
         {
           cancelToken: newCancelTokenSource.token,
         }
