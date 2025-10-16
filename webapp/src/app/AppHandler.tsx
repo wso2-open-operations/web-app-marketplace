@@ -26,6 +26,7 @@ import { getActiveRoutesV2, routes } from "@src/route";
 
 const AppHandler = () => {
   const auth = useAppSelector((state: RootState) => state.auth);
+  const app = useAppSelector((state: RootState) => state.app);
   const router = createBrowserRouter([
     {
       path: "/",
@@ -37,10 +38,10 @@ const AppHandler = () => {
 
   return (
     <>
-      {auth.status === "loading" && (
+      {(auth.status === "loading" || app.state === "loading") && (
         <PreLoader isLoading={true} message={auth.statusMessage} />
       )}
-      {auth.status === "success" && auth.mode === "active" && (
+      {auth.status === "success" && auth.mode === "active" && app.state === "success" && (
         <RouterProvider router={router} />
       )}
       {auth.status === "success" && auth.mode === "maintenance" && (
@@ -48,6 +49,9 @@ const AppHandler = () => {
       )}
       {auth.status === "failed" && (
         <ErrorHandler message={auth.statusMessage} />
+      )}
+      {app.state === "failed" && (
+        <ErrorHandler message={app.stateMessage} />
       )}
     </>
   );
