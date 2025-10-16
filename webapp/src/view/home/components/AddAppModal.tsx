@@ -295,7 +295,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
               <TextField
                 fullWidth
                 name="title"
-                placeholder="People App"
+                placeholder="Web App Marketplace"
                 value={formik.values.title}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -349,7 +349,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
               <TextField
                 fullWidth
                 name="description"
-                placeholder="People App"
+                placeholder="Web App Marketplace"
                 multiline
                 rows={3}
                 value={formik.values.description}
