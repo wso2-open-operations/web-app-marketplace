@@ -49,7 +49,7 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
             a.version_name AS versionName,
             a.icon,
             a.added_by AS addedBy,
-            t.is_active,
+            a.is_active,
             t.id as tagId,
             t.name as tagName,
             t.color as tagColor,
