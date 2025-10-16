@@ -29,8 +29,8 @@ public isolated function fetchApps() returns App[]|error {
 # + filters - Filter criteria to query apps
 # + email - Email of the user
 # + return - Array of extended app records
-public isolated function fetchAppsByFilter(string email, AppsFilter filters) returns UserApps[]|error {
-    stream<UserApps, error?> result =  databaseClient->query(fetchAppsByFilterQuery(email, filters));
+public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApps[]|error {
+    stream<UserApps, error?> result =  databaseClient->query(fetchUserAppsQuery(email, filters));
     return from UserApps app in result
         select app;
 }
