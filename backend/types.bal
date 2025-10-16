@@ -41,12 +41,10 @@ public type App record {|
     string icon;
     # User who added the link
     string addedBy;
-    # Tag ID of the target app
-    int tagId;
-    # Tag name of the target app
-    string tagName;
-    # Tag color of the target app
-    string tagColor;
+    # Tags as JSON string containing array of tag details
+    Tag[] tags;
+    # Active status of the app - "1" for active, "0" for inactive
+    string isActive?;
 |};
 
 # [Database] Extended app record containing all app fields.
@@ -54,8 +52,6 @@ public type UserApps record {|
     *App;
     # Email of the user who last updated the app
     int isFavourite;
-    # Active status of the app - "1" for active, "0" for inactive
-    string isActive;
 |};
 
 # [Database] Create App record.
@@ -84,10 +80,8 @@ public type CreateApp record {|
     string icon;
     # User who added the link
     string addedBy;
-    # Tag id of the target app
-    int tagId;
-    # Tag name of the target app
-    string tagName;
+    # Tag IDs of the target app
+    int[] tags;
     # User groups of the target app
     string[] userGroups;
     # Is the App is active or not
@@ -100,6 +94,8 @@ public type Tag record {|
     int id;
     # Display name of the tag
     string name;
+    # Color code of the tag
+    string color;
 |};
 
 # User action for marking/unmarking apps as favourites.
