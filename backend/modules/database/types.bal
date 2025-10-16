@@ -69,7 +69,7 @@ public type UserApps record {|
     *App;
     # Email of the user who last updated the app
     @sql:Column {name: "is_favourite"}
-    string isFavourite;
+    int isFavourite;
     # Active status of the app - "1" for active, "0" for inactive
     @sql:Column {name: "is_active"}
     string isActive;
