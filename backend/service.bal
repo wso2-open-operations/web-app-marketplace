@@ -149,7 +149,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        UserApps[]|error? result = database:fetchAppsByFilter(email, {userGroups: userInfo.groups});
+        UserApps[]|error? result = database:fetchUserApps(email, {userGroups: userInfo.groups});
         if result is error {
             log:printError("Error while retrieving apps", result);
             return <http:InternalServerError>{
