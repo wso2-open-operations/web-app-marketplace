@@ -65,7 +65,7 @@ public type App record {|
 |};
 
 # [Database] Extended app record containing all app fields.
-public type ExtendedApp record {|
+public type UserApps record {|
     *App;
     # Email of the user who last updated the app
     @sql:Column {name: "is_favourite"}

@@ -29,17 +29,17 @@ public isolated function fetchApps() returns App[]|error {
 # + filters - Filter criteria to query apps
 # + email - Email of the user
 # + return - Array of extended app records
-public isolated function fetchAppsByFilter(string email, AppsFilter filters) returns ExtendedApp[]|error {
-    stream<ExtendedApp, error?> result =  databaseClient->query(fetchAppsByFilterQuery(email, filters));
-    return from ExtendedApp app in result
+public isolated function fetchAppsByFilter(string email, AppsFilter filters) returns UserApps[]|error {
+    stream<UserApps, error?> result =  databaseClient->query(fetchAppsByFilterQuery(email, filters));
+    return from UserApps app in result
         select app;
 }
 # Retrieves a single app from the database based on filter criteria.
 #
 # + filters - Filter conditions for searching the app
 # + return - Returns ExtendedApp, nill or error
-public isolated function fetchApp(AppFilter filters) returns ExtendedApp|error? {
-    ExtendedApp|error result =  databaseClient->queryRow(fetchAppQuery(filters));
+public isolated function fetchApp(AppFilter filters) returns UserApps|error? {
+    UserApps|error result =  databaseClient->queryRow(fetchAppQuery(filters));
 
     if result is error {
         if result is sql:NoRowsError {

@@ -102,7 +102,7 @@ public enum Action {
 }
 
 # Extended app record containing all app fields plus.
-public type ExtendedApp record {|
+public type UserApps record {|
     *App;
     # Email of the user who last updated the app
     string isFavourite;
