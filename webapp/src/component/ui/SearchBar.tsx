@@ -108,7 +108,7 @@ export default function SearchBar({
   return (
     <Box
       sx={{
-        maxWidth: "500px",
+        width: "500px",
         borderRadius: 2,
         boxShadow: isOpen ? "0 2px 8px rgba(0,0,0,0)" : "",
         backgroundColor: "hsla(0, 0%, 99%, 1)",
