@@ -131,7 +131,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get apps visible to the user.
     #
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
-    resource function get apps/[string email](http:RequestContext ctx) returns ExtendedApp[]|http:NotFound|http:BadRequest|http:InternalServerError {
+    resource function get apps/[string email](http:RequestContext ctx) returns UserApps[]|http:NotFound|http:BadRequest|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError("User information header not found!", userInfo);
@@ -149,7 +149,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        ExtendedApp[]|error? result = database:fetchAppsByFilter(email, {userGroups: userInfo.groups});
+        UserApps[]|error? result = database:fetchAppsByFilter(email, {userGroups: userInfo.groups});
         if result is error {
             log:printError("Error while retrieving apps", result);
             return <http:InternalServerError>{
@@ -191,7 +191,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        ExtendedApp|error? validApp = database:fetchApp({name: app.name, url: app.url});
+        UserApps|error? validApp = database:fetchApp({name: app.name, url: app.url});
         if validApp is error {
             log:printError("Error occurred while validating app", validApp);
             return <http:InternalServerError>{
@@ -363,7 +363,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         boolean isFavourite = action == FAVOURITE;
 
-        ExtendedApp|error? app = database:fetchApp({id: id});
+        UserApps|error? app = database:fetchApp({id: id});
         if app is error {
             log:printError("Error occurred while validating the App ID", app);
             return <http:InternalServerError>{
