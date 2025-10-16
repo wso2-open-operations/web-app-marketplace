@@ -15,15 +15,39 @@
 // under the License. 
 import ballerina/sql;
 
-# Fetch all apps visible to the given `roles`.
+# Fetch all apps visible to the given roles.
 #
-# + email - User email used to look up favourites
-# + roles - Role names used to resolve visible apps
-# + return - App[] with `isFavourite` set, or an `error?` on failure
-public isolated function fetchApps(string email, string[] roles) returns App[]|error {
-    stream<App, error?> result = databaseClient->query(fetchAppsQuery(email, roles));
+# + return - App[] or an error? on failure
+public isolated function fetchApps() returns App[]|error {
+    stream<App, error?> result = databaseClient->query(fetchAppsQuery());
     return from App app in result
         select app;
+}
+
+# Fetch app details by applying filters for validation and admin operations.
+#
+# + filters - Filter criteria to query apps
+# + email - Email of the user
+# + return - Array of extended app records
+public isolated function fetchAppsByFilter(string email, AppsFilter filters) returns ExtendedApp[]|error {
+    stream<ExtendedApp, error?> result =  databaseClient->query(fetchAppsByFilterQuery(email, filters));
+    return from ExtendedApp app in result
+        select app;
+}
+# Retrieves a single app from the database based on filter criteria.
+#
+# + filters - Filter conditions for searching the app
+# + return - Returns ExtendedApp, nill or error
+public isolated function fetchApp(AppFilter filters) returns ExtendedApp|error? {
+    ExtendedApp|error result =  databaseClient->queryRow(fetchAppQuery(filters));
+
+    if result is error {
+        if result is sql:NoRowsError {
+            return;
+        }
+        return  result;
+    }
+    return result;
 }
 
 # Insert or update user's favourite status for an app.
@@ -31,7 +55,7 @@ public isolated function fetchApps(string email, string[] roles) returns App[]|e
 # + email - User email to associate with the favourite
 # + appId - Application ID to mark as favourite/unfavourite
 # + isFavourite - favourite status to set
-# + return - `error?` on failure
+# + return - error? on failure
 public isolated function upsertFavourites(string email, int appId, boolean isFavourite) returns error? {
     _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFavourite));
 }
@@ -59,16 +83,6 @@ public isolated function fetchUserGroups() returns string[]|error? {
     
     string[] userGroups = check result.fromJsonStringWithType();
     return  userGroups;
-}
-
-# Fetch app details by applying filters for validation and admin operations.
-#
-# + filters - Filter criteria to query apps (id, header, url, addedBy, isActive)
-# + return - Array of extended app records with full details, or error on failure
-public isolated function fetchAppByFilter(AppFilters filters) returns ExtendedApp[]|error {
-    stream<ExtendedApp, error?> result =  databaseClient->query(fetchAppByFilterQuery(filters));
-    return from ExtendedApp app in result
-        select app;
 }
 
 # Fetch all active tags.

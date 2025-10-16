@@ -19,7 +19,7 @@ CREATE TABLE tags (
 DROP TABLE IF EXISTS apps;
 CREATE TABLE apps (
   id            INT AUTO_INCREMENT PRIMARY KEY,
-  header        VARCHAR(150) NOT NULL,
+  name        VARCHAR(150) NOT NULL,
   `url`         TEXT,         
   `description` TEXT NULL,
   version_name  VARCHAR(64) NOT NULL,
