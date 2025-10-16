@@ -205,7 +205,18 @@ export default function SearchBar({
                 overflowY: "hidden",
                 paddingBottom: 2,
                 "&::-webkit-scrollbar": {
-                  height: 0,
+                  height: 8,
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: "#f1f1f1",
+                  borderRadius: 4,
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#cbd5e0",
+                  borderRadius: 4,
+                  "&:hover": {
+                    backgroundColor: "#a0aec0",
+                  },
                 },
               }}
             >
