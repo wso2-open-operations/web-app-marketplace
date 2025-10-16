@@ -3,6 +3,8 @@ DROP DATABASE IF EXISTS web_app_marketplace;
 CREATE DATABASE web_app_marketplace;
 USE web_app_marketplace;
 
+-- Tags table
+DROP TABLE IF EXISTS tags;
 CREATE TABLE `tags` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
@@ -16,6 +18,8 @@ CREATE TABLE `tags` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Apps table
+DROP TABLE IF EXISTS apps;
 CREATE TABLE `apps` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
@@ -35,6 +39,8 @@ CREATE TABLE `apps` (
   CONSTRAINT `fk_apps_tag` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- User favourite table
+DROP TABLE IF EXISTS user_favourites;
 CREATE TABLE `user_favourites` (
   `user_email` varchar(254) NOT NULL,
   `app_id` int NOT NULL,
@@ -46,6 +52,8 @@ CREATE TABLE `user_favourites` (
   CONSTRAINT `fk_fav_app` FOREIGN KEY (`app_id`) REFERENCES `apps` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- User groups table
+DROP TABLE IF EXISTS user_groups;
 CREATE TABLE `user_groups` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(256) NOT NULL,
