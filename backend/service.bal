@@ -149,7 +149,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        UserApps[]|error? result = database:fetchUserApps(email, {userGroups: userInfo.groups});
+        UserApps[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups});
         if result is error {
             log:printError("Error while retrieving apps", result);
             return <http:InternalServerError>{
@@ -157,7 +157,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if result is () {
+        if result.length() === 0 {
             string customError = string `No apps found for user: ${email}`;
             log:printError(customError);
             return <http:NotFound>{
@@ -210,7 +210,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        string[]|error? validUserGroups = database:fetchUserGroups();
+        string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
             log:printError("Error occurred while retrieving user groups", validUserGroups);
             return<http:InternalServerError>{
@@ -220,7 +220,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if validUserGroups is () {
+        if validUserGroups.length() == 0 {
             log:printError("There are no user groups. Before adding usergroups you have to create new user groups");
             return<http:InternalServerError>{
                 body: {
@@ -279,7 +279,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        string[]|error? validUserGroups = database:fetchUserGroups();
+        string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
             log:printError("Error occurred while retrieving user groups", validUserGroups);
             return<http:InternalServerError>{
@@ -289,7 +289,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if validUserGroups is () {
+        if validUserGroups.length() == 0 {
             log:printError("There are no user groups. Before adding usergroups you have to create new user groups");
             return<http:InternalServerError>{
                 body: {
