@@ -261,9 +261,7 @@ export default function AppCard({
               "&::-webkit-scrollbar-thumb:hover": {
                 background: "#a0aec0",
               },
-              // Prevent line wrapping
               flexWrap: "nowrap",
-              // Add smooth scrolling
               scrollBehavior: "smooth",
             }}
           >
@@ -280,8 +278,8 @@ export default function AppCard({
                   padding: "4px",
                   height: "auto",
                   borderRadius: 1,
-                  flexShrink: 0, // Prevent chips from shrinking
-                  whiteSpace: "nowrap", // Prevent text wrapping inside chip
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
                 }}
               />
             ))}
