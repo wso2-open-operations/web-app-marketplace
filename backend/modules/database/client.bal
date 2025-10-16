@@ -18,8 +18,6 @@ import ballerinax/mysql.driver as _;
 
 # Database Client Configuration.
 configurable DatabaseConfig dbConfig = ?;
-# Encryption key for sensitive data.
-configurable string encryptionKey = ?;
 
 # Database Client.
 final mysql:Client databaseClient = check new (...dbConfig);

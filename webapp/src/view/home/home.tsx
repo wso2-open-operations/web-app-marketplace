@@ -30,9 +30,9 @@ import {
   filterAndSortApps,
   extractUniqueTags,
 } from "@utils/searchUtils";
-import AppCard from "@component/ui/AppCard";
+import AppCard from "@root/src/view/home/components/AppCard";
 import SearchBar from "@component/ui/SearchBar";
-import AddAppModal from "@component/ui/AddAppModal";
+import AddAppModal from "@root/src/view/home/components/AddAppModal";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import { Role } from "@root/src/slices/authSlice/auth";
@@ -131,10 +131,10 @@ export default function Home() {
           filteredApps.map((app) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={app.id}>
               <AppCard
-                title={app.header}
+                title={app.name}
                 description={app.description}
                 logoUrl={app.icon || `/icons/${app.iconName}`}
-                logoAlt={`${app.header} Icon`}
+                logoAlt={`${app.name} Icon`}
                 category={app.tagName}
                 appUrl={app.urlName}
                 isFavourite={app.isFavourite}

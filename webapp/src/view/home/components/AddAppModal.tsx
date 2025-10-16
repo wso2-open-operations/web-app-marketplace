@@ -33,7 +33,7 @@ import * as Yup from "yup";
 import { useEffect, useState } from "react";
 
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
-import { createApp, resetCreateState } from "@slices/appSlice/app";
+import { createApp, CreateAppPayload, resetCreateState } from "@slices/appSlice/app";
 import { State } from "@root/src/types/types";
 
 interface AddAppModalProps {
@@ -69,10 +69,6 @@ const validationSchema = Yup.object({
   tagId: Yup.number()
     .required("Tag is required")
     .typeError("Tag is required"),
-  tagColor: Yup.string()
-    .trim()
-    .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Must be a valid hex color (e.g., #FF5733 or #F57)")
-    .required("Tag color is required"),
   groupIds: Yup.array()
     .of(Yup.string().required())
     .min(1, "At least one user group is required")
@@ -121,7 +117,6 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
       link: "",
       versionName: "",
       tagId: "" as any,
-      tagColor: "",
       groupIds: [] as string[],
       icon: null as File | null,
     },
@@ -138,14 +133,13 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
         // Get tag name from tags array
         const selectedTag = tags?.find((t) => t.id === values.tagId);
         
-        const payload = {
-          header: values.title.trim(),
+        const payload:CreateAppPayload = {
+          name: values.title.trim(),
           url: values.link.trim(),
           description: values.description.trim(),
           versionName: values.versionName.trim(),
           tagId: values.tagId,
           tagName: selectedTag?.name || "",
-          tagColor: values.tagColor.trim().toUpperCase(),
           icon: base64Icon,
           userGroups: values.groupIds,
         };
@@ -372,63 +366,30 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
               />
             </Box>
 
-            {/* Tag and Tag Color in Row */}
-            <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Tag
-                </Typography>
-                <Autocomplete
-                  options={tags || []}
-                  getOptionLabel={(option) => option.name}
-                  value={tags?.find((t) => t.id === formik.values.tagId) || null}
-                  onChange={(_, newValue) => {
-                    formik.setFieldValue("tagId", newValue?.id || "");
-                  }}
-                  onBlur={formik.handleBlur}
-                  disabled={submitState === State.loading}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      name="tagId"
-                      placeholder="Select a tag"
-                      error={formik.touched.tagId && Boolean(formik.errors.tagId)}
-                      helperText={formik.touched.tagId && (formik.errors.tagId as string)}
-                    />
-                  )}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Tag Color
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="tagColor"
-                  placeholder="#FF5733"
-                  value={formik.values.tagColor}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.tagColor && Boolean(formik.errors.tagColor)}
-                  helperText={formik.touched.tagColor && formik.errors.tagColor}
-                  disabled={submitState === State.loading}
-                  InputProps={{
-                    startAdornment: formik.values.tagColor && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(formik.values.tagColor) ? (
-                      <Box
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 1,
-                          bgcolor: formik.values.tagColor,
-                          border: "1px solid",
-                          borderColor: "divider",
-                          mr: 1,
-                        }}
-                      />
-                    ) : null,
-                  }}
-                />
-              </Box>
+            {/* Tag */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                Tag
+              </Typography>
+              <Autocomplete
+                options={tags || []}
+                getOptionLabel={(option) => option.name}
+                value={tags?.find((t) => t.id === formik.values.tagId) || null}
+                onChange={(_, newValue) => {
+                  formik.setFieldValue("tagId", newValue?.id || "");
+                }}
+                onBlur={formik.handleBlur}
+                disabled={submitState === State.loading}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    name="tagId"
+                    placeholder="Select a tag"
+                    error={formik.touched.tagId && Boolean(formik.errors.tagId)}
+                    helperText={formik.touched.tagId && (formik.errors.tagId as string)}
+                  />
+                )}
+              />
             </Box>
 
             {/* User Groups */}

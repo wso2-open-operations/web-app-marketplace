@@ -17,53 +17,171 @@ import ballerina/sql;
 
 # [Database] Build query to fetch apps visible to any of the given user roles, including favourite status for the user.
 #
-# + email - User email to check favourites
-# + roles - User roles to filter
 # + return - Parameterized query selecting apps with favourite status
-isolated function fetchAppsQuery(string email, string[] roles) returns sql:ParameterizedQuery {
-    sql:ParameterizedQuery selectClause = `
+isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
         SELECT 
             a.id,
-            a.header,
+            a.name,
             a.url,
             a.description,
             a.version_name,
-            a.tag_id,
-            t.name,
-            t.color,
             a.icon,
             a.added_by,
+            t.id AS tag_id,
+            t.name as tag_name,
+            t.color
+        FROM apps a
+        LEFT JOIN tags t ON a.tag_id = t.id
+    `;
+
+# Build query to fetch app details with filters for validation and admin operations.
+#
+# + email - User email to check favourite status
+# + filters - Filter criteria to apply when querying apps
+# + return - Parameterized SQL query with applied filters
+isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery mainQuery = `
+        SELECT 
+            a.id,
+            a.name,
+            a.url,
+            a.description,
+            a.version_name AS versionName,
+            a.icon,
+            a.added_by AS addedBy,
+            a.is_active,
+            t.id as tagId,
+            t.name as tagName,
+            t.color as tagColor,
             CASE WHEN uf.app_id IS NOT NULL THEN 1 ELSE 0 END AS is_favourite
         FROM apps a
         LEFT JOIN user_favourites uf ON a.id = uf.app_id 
-            AND uf.user_email = ${email} 
+            AND uf.user_email = ${email}
             AND uf.is_favourite = 1
-        LEFT JOIN tags t ON a.tag_id =t.id
-        WHERE a.is_active = 1`;
+        LEFT JOIN tags t ON a.tag_id = t.id
+    `;
 
-    if roles.length() == 0 {
-        // No roles provided: show only apps with empty user_groups
-        return sql:queryConcat(selectClause, `
-          AND (a.user_groups IS NULL OR a.user_groups = '')
-        ORDER BY a.header`);
+    sql:ParameterizedQuery[] filterQueries = [];
+    if filters.name is string {
+        filterQueries.push(` a.name = ${filters.name}`);
     }
 
-    // Roles provided: show apps matching any role OR with empty user_groups
-    sql:ParameterizedQuery[] roleConditions = [];
-    foreach var role in roles {
-        roleConditions.push(`FIND_IN_SET(${role}, a.user_groups)`);
+    if filters.id is int {
+        filterQueries.push(` a.id = ${filters.id}`);
     }
 
-    sql:ParameterizedQuery roleClause = roleConditions[0];
-    foreach int i in 1 ..< roleConditions.length() {
-        roleClause = sql:queryConcat(roleClause, ` OR `, roleConditions[i]);
+    if filters.url is string {
+        filterQueries.push(` a.url = ${filters.url}`);
     }
 
-    sql:ParameterizedQuery whereClause = sql:queryConcat(`
-          AND ((`, roleClause, `) OR (a.user_groups IS NULL OR a.user_groups = ''))`);
+    if filters.addedBy is string {
+        filterQueries.push(` a.added_by = ${filters.addedBy}`);
+    }
 
-    return sql:queryConcat(selectClause, whereClause, `
-        ORDER BY a.header`);
+    if filters.isActive is string {
+        filterQueries.push(` a.is_active = ${filters.isActive}`);
+    }
+
+    string[]? userGroups = filters.userGroups;
+    if userGroups is string[] && userGroups.length() > 0 {
+        // Build conditions to check if any of the provided groups exist in the app's user_groups
+        sql:ParameterizedQuery[] groupConditions = [];
+        foreach string group in userGroups {
+            string trimmedGroup = group.trim();
+            if trimmedGroup.length() > 0 {
+                groupConditions.push(`FIND_IN_SET(${trimmedGroup}, a.user_groups)`);
+            }
+        }
+
+        if groupConditions.length() > 0 {
+            // Create OR conditions for each group, and also include apps with null or empty user_groups
+            sql:ParameterizedQuery groupClause = groupConditions[0];
+            foreach int i in 1 ..< groupConditions.length() {
+                groupClause = sql:queryConcat(groupClause, ` OR `, groupConditions[i]);
+            }
+            // Add condition: matches any group OR has null/empty user_groups
+            filterQueries.push(sql:queryConcat(`((`, groupClause, `) OR (a.user_groups IS NULL OR a.user_groups = ''))`));
+        }
+    }
+
+    mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
+
+    return mainQuery;
+}
+
+# Build query to fetch app details with filters for validation and admin operations.
+#
+# + filters - Filter criteria to apply when querying apps
+# + return - Parameterized SQL query with applied filters
+isolated function fetchAppQuery(AppFilter filters) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery mainQuery = `
+        SELECT 
+            a.id,
+            a.name,
+            a.url,
+            a.description,
+            a.version_name AS versionName,
+            a.tag_id AS tagId,
+            a.icon,
+            a.added_by AS addedBy,
+            t.name AS tagName,
+            t.color as tagColor,
+            t.is_active
+        FROM apps a
+        LEFT JOIN tags t ON a.tag_id = t.id
+    `;
+
+    sql:ParameterizedQuery[] filterQueries = [];
+    if filters.name is string {
+        filterQueries.push(` a.name = ${filters.name}`);
+    }
+
+    if filters.id is int {
+        filterQueries.push(` a.id = ${filters.id}`);
+    }
+
+    if filters.url is string {
+        filterQueries.push(` a.url = ${filters.url}`);
+    }
+
+    mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
+
+    return mainQuery;
+}
+
+# Build query to create a new app.
+# 
+# + app - App data to insert
+# + return - Parameterized query for app creation
+isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
+    string userGroups = app.userGroups.length() > 0 ? string:'join(",", ...app.userGroups) : "";
+
+    sql:ParameterizedQuery query = sql:queryConcat(
+        `INSERT INTO apps (
+            name,
+            url,
+            description,
+            version_name,
+            tag_id,
+            icon,
+            user_groups,
+            is_active,
+            added_by,
+            updated_by
+        ) VALUES (
+            ${app.name},
+            ${app.url},
+            ${app.description},
+            ${app.versionName},
+            ${app.tagId},
+            ${app.icon},
+            ${userGroups},
+            ${app.isActive},
+            ${app.addedBy},
+            ${app.addedBy} 
+        )`
+    );
+    return query;
 }
 
 # Build query to insert or update user's favourite status for an app.
@@ -86,105 +204,17 @@ isolated function upsertFavouritesQuery(string email, int appId, boolean isFavou
     ON DUPLICATE KEY UPDATE
         is_favourite = ${isFavourite}`;
 
-# Build query to fetch app details with filters for validation and admin operations.
-#
-# + filters - Filter criteria to apply when querying apps
-# + return - Parameterized SQL query with applied filters
-isolated function fetchAppByFilterQuery(AppFilters filters) returns sql:ParameterizedQuery {
-    sql:ParameterizedQuery mainQuery = `
-        SELECT 
-            a.id,
-            a.header,
-            a.url,
-            a.description,
-            a.version_name AS versionName,
-            a.tag_id AS tagId,
-            a.icon,
-            a.added_by AS addedBy,
-            a.updated_by,
-            t.name AS tagName,
-            t.color as tagColor,
-            t.is_active
-        FROM apps a
-        LEFT JOIN tags t ON a.tag_id = t.id
-    `;
-
-    sql:ParameterizedQuery[] filterQueries = [];
-    if filters.header is string {
-        filterQueries.push(` a.header = ${filters.header}`);
-    }
-
-    if filters.id is int {
-        filterQueries.push(` a.id = ${filters.id}`);
-    }
-
-    if filters.url is string {
-        filterQueries.push(` a.url = ${filters.url}`);
-    }
-
-    if filters.addedBy is string {
-        filterQueries.push(` a.added_by = ${filters.addedBy}`);
-    }
-
-    if filters.isActive is string {
-        filterQueries.push(` a.is_active = ${filters.isActive}`);
-    }
-
-    mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
-
-    return mainQuery;
-}
-
-# Build query to create a new app.
-# 
-# + app - App data to insert
-# + return - Parameterized query for app creation
-isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
-    string userGroups = app.userGroups.length() > 0 ? string:'join(",", ...app.userGroups) : "";
-
-    sql:ParameterizedQuery query = sql:queryConcat(
-        `INSERT INTO apps (
-            header,
-            url,
-            description,
-            version_name,
-            tag_id,
-            icon,
-            user_groups,
-            is_active,
-            added_by,
-            updated_by
-        ) VALUES (
-            ${app.header},
-            ${app.url},
-            ${app.description},
-            ${app.versionName},
-            ${app.tagId},
-            ${app.icon},
-            ${userGroups},
-            ${app.isActive},
-            ${app.addedBy},
-            ${app.addedBy} 
-        )`
-    );
-    return query;
-}
-
-# Build query to retrieve user groups as JSON from the database schema.
+# Build query to fetch active user groups.
 # 
 # + return - Parameterized query for user groups
-isolated  function fetchUserGroupsQuery() returns sql:ParameterizedQuery => `
-    SELECT CAST(
-         CONCAT(
-           '[',
-           REPLACE(SUBSTRING(COLUMN_TYPE, 5, CHAR_LENGTH(COLUMN_TYPE) - 5), '''', '"'),
-           ']'
-         ) AS JSON
-       ) AS user_groups
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-        AND TABLE_NAME   = 'apps'
-        AND COLUMN_NAME  = 'user_groups'`;
+isolated function fetchUserGroupsQuery() returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery query = `
+        SELECT 
+            name
+        FROM user_groups
+        WHERE is_active = 1`;
+    return query;
+}
 
 # Build query to fetch active tags.
 # 

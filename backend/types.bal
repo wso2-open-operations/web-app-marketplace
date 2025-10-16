@@ -30,31 +30,38 @@ public type App record {|
     # Unique identifier of the link
     int id;
     # Display title
-    string header;
-    # Target URL
+    string name;
+    # Target URL 
     string url;
     # Short description
     string description;
     # Version label of the target app
     string versionName;
-    # Tag id of the target app
+    # Icon asset name/key
+    string icon;
+    # User who added the link
+    string addedBy;
+    # Tag ID of the target app
     int tagId;
     # Tag name of the target app
     string tagName;
     # Tag color of the target app
     string tagColor;
-    # Icon asset name or key
-    string icon;
-    # User who added the link
-    string addedBy;
-    # Whether the current user has favorited this link (0 = no, 1 = yes)
+|};
+
+# [Database] Extended app record containing all app fields.
+public type UserApps record {|
+    *App;
+    # Email of the user who last updated the app
     int isFavourite;
+    # Active status of the app - "1" for active, "0" for inactive
+    string isActive;
 |};
 
 # [Database] Create App record.
 public type CreateApp record {|
     # Display title
-    string header;
+    string name;
     # Target URL
     @constraint:String{
         pattern: {
@@ -67,18 +74,6 @@ public type CreateApp record {|
     string description;
     # Version label of the target app
     string versionName;
-    # Tag id of the target app
-    int tagId;
-    # Tag name of the target app
-    string tagName;
-    # Tag color of the target app
-    @constraint:String {
-        pattern: {
-            value: NON_EMPTY_HEX_VALUE,
-            message: "Color value should be a valid  hex value"
-        }
-    }
-    string tagColor;
     # Icon asset name or key
     @constraint:String{
         pattern: {
@@ -89,6 +84,10 @@ public type CreateApp record {|
     string icon;
     # User who added the link
     string addedBy;
+    # Tag id of the target app
+    int tagId;
+    # Tag name of the target app
+    string tagName;
     # User groups of the target app
     string[] userGroups;
     # Is the App is active or not
@@ -110,28 +109,3 @@ public enum Action {
     # Remove an app from favourites
     UNFAVOURITE = "unfavourite"
 }
-
-# Filter criteria for querying apps with optional conditions.
-public type AppFilters record {|
-    # Unique identifier of the app to filter by
-    int? id = ();
-    # Display title/header to filter by
-    string? header = ();
-    # Target URL to filter by 
-    string? url = ();
-    # Email of the user who added the app
-    string? addedBy = ();
-    # Active status filter
-    string? isActive = ();
-    # Comma-separated user groups associated with the app
-    string? userGroups = ();
-|};
-
-# Extended app record containing all app fields plus.
-public type ExtendedApp record {|
-    *App;
-    # Email of the user who last updated the app
-    string updatedBy;
-    # Active status of the app - "1" for active, "0" for inactive
-    string isActive;
-|};

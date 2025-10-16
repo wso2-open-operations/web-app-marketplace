@@ -45,10 +45,10 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError|http:NotFound {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            log:printError("User information header not found!", userInfo);
             return <http:InternalServerError>{
                 body: {
-                    message: USER_INFO_HEADER_NOT_FOUND_ERROR
+                    message: "User information header not found!"
                 }
             };
         }
@@ -63,7 +63,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         people:Employee|error? employee = people:fetchEmployee(userInfo.email);
         if employee is error {
-            string customError = string `${ERROR_FETCHING_USER_INFO}: ${userInfo.email}`;
+            string customError = string `Error occurred while fetching user information for user : ${userInfo.email}`;
             log:printError(customError, employee);
             return <http:InternalServerError>{
                 body: customError
@@ -74,7 +74,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError(string `No employee information found for the user: ${userInfo.email}`);
             return <http:NotFound>{
                 body: {
-                    message: NO_USER_FOUND
+                    message: "No user found!"
                 }
             };
         }
@@ -87,7 +87,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
         } 
-
+        
         UserInfo userInfoResponse = {...employee, privileges};
 
         error? cacheError = cache.put(userInfo.email, userInfoResponse);
@@ -103,22 +103,62 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get apps(http:RequestContext ctx) returns App[]|http:NotFound|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            log:printError("User information header not found!", userInfo);
             return <http:InternalServerError>{
-                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+                body: {message: "User information header not found!"}
             };
         }
 
-        App[]|error? result = database:fetchApps(userInfo.email, userInfo.groups);
+        App[]|error? result = database:fetchApps();
         if result is error {
-            log:printError(ERROR_RETRIEVING_APPS, result);
+            log:printError("Error while retrieving apps", result);
             return <http:InternalServerError>{
-                body: {message: ERROR_RETRIEVING_APPS}
+                body: {message: "Error while retrieving apps"}
             };
         }
 
         if result is () {
-            string customError = string `${NO_APPS_FOUND} : ${userInfo.email}`;
+            string customError = string `No apps found for user: ${userInfo.email}`;
+            log:printError(customError);
+            return <http:NotFound>{
+                body: {message: customError}
+            };
+        }
+
+        return result;
+    }
+
+    # Get apps visible to the user.
+    #
+    # + return - App[] on success, 404 when no apps, or 500 on internal errors
+    resource function get apps/[string email](http:RequestContext ctx) returns UserApps[]|http:NotFound|http:BadRequest|http:InternalServerError {
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError("User information header not found!", userInfo);
+            return <http:InternalServerError>{
+                body: {message: "User information header not found!"}
+            };
+        }
+
+        if !email.matches(WSO2_EMAIL) || email != userInfo.email {
+            log:printError("Invalid email.");
+            return<http:BadRequest>{
+                body:  {
+                    message: "Invalid email"
+                }
+            };
+        }
+
+        UserApps[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups});
+        if result is error {
+            log:printError("Error while retrieving apps", result);
+            return <http:InternalServerError>{
+                body: {message: "Error while retrieving apps"}
+            };
+        }
+
+        if result.length() === 0 {
+            string customError = string `No apps found for user: ${email}`;
             log:printError(customError);
             return <http:NotFound>{
                 body: {message: customError}
@@ -135,55 +175,56 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            log:printError("User information header not found!", userInfo);
             return <http:InternalServerError>{
-                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+                body: {message: "User information header not found!"}
             };
         }
 
         if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
-            log:printWarn(string `${UNAUTHORIZED_REQUEST} email: ${userInfo.email} groups: ${
+            log:printWarn(string `Access denied: Only administrators can add new apps. email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: UNAUTHORIZED_REQUEST
+                    message: "Access denied: Only administrators can add new apps."
                 }
             };
         }
 
-        ExtendedApp[]|error validApp = database:fetchAppByFilter({header: app.header, url: app.url});
+        UserApps|error? validApp = database:fetchApp({name: app.name, url: app.url});
         if validApp is error {
-            log:printError(ERROR_VALIDATING_APP, validApp);
+            log:printError("Error occurred while validating app", validApp);
             return <http:InternalServerError>{
                 body: {
-                    message: ERROR_VALIDATING_APP
+                    message: "Error occurred while validating app"
                 }
             };
         }
 
-        if !(validApp.length() === 0) {
+        if !(validApp is ()) {
+            log:printError(string `Application with app name : ${app.name} or url : ${app.url} already exists`);  
             return <http:InternalServerError>{
                 body: {
-                    message: APP_ALREADY_EXISTS
+                    message: "Application with app name and url already exists"
                 }
             };
         }
 
-        string[]|error? validUserGroups = database:fetchUserGroups();
+        string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
-            log:printError(ERROR_RETRIEVING_USER_GROUPS, validUserGroups);
+            log:printError("Error occurred while retrieving user groups", validUserGroups);
             return<http:InternalServerError>{
                 body: {
-                    message: ERROR_RETRIEVING_USER_GROUPS
+                    message: "Error occurred while retrieving user groups"
                 }
             };
         }
 
-        if validUserGroups is () {
-            log:printError(NO_USER_GROUPS);
+        if validUserGroups.length() == 0 {
+            log:printError("There are no user groups. Before adding usergroups you have to create new user groups");
             return<http:InternalServerError>{
                 body: {
-                    message: NO_USER_GROUPS
+                    message: "There are no user groups. Before adding usergroups you have to create new user groups"
                 }
             };
         }
@@ -193,14 +234,14 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError(string `Invalid usergroups ${app.userGroups.toString()}`);
             return <http:BadRequest>{
                 body:  {
-                    message: INVALID_USER_GROUPS
+                    message: "Invalid usergroups"
                 }
             };
         }
 
         error? appError = database:createApp(app);
         if appError is error {
-            string customError = string `${ERROR_ADDING_APP} : ${app.header}`;
+            string customError = string `Error occurred while adding app: ${app.name}`;
             log:printError(customError, appError);
             return <http:InternalServerError>{
                 body: {
@@ -211,7 +252,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         return <http:Created>{
             body: {
-                message: string `${SUCCESS_APP_ADDED}`
+                message: "Successfully added app to the store"
             }
         };
     }
@@ -222,37 +263,37 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get user\-groups(http:RequestContext ctx) returns string[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            log:printError("User information header not found!", userInfo);
             return <http:InternalServerError>{
-                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+                body: {message: "User information header not found!"}
             };
         }
 
         if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
-            log:printWarn(string `${UNAUTHORIZED_REQUEST} email: ${userInfo.email} groups: ${
+            log:printWarn(string `Access denied: Only administrators can add new apps. email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: UNAUTHORIZED_REQUEST
+                    message: "Access denied: Only administrators can add new apps."
                 }
             };
         }
 
-        string[]|error? validUserGroups = database:fetchUserGroups();
+        string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
-            log:printError(ERROR_RETRIEVING_USER_GROUPS, validUserGroups);
+            log:printError("Error occurred while retrieving user groups", validUserGroups);
             return<http:InternalServerError>{
                 body: {
-                    message: ERROR_RETRIEVING_USER_GROUPS
+                    message: "Error occurred while retrieving user groups"
                 }
             };
         }
 
-        if validUserGroups is () {
-            log:printError(NO_USER_GROUPS);
+        if validUserGroups.length() == 0 {
+            log:printError("There are no user groups. Before adding usergroups you have to create new user groups");
             return<http:InternalServerError>{
                 body: {
-                    message: NO_USER_GROUPS
+                    message: "There are no user groups. Before adding usergroups you have to create new user groups"
                 }
             };
         }
@@ -261,41 +302,42 @@ service http:InterceptableService / on new http:Listener(9090) {
     }
 
     # Get tags.
+    # 
     # + return - Array of tags, or Forbidden/InternalServerError
     resource function get tags(http:RequestContext ctx) returns Tag[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            log:printError("User information header not found!", userInfo);
             return <http:InternalServerError>{
-                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+                body: {message: "User information header not found!"}
             };
         }
 
         if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
-            log:printWarn(string `${UNAUTHORIZED_REQUEST} email: ${userInfo.email} groups: ${
+            log:printWarn(string `Access denied: Only administrators can add new apps. email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: UNAUTHORIZED_REQUEST
+                    message: "Access denied: Only administrators can add new apps."
                 }
             };
         }
 
         Tag[]|error? tags = database:fetchTags();
         if tags is error {
-            log:printError(ERROR_RETRIEVING_TAGS, tags);
+            log:printError("Error occurred while retrieving tags", tags);
             return <http:InternalServerError>{
                 body: {
-                    message: ERROR_RETRIEVING_TAGS
+                    message: "Error occurred while retrieving tags"
                 }
             };
         }
 
         if tags is () {
-            log:printError(ERROR_RETRIEVING_TAGS);
+            log:printError("Error occurred while retrieving tags");
             return <http:InternalServerError>{
                 body: {
-                    message: ERROR_RETRIEVING_TAGS
+                    message: "Error occurred while retrieving tags"
                 }
             };
         }
@@ -313,45 +355,45 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            log:printError(USER_INFO_HEADER_NOT_FOUND_ERROR, userInfo);
+            log:printError("User information header not found!", userInfo);
             return <http:InternalServerError>{
-                body: {message: USER_INFO_HEADER_NOT_FOUND_ERROR}
+                body: {message: "User information header not found!"}
             };
         }
 
         boolean isFavourite = action == FAVOURITE;
 
-        ExtendedApp[]|error app = database:fetchAppByFilter({id: id});
+        UserApps|error? app = database:fetchApp({id: id});
         if app is error {
-            log:printError(ERROR_VALIDATING_APP_ID, app);
+            log:printError("Error occurred while validating the App ID", app);
             return <http:InternalServerError>{
                 body: {
-                    message: ERROR_VALIDATING_APP_ID
+                    message: "Error occurred while validating the App ID"
                 }
             };
         }
 
-        if !(app.length() === 0) {
+        if app is (){
             log:printError(string `Application with ID: ${id} was not found!`);  
             return <http:NotFound>{
                 body: {
-                    message: APP_NOT_FOUND  
+                    message: "Application not found"
                 }
             };
         }
 
         error? upsertError = database:upsertFavourites(userInfo.email, id, isFavourite);
         if upsertError is error {
-            log:printError(ERROR_UPSERTING_APP, upsertError, id = id);  
+            log:printError("Error occurred while upserting the app", upsertError, id = id);  
             return <http:InternalServerError>{
                 body: {
-                    message: ERROR_UPSERTING_APP
+                    message: "Error occurred while upserting the app"
                 }
             };
         }
         return <http:Ok>{
             body:  {
-                message: SUCCESS_FAVOURITE_UPDATED
+                message: "Successfully updated"
             }
         };
     }

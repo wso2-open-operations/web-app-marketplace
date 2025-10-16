@@ -1,5 +1,5 @@
 window.config = {
-  APP_NAME: "People App",
+  APP_NAME: "Web App Marketplace",
   APP_DOMAIN: "",
   REACT_APP_BACKEND_BASE_URL: "",
   ASGARDEO_CLIENT_ID: "",
