@@ -60,6 +60,11 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.favourites),
     allowRoles: [Role.ADMIN, Role.EMPLOYEE],
   },
+  /*
+   TODO: Implement User Guide page when the user guide content is ready.
+   The /help route is commented out for now and will be re-enabled once the
+   user guide page (View.help) is implemented.
+
   {
     path: "/help",
     text: "Help",
@@ -68,6 +73,7 @@ export const routes: RouteObjectWithRole[] = [
     allowRoles: [Role.ADMIN, Role.EMPLOYEE],
     bottomNav: true,
   }
+  */
 ];
 export const getActiveRoutesV2 = (
   routes: RouteObjectWithRole[] | undefined,
