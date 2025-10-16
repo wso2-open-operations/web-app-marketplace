@@ -37,7 +37,7 @@ public isolated function fetchUserApps(string email, AppsFilter filters) returns
 # Retrieves a single app from the database based on filter criteria.
 #
 # + filters - Filter conditions for searching the app
-# + return - Returns ExtendedApp, nill or error
+# + return - Returns UserApps, nil or error
 public isolated function fetchApp(AppFilter filters) returns UserApps|error? {
     UserApps|error result =  databaseClient->queryRow(fetchAppQuery(filters));
 
@@ -68,21 +68,13 @@ public isolated function createApp(CreateApp app) returns error? {
     _ = check databaseClient->execute(createAppQuery(app));
 }
 
-# Retrieve user groups from the database schema.
+# Retrieve user groups.
 # 
 # + return - Array of user groups or error
-public isolated function fetchUserGroups() returns string[]|error? {
-    string|error result = databaseClient->queryRow(fetchUserGroupsQuery());
-
-    if result is error {
-        if result is sql:NoRowsError {
-            return;
-        }
-        return result;
-    }
-    
-    string[] userGroups = check result.fromJsonStringWithType();
-    return  userGroups;
+public isolated function fetchUserGroups() returns string[]|error {
+    stream<record {|string name;|}, error?> result = databaseClient->query(fetchUserGroupsQuery());
+    return from var item in result
+        select item.name;
 }
 
 # Fetch all active tags.
