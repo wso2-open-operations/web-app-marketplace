@@ -123,12 +123,10 @@ export default function Home() {
                 description={app.description}
                 logoUrl={app.icon || `/icons/${app.iconName}`}
                 logoAlt={`${app.name} Icon`}
-                category={app.tagName}
+                tags={app.tags}
                 appUrl={app.url}
                 isFavourite={app.isFavourite}
                 appId={app.id}
-                tagId={app.tagId}
-                tagColor={app.tagColor}
               />
             </Grid>
           ))
