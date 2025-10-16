@@ -25,7 +25,6 @@ import {
   useAppSelector,
 } from "@slices/store";
 import ErrorHandler from "@component/common/ErrorHandler";
-import { fetchApps } from "@slices/appSlice/app";
 import { State } from "@root/src/types/types";
 import {
   filterAndSortApps,
@@ -53,7 +52,6 @@ export default function Home() {
   const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    dispatch(fetchApps());
     dispatch(fetchTags());
     dispatch(fetchGroups());
   }, [dispatch]);
