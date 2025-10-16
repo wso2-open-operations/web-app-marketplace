@@ -39,7 +39,7 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
 # + email - User email to check favourite status
 # + filters - Filter criteria to apply when querying apps
 # + return - Parameterized SQL query with applied filters
-isolated function fetchAppsByFilterQuery(string email, AppsFilter filters) returns sql:ParameterizedQuery {
+isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery mainQuery = `
         SELECT 
             a.id,
