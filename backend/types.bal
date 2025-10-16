@@ -49,6 +49,15 @@ public type App record {|
     string tagColor;
 |};
 
+# Extended app record containing all app fields plus.
+public type ExtendedApp record {|
+    *App;
+    # Email of the user who last updated the app
+    int isFavourite;
+    # Active status of the app - "1" for active, "0" for inactive
+    string isActive;
+|};
+
 # [Database] Create App record.
 public type CreateApp record {|
     # Display title
