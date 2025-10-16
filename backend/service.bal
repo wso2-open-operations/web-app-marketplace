@@ -87,7 +87,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
         } 
-
+        
         UserInfo userInfoResponse = {...employee, privileges};
 
         error? cacheError = cache.put(userInfo.email, userInfoResponse);
@@ -202,7 +202,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !(validApp is ()) {
-            log:printError(string `Application with app name : ${app.name} or url : ${app.url} is already exists`);
+            log:printError(string `Application with app name : ${app.name} or url : ${app.url} already exists`);  
             return <http:InternalServerError>{
                 body: {
                     message: "Application with app name and url already exists"
