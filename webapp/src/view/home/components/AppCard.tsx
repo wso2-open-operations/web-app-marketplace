@@ -151,6 +151,7 @@ export default function AppCard({
 
   return (
     <Card
+      onClick={handleLaunchClick}
       sx={{
         maxWidth: 500,
         width: "100%",
@@ -160,6 +161,12 @@ export default function AppCard({
         position: "relative",
         border: "0.5px solid #e6e6e6",
         background: "linear-gradient(180deg, #FFF 60%, #FAFAFA 100%)",
+        cursor: "pointer",
+        transition: "box-shadow 0.3s ease, transform 0.2s ease",
+        "&:hover": {
+          boxShadow: "0 6px 16px rgba(0,0,0,0.1)",
+          transform: "translateY(-2px)",
+        },
       }}
     >
       <CardContent
@@ -169,6 +176,7 @@ export default function AppCard({
           display: "flex",
           flexDirection: "column",
           gap: 3,
+          height: "100%",
         }}
       >
         <Box
@@ -180,7 +188,10 @@ export default function AppCard({
         >
           {renderLogo()}
           <IconButton
-            onClick={handleFavoriteClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFavoriteClick();
+            }}
             sx={{
               padding: 0.5,
               "&:hover": { backgroundColor: "transparent" },
@@ -210,6 +221,7 @@ export default function AppCard({
           sx={{
             color: "#718096",
             lineHeight: 1.6,
+            flexGrow: 1,
           }}
         >
           {description}
@@ -220,6 +232,7 @@ export default function AppCard({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            marginTop: "auto",
           }}
         >
           <Chip
@@ -236,16 +249,7 @@ export default function AppCard({
             }}
           />
           <Box sx={{ display: "flex", gap: 2 }}>
-            <IconButton
-              onClick={handleLaunchClick}
-              sx={{
-                padding: 0.5,
-                "&:hover": { backgroundColor: "transparent" },
-              }}
-              aria-label="Open app in new tab"
-            >
-              <Launch sx={{ fontSize: 20, color: "#718096" }} />
-            </IconButton>
+            <Launch sx={{ fontSize: 20, color: "#718096" }} />
           </Box>
         </Box>
       </CardContent>
