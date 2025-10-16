@@ -22,30 +22,30 @@ import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { UpdateAction, State } from "@/types/types";
+import { UserState } from "../authSlice/auth";
 
 export type App = {
   id: number;
-  header: string;
+  name: string;
   urlName: string;
   description: string;
   versionName: string;
+  icon?: string;
   tagId: number;
   tagName: string;
   tagColor: string;
   iconName: string;
-  icon?: string; // Base64 encoded icon
   addedBy: string;
   isFavourite: 0 | 1;
 };
 
 export type CreateAppPayload = {
-  header: string;
+  name: string;
   url: string;
   description: string;
   versionName: string;
   tagId: number;
   tagName: string;
-  tagColor: string;
   icon: string;
   userGroups: string[];
 };
@@ -66,7 +66,6 @@ const initialState: AppState = {
   submitState: State.idle
 };
 
-
 interface UpdateArgs {
   id: number;
   active: UpdateAction;
@@ -74,13 +73,14 @@ interface UpdateArgs {
 
 export const fetchApps = createAsyncThunk(
   "app/fetchApps",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { getState, dispatch, rejectWithValue }) => {
+    const {userInfo, state} = (getState() as {user: UserState}).user;
+
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
-
     return new Promise<App[]>((resolve, reject) => {
       APIService.getInstance()
-        .get(AppConfig.serviceUrls.apps, {
+        .get(`${AppConfig.serviceUrls.apps}/${userInfo?.workEmail}`, {
           cancelToken: newCancelTokenSource.token,
         })
         .then((response) => {
@@ -156,13 +156,12 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
 
     try {
       const requestBody = {
-        header: payload.header,
+        name: payload.name,
         url: payload.url,
         description: payload.description,
         versionName: payload.versionName,
         tagId: payload.tagId,
         tagName: payload.tagName,
-        tagColor: payload.tagColor,
         icon: payload.icon,
         addedBy: userEmail,
         userGroups: payload.userGroups,

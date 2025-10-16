@@ -44,7 +44,7 @@ export const filterAndSortApps = (
   const descriptionMatches: App[] = [];
 
   filtered.forEach((app) => {
-    const titleMatch = app.header.toLowerCase().includes(normalizedSearch);
+    const titleMatch = app.name.toLowerCase().includes(normalizedSearch);
     const tagMatch = app.tagName.toLowerCase().includes(normalizedSearch);
     const descriptionMatch = app.description
       .toLowerCase()
