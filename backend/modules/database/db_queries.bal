@@ -204,21 +204,14 @@ isolated function upsertFavouritesQuery(string email, int appId, boolean isFavou
     ON DUPLICATE KEY UPDATE
         is_favourite = ${isFavourite}`;
 
-# Build query to retrieve user groups as JSON from the database schema.
-# 
-# + return - Parameterized query for user groups
-isolated  function fetchUserGroupsQuery() returns sql:ParameterizedQuery => `
-    SELECT CAST(
-         CONCAT(
-           '[',
-           REPLACE(SUBSTRING(COLUMN_TYPE, 5, CHAR_LENGTH(COLUMN_TYPE) - 5), '''', '"'),
-           ']'
-         ) AS JSON
-       ) AS user_groups
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-        AND TABLE_NAME   = 'apps'
-        AND COLUMN_NAME  = 'user_groups'`;
+isolated function fetchUserGroupsQuery() returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery query = `
+        SELECT 
+            name
+        FROM user_groups
+        WHERE is_active = 1`;
+    return query;
+}
 
 # Build query to fetch active tags.
 # 
