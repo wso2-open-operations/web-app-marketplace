@@ -111,7 +111,7 @@ export default function SearchBar({
         width: "500px",
         borderRadius: 2,
         boxShadow: isOpen ? "0 2px 8px rgba(0,0,0,0)" : "",
-        backgroundColor: "hsla(0, 0%, 99%, 1)",
+        backgroundColor: "#FFF",
         border: isOpen ? "1px solid #e6e6e6" : "",
         overflow: "hidden",
       }}
