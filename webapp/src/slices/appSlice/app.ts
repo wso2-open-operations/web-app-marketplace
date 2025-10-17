@@ -41,7 +41,7 @@ export type App = {
   iconName: string;
   addedBy: string;
   isFavourite: 0 | 1;
-  isActive?: string;
+  isActive?: 0 | 1;
 };
 
 export type CreateAppPayload = {
@@ -166,7 +166,7 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         icon: payload.icon,
         addedBy: userEmail,
         userGroups: payload.userGroups,
-        isActive: true
+        isActive: 1
       };
 
       const res = await APIService.getInstance().post(
