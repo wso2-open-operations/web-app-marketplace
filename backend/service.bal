@@ -191,7 +191,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        UserApps|error? validApp = database:fetchApp({name: app.name, url: app.url});
+        App|error? validApp = database:fetchApp({name: app.name, url: app.url});
         if validApp is error {
             log:printError("Error occurred while validating app", validApp);
             return <http:InternalServerError>{
@@ -363,7 +363,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         boolean isFavourite = action == FAVOURITE;
 
-        UserApps|error? app = database:fetchApp({id: id});
+        App|error? app = database:fetchApp({id: id});
         if app is error {
             log:printError("Error occurred while validating the App ID", app);
             return <http:InternalServerError>{
