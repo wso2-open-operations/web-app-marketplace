@@ -24,6 +24,7 @@ import {
   IconButton,
   LinearProgress,
   Alert,
+  Chip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
@@ -67,9 +68,10 @@ const validationSchema = Yup.object({
     .trim()
     .min(1, "Version name must be at least 1 character")
     .required("App version name is required"),
-  tagId: Yup.number()
-    .required("Tag is required")
-    .typeError("Tag is required"),
+  tags: Yup.array()
+    .of(Yup.number().required())
+    .min(1, "At least one tag is required")
+    .required("Tags are required"),
   groupIds: Yup.array()
     .of(Yup.string().required())
     .min(1, "At least one user group is required")
@@ -117,7 +119,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
       description: "",
       link: "",
       versionName: "",
-      tagId: "" as any,
+      tags: [] as number[],
       groupIds: [] as string[],
       icon: null as File | null,
     },
@@ -131,16 +133,12 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
       reader.onload = async () => {
         const base64Icon = reader.result as string;
         
-        // Get tag name from tags array
-        const selectedTag = tags?.find((t) => t.id === values.tagId);
-        
         const payload:CreateAppPayload = {
           name: values.title.trim(),
           url: values.link.trim(),
           description: values.description.trim(),
           versionName: values.versionName.trim(),
-          tagId: values.tagId,
-          tagName: selectedTag?.name || "",
+          tags: values.tags,
           icon: base64Icon,
           userGroups: values.groupIds,
         };
@@ -246,7 +244,8 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
           transform: "translate(-50%, -50%)",
           width: 700,
           maxHeight: "90vh",
-          overflow: "auto",
+          display: "flex",
+          flexDirection: "column",
           bgcolor: "background.paper",
           borderRadius: 2,
           boxShadow: 24,
@@ -264,6 +263,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
             color: "primary.contrastText",
             borderTopLeftRadius: 8,
             borderTopRightRadius: 8,
+            flexShrink: 0,
           }}
         >
           <Typography id="modal-title" variant="h6" component="h2">
@@ -275,11 +275,12 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
         </Box>
 
         {/* Form Content */}
-        <form onSubmit={formik.handleSubmit}>
-          <Box sx={{ p: 4 }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>
-              App Information
-            </Typography>
+        <Box sx={{ overflowY: "auto", flex: 1 }}>
+          <form onSubmit={formik.handleSubmit}>
+            <Box sx={{ p: 4 }}>
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                App Information
+              </Typography>
 
             {/* Show general error */}
             {submitState === State.failed && stateMessage && (
@@ -370,24 +371,46 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
             {/* Tag */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                Tag
+                Tags
               </Typography>
               <Autocomplete
+                multiple
                 options={tags || []}
                 getOptionLabel={(option) => option.name}
-                value={tags?.find((t) => t.id === formik.values.tagId) || null}
+                value={tags?.filter((t) => formik.values.tags.includes(t.id)) || []}
                 onChange={(_, newValue) => {
-                  formik.setFieldValue("tagId", newValue?.id || "");
+                  formik.setFieldValue("tags", newValue.map((tag) => tag.id));
                 }}
                 onBlur={formik.handleBlur}
                 disabled={submitState === State.loading}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name}
+                      sx={{
+                        backgroundColor: option.color ? `${option.color}1A` : "#e0e0e0",
+                        border: option.color ? `2px solid ${option.color}80` : "2px solid #bdbdbd",
+                        color: option.color || "#424242",
+                        fontWeight: 500,
+                        "& .MuiChip-deleteIcon": {
+                          color: option.color || "#424242",
+                          "&:hover": {
+                            color: option.color ? `${option.color}CC` : "#616161",
+                          },
+                        },
+                      }}
+                    />
+                  ))
+                }
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    name="tagId"
-                    placeholder="Select a tag"
-                    error={formik.touched.tagId && Boolean(formik.errors.tagId)}
-                    helperText={formik.touched.tagId && (formik.errors.tagId as string)}
+                    name="tags"
+                    placeholder="Select one or more tags"
+                    error={formik.touched.tags && Boolean(formik.errors.tags)}
+                    helperText={formik.touched.tags && (formik.errors.tags as string)}
                   />
                 )}
               />
@@ -586,33 +609,34 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                 </Typography>
               )}
             </Box>
-          </Box>
+            </Box>
 
-          {/* Footer Buttons */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 2,
-              p: 3,
-              pt: 0,
-            }}
-          >
-            <Button
-              onClick={handleClose}
-              disabled={submitState === State.loading}
+            {/* Footer Buttons */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+                pb: 3,
+                px: 4,
+              }}
             >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={submitState === State.loading || !formik.isValid}
-            >
-              {submitState === State.loading ? "Creating..." : "Create App"}
-            </Button>
-          </Box>
-        </form>
+              <Button
+                onClick={handleClose}
+                disabled={submitState === State.loading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={submitState === State.loading || !formik.isValid}
+              >
+                {submitState === State.loading ? "Creating..." : "Create App"}
+              </Button>
+            </Box>
+          </form>
+        </Box>
       </Box>
     </Modal>
   );

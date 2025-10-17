@@ -30,7 +30,9 @@ export const filterAndSortApps = (
   // Filter by selected tags if any
   let filtered = apps;
   if (selectedTagIds.length > 0) {
-    filtered = apps.filter((app) => selectedTagIds.includes(app.tagId));
+    filtered = apps.filter((app) => 
+      app.tags.some((tag) => selectedTagIds.includes(tag.id))
+    );
   }
 
   // If no search term, return tag-filtered results
@@ -45,7 +47,9 @@ export const filterAndSortApps = (
 
   filtered.forEach((app) => {
     const titleMatch = app.name.toLowerCase().includes(normalizedSearch);
-    const tagMatch = app.tagName.toLowerCase().includes(normalizedSearch);
+    const tagMatch = app.tags.some((tag) => 
+      tag.name.toLowerCase().includes(normalizedSearch)
+    );
     const descriptionMatch = app.description
       .toLowerCase()
       .includes(normalizedSearch);
@@ -72,13 +76,15 @@ export const extractUniqueTags = (
   const tagMap = new Map<number, { id: number; name: string; color: string }>();
 
   apps.forEach((app) => {
-    if (!tagMap.has(app.tagId)) {
-      tagMap.set(app.tagId, {
-        id: app.tagId,
-        name: app.tagName,
-        color: app.tagColor,
-      });
-    }
+    app.tags.forEach((tag) => {
+      if (!tagMap.has(tag.id)) {
+        tagMap.set(tag.id, {
+          id: tag.id,
+          name: tag.name,
+          color: tag.color,
+        });
+      }
+    });
   });
 
   return Array.from(tagMap.values()).sort((a, b) =>

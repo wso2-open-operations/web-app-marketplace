@@ -27,32 +27,29 @@ import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
 import { useAppDispatch } from "@root/src/slices/store";
-import { upsertAppFavourite } from "@root/src/slices/appSlice/app";
+import { upsertAppFavourite, Tag } from "@root/src/slices/appSlice/app";
 import { UpdateAction } from "@root/src/types/types";
 
 interface AppCardProps {
   title: string;
   description: string;
   logoUrl: string;
-  category: string;
+  tags: Tag[];
   appUrl: string;
   logoAlt?: string;
   isFavourite?: number;
   appId: number;
-  tagId: number;
-  tagColor: string;
 }
 
 export default function AppCard({
   title,
   description,
   logoUrl,
-  category,
+  tags,
   appUrl,
   logoAlt = "App Logo",
   isFavourite = 0,
   appId,
-  tagColor,
 }: AppCardProps) {
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
   const dispatch = useAppDispatch();
@@ -77,7 +74,12 @@ export default function AppCard({
   };
 
   const handleLaunchClick = () => {
-    window.open(appUrl, "_blank", "noopener,noreferrer");
+    if (!appUrl) return; 
+        const url = appUrl.startsWith('http://') || appUrl.startsWith('https://') 
+      ? appUrl 
+      : `https://${appUrl}`;
+    
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const renderLogo = () => {
@@ -144,6 +146,7 @@ export default function AppCard({
 
   return (
     <Card
+      onClick={handleLaunchClick}
       sx={{
         maxWidth: 500,
         width: "100%",
@@ -152,7 +155,15 @@ export default function AppCard({
         boxShadow: "0 4px 12px rgba(0,0,0,0.0)",
         position: "relative",
         border: "0.5px solid #e6e6e6",
-        background: "linear-gradient(180deg, #FFF 60%, #FAFAFA 100%)",
+        background: "#fff",
+        cursor: "pointer",
+        transition: "box-shadow 0.3s ease, transform 0.2s ease",
+        "&:hover": {
+          boxShadow: "0 6px 16px rgba(0,0,0,0.05)",
+          transform: "translateY(-2px)",
+          background: "#fff",
+
+        },
       }}
     >
       <CardContent
@@ -162,6 +173,7 @@ export default function AppCard({
           display: "flex",
           flexDirection: "column",
           gap: 3,
+          height: "100%",
         }}
       >
         <Box
@@ -173,7 +185,10 @@ export default function AppCard({
         >
           {renderLogo()}
           <IconButton
-            onClick={handleFavoriteClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFavoriteClick();
+            }}
             sx={{
               padding: 0.5,
               "&:hover": { backgroundColor: "transparent" },
@@ -203,6 +218,7 @@ export default function AppCard({
           sx={{
             color: "#718096",
             lineHeight: 1.6,
+            flexGrow: 1,
           }}
         >
           {description}
@@ -213,32 +229,63 @@ export default function AppCard({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            marginTop: "auto",
+            gap: 2,
           }}
         >
-          <Chip
-            label={category}
+          <Box
             sx={{
-              backgroundColor: `${tagColor}1A`,
-              border: `2px solid ${tagColor}80`,
-              color: `${tagColor}`,
-              fontWeight: 500,
-              fontSize: "0.9rem",
-              padding: "4px",
-              height: "auto",
-              borderRadius: 1,
+              display: "flex",
+              gap: 1,
+              flex: 1,
+              overflowX: "auto",
+              overflowY: "hidden",
+              scrollbarWidth: "thin",
+              scrollbarColor: "transparent transparent",
+              "&:hover": {
+                scrollbarColor: "#cbd5e0 #f7fafc",
+              },
+              "&::-webkit-scrollbar": {
+                height: "6px",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "transparent",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "transparent",
+                borderRadius: "3px",
+              },
+              "&:hover::-webkit-scrollbar-thumb": {
+                background: "#cbd5e0",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                background: "#a0aec0",
+              },
+              flexWrap: "nowrap",
+              scrollBehavior: "smooth",
             }}
-          />
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <IconButton
-              onClick={handleLaunchClick}
-              sx={{
-                padding: 0.5,
-                "&:hover": { backgroundColor: "transparent" },
-              }}
-              aria-label="Open app in new tab"
-            >
-              <Launch sx={{ fontSize: 20, color: "#718096" }} />
-            </IconButton>
+          >
+            {tags.map((tag) => (
+              <Chip
+                key={tag.id}
+                label={tag.name}
+                sx={{
+                  backgroundColor: `${tag.color}1A`,
+                  border: `2px solid ${tag.color}80`,
+                  color: `${tag.color}`,
+                  fontWeight: 500,
+                  fontSize: "0.9rem",
+                  padding: "4px",
+                  height: "auto",
+                  borderRadius: 1,
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                }}
+              />
+            ))}
+          </Box>
+          <Box sx={{ display: "flex", gap: 2, flexShrink: 0 }}>
+            <Launch sx={{ fontSize: 20, color: "#718096" }} />
           </Box>
         </Box>
       </CardContent>

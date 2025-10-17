@@ -108,10 +108,10 @@ export default function SearchBar({
   return (
     <Box
       sx={{
-        maxWidth: "500px",
+        width: "500px",
         borderRadius: 2,
         boxShadow: isOpen ? "0 2px 8px rgba(0,0,0,0)" : "",
-        backgroundColor: "hsla(0, 0%, 99%, 1)",
+        backgroundColor: "#FFF",
         border: isOpen ? "1px solid #e6e6e6" : "",
         overflow: "hidden",
       }}
@@ -205,7 +205,18 @@ export default function SearchBar({
                 overflowY: "hidden",
                 paddingBottom: 2,
                 "&::-webkit-scrollbar": {
-                  height: 0,
+                  height: 8,
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: "#f1f1f1",
+                  borderRadius: 4,
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#cbd5e0",
+                  borderRadius: 4,
+                  "&:hover": {
+                    backgroundColor: "#a0aec0",
+                  },
                 },
               }}
             >
