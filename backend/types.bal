@@ -44,7 +44,7 @@ public type App record {|
     # Tags as JSON string containing array of tag details
     Tag[] tags;
     # Active status of the app - "1" for active, "0" for inactive
-    string isActive?;
+    int isActive?;
 |};
 
 # [Database] Extended app record containing all app fields.
