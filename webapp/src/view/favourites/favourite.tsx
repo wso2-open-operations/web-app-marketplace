@@ -3,7 +3,7 @@ import { Grid } from "@mui/material";
 import { RootState, useAppSelector } from "@root/src/slices/store";
 import ErrorHandler from "@component/common/ErrorHandler";
 
-import AppCard from "../home/components/AppCard";
+import AppCard from "@view/home/components/AppCard";
 
 function Favourites() {
     const apps = useAppSelector((state: RootState) => state.app.apps);
