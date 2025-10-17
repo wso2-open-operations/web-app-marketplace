@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License. 
 import ballerina/sql;
-
 import ballerina/log;
 
 # Fetch all apps visible to the given roles.
@@ -44,7 +43,6 @@ public isolated function fetchApps() returns App[]|error {
                 });
             };
         
-
     if iterateError is sql:Error {
         string errorMsg = string `An error occurred when retrieving apps!`;
         log:printError(errorMsg, iterateError);
