@@ -134,7 +134,7 @@ export default function SearchBar({
           aria-label="search"
           disabled
         >
-          <Search />
+          <Search style={{color: "#00000099"}} />
         </IconButton>
 
         <InputBase
@@ -144,7 +144,7 @@ export default function SearchBar({
           sx={{
             flex: 1,
             fontSize: "14px",
-            color: "#2d3748",
+            color: "text.secondary",
           }}
         />
 
@@ -168,16 +168,16 @@ export default function SearchBar({
           <Typography
             sx={{
               fontSize: "14px",
-              color: "#4a5568",
+              color: "text.secondary",
               fontWeight: 500,
             }}
           >
             Tags
           </Typography>
           {isTagsOpen ? (
-            <KeyboardArrowUp sx={{ fontSize: 18, color: "#718096" }} />
+            <KeyboardArrowUp sx={{ fontSize: 18, color: "#9CA3AF" }} />
           ) : (
-            <KeyboardArrowDown sx={{ fontSize: 18, color: "#718096" }} />
+            <KeyboardArrowDown sx={{ fontSize: 18, color: "#9CA3AF" }} />
           )}
         </Box>
 
@@ -187,7 +187,7 @@ export default function SearchBar({
             display: "flex",
             alignItems: "center",
             gap: 0.5,
-            color: "#a0aec0",
+            color: "#9CA3AF",
             fontSize: "12px",
             fontWeight: 500,
             ml: 1,
@@ -228,14 +228,14 @@ export default function SearchBar({
         }}
       >
         <List sx={{ py: 0 }}>
-          {/* ALL Option */}
+          {/* ALL Option - treat as first tag */}
           <ListItem disablePadding>
             <ListItemButton
               onClick={() => onTagsChange([])}
               sx={{
                 py: 1.5,
                 px: 2,
-                borderBottom: "1px solid #f0f0f0",
+                backgroundColor: "transparent",
                 "&:hover": {
                   backgroundColor: "#f7fafc",
                 },
@@ -246,13 +246,13 @@ export default function SearchBar({
                 primaryTypographyProps={{
                   fontSize: "14px",
                   fontWeight: selectedTags.length === 0 ? 600 : 400,
-                  color: selectedTags.length === 0 ? "#2d3748" : "#4a5568",
+                  color: selectedTags.length === 0 ? "text.secondary" : "#9CA3AF",
                 }}
               />
             </ListItemButton>
           </ListItem>
 
-          {/* Tag Options */}
+          {/* Regular Tag Options */}
           {availableTags.map((tag) => {
             const isSelected = selectedTags.includes(tag.id);
             return (
@@ -266,9 +266,9 @@ export default function SearchBar({
                       size="small"
                       onClick={(e) => handleTagRemove(tag.id, e)}
                       sx={{
-                        color: "#718096",
+                        color: "#9CA3AF",
                         "&:hover": {
-                          color: "#2d3748",
+                          color: "text.secondary",
                         },
                       }}
                     >
@@ -297,7 +297,7 @@ export default function SearchBar({
                     primaryTypographyProps={{
                       fontSize: "14px",
                       fontWeight: isSelected ? 600 : 400,
-                      color: "#4a5568",
+                      color: isSelected ? "text.secondary" : "#9CA3AF",
                     }}
                   />
                 </ListItemButton>
