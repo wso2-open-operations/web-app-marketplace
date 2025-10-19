@@ -281,10 +281,10 @@ export default function SearchBar({
                   sx={{
                     py: 1.5,
                     px: 2,
-                    borderBottom: "1px solid #f0f0f0",
-                    backgroundColor: isSelected ? "#f7fafc" : "transparent",
+                    borderBottom: isSelected ? "none" : "1px solid #f0f0f0",
+                    backgroundColor: "transparent",
                     "&:hover": {
-                      backgroundColor: isSelected ? "#edf2f7" : "#f7fafc",
+                      backgroundColor: "#f7fafc",
                     },
                     "&:last-child": {
                       borderBottom: "none",
@@ -296,7 +296,7 @@ export default function SearchBar({
                     primaryTypographyProps={{
                       fontSize: "14px",
                       fontWeight: isSelected ? 600 : 400,
-                      color: isSelected ? "#2d3748" : "#4a5568",
+                      color: "#4a5568",
                     }}
                   />
                 </ListItemButton>
