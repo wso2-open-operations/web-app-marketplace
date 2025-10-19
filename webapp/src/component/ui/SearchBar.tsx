@@ -26,7 +26,8 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import { Search, Close, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { Search } from 'lucide-react';
 
 import { useState, useEffect, useRef } from "react";
 
@@ -129,11 +130,11 @@ export default function SearchBar({
         }}
       >
         <IconButton
-          sx={{ p: 0.5, mr: 1 }}
+          sx={{ p: 0.5, mr: "4px" }}
           aria-label="search"
           disabled
         >
-          <Search sx={{ fontSize: 20, color: "#718096" }} />
+          <Search />
         </IconButton>
 
         <InputBase
