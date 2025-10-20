@@ -57,7 +57,6 @@ export type CreateAppPayload = {
 interface AppState {
   state: State;
   stateMessage: string | null;
-  errorMessage: string | null;
   apps: App[] | null;
   submitState: State
 }
@@ -65,7 +64,6 @@ interface AppState {
 const initialState: AppState = {
   state: State.idle,
   stateMessage: null,
-  errorMessage: null,
   apps: null,
   submitState: State.idle
 };
@@ -239,7 +237,6 @@ export const appSlice = createSlice({
       .addCase(fetchApps.rejected, (state, action) => {
         state.state = State.failed;
         state.stateMessage = "Failed to load applications. Please try again later.";
-        state.errorMessage = action.error.message || "An error occurred while fetching applications.";
       })
 
       .addCase(upsertAppFavourite.fulfilled, (state, action) => {
@@ -265,7 +262,6 @@ export const appSlice = createSlice({
       .addCase(createApp.rejected, (state, action) => {
         state.submitState = State.failed;
         state.stateMessage = "Failed to create application. Please try again.";
-        state.errorMessage = action.payload as string || "An error occurred while creating the application.";
       });
   },
 });
