@@ -182,7 +182,6 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         })
       );
 
-      // Refetch apps list to get the newly created app
       dispatch(fetchApps());
 
       return;
