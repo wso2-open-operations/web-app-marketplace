@@ -111,7 +111,6 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
 
     await dispatch(getUserInfo());
     await dispatch(loadPrivileges());
-    await dispatch(fetchApps());
   };
 
   useEffect(() => {
