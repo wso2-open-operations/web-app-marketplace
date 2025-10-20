@@ -36,10 +36,11 @@ import AddAppModal from "@root/src/view/home/components/AddAppModal";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import { Role } from "@root/src/slices/authSlice/auth";
+import { fetchApps } from "@root/src/slices/appSlice/app";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { state, apps } = useAppSelector((state: RootState) => state.app);
+  const { state, apps, stateMessage } = useAppSelector((state: RootState) => state.app);
   const roles = useAppSelector((state: RootState) => state.auth.roles);
   const isAdmin = roles.includes(Role.ADMIN);
 
@@ -52,6 +53,7 @@ export default function Home() {
   const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
+    dispatch(fetchApps());
     dispatch(fetchTags());
     dispatch(fetchGroups());
   }, [dispatch]);
@@ -83,7 +85,7 @@ export default function Home() {
   }
 
   if (state === State.failed) {
-    return <ErrorHandler message="Failed to load applications. Please try again later." />;
+    return <ErrorHandler message={stateMessage} />;
   }
 
   return (
