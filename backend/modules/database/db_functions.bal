@@ -22,7 +22,7 @@ import ballerina/sql;
 public isolated function fetchApps() returns App[]|error {
     App[] apps = [];
     stream<AppRecord, error?> result = databaseClient->query(fetchAppsQuery());
-        error? iterateError = from AppRecord appStr in result
+        check from AppRecord appStr in result
             do{
                 Tag[]|error tag = appStr.tags.fromJsonStringWithType();
                 if tag is error {
@@ -42,12 +42,6 @@ public isolated function fetchApps() returns App[]|error {
                     isActive: appStr.isActive
                 });
             };
-        
-    if iterateError is error {
-        string errorMsg = string `An error occurred when retrieving apps!`;
-        log:printError(errorMsg, iterateError);
-        return error(errorMsg);
-    }
 
     return apps;
 }
