@@ -47,14 +47,14 @@ public type App record {|
     boolean isActive?;
 |};
 
-# [Database] Extended app record containing all app fields.
+# Structure of Extended app record containing all app fields.
 public type UserApps record {|
     *App;
     # Email of the user who last updated the app
     int isFavourite;
 |};
 
-# [Database] Create App record.
+# Structure of Create App record.
 public type CreateApp record {|
     # Display title
     string name;
@@ -88,7 +88,7 @@ public type CreateApp record {|
     boolean isActive;
 |};
 
-# [Database] Tag record.
+# Structure of Tag record.
 public type Tag record {|
     # Unique identifier of the tag
     int id;
