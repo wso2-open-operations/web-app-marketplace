@@ -14,14 +14,15 @@
 // specific language governing permissions and limitations
 // under the License. 
 import ballerina/log;
+import ballerina/sql;
 
 # Fetch all apps visible to the given roles.
 #
 # + return - App[] or an error? on failure
 public isolated function fetchApps() returns App[]|error {
     App[] apps = [];
-    stream<AppStr, error?> result = databaseClient->query(fetchAppsQuery());
-        error? iterateError = from AppStr appStr in result
+    stream<AppRecord, error?> result = databaseClient->query(fetchAppsQuery());
+        error? iterateError = from AppRecord appStr in result
             do{
                 Tag[]|error tag = appStr.tags.fromJsonStringWithType();
                 if tag is error {
@@ -58,8 +59,8 @@ public isolated function fetchApps() returns App[]|error {
 # + return - Array of extended app records
 public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApps[]|error {
     UserApps[] userApps = [];
-    stream<UserAppStr, error?> result =  databaseClient->query(fetchUserAppsQuery(email, filters));
-    check from UserAppStr app in result
+    stream<UserAppRecord, error?> result =  databaseClient->query(fetchUserAppsQuery(email, filters));
+    check from UserAppRecord app in result
         do {
             Tag[]|error tag = app.tags.fromJsonStringWithType();
             if tag is error {
@@ -83,37 +84,26 @@ public isolated function fetchUserApps(string email, AppsFilter filters) returns
     return userApps;
     
 }
-# Retrieves a single app from the database based on filter criteria.
-#
-# + filters - Filter conditions for searching the app
-# + return - Returns App, nil or error
-public isolated function fetchApp(AppFilter filters) returns App|error? {
-    stream<AppStr, error?> result = databaseClient->query(fetchAppQuery(filters));
-    
-    record {|AppStr value;|}? appRecord = check result.next();
-    check result.close();
 
-    if appRecord is () {
-        return; 
-    }
-    
-    AppStr app = appRecord.value;
-    Tag[]|error tag = app.tags.fromJsonStringWithType();
-    if tag is error {
-        string customError = string `An error occurred when retrieving tags of ${app.name}`;
-        log:printError(customError, tag);
-        return error(customError);
+public isolated function fetchApp(AppFilter filters) returns App|error? {
+    AppRecord|error appRecord = databaseClient->queryRow(fetchAppQuery(filters));
+
+    if appRecord is error {
+        if appRecord is sql:NoRowsError {
+            return; 
+        }
+        return appRecord;
     }
     
     return {
-        id: app.id,
-        name: app.name,
-        url: app.url,
-        description: app.description,
-        versionName: app.versionName,
-        icon: app.icon,
-        addedBy: app.addedBy,
-        tags: tag
+        id: appRecord.id,
+        name: appRecord.name,
+        url: appRecord.url,
+        description: appRecord.description,
+        versionName: appRecord.versionName,
+        icon: appRecord.icon,
+        addedBy: appRecord.addedBy,
+        tags: check appRecord.tags.fromJsonStringWithType()
     };
 }
 
