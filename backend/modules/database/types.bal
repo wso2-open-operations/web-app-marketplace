@@ -62,7 +62,7 @@ public type AppStr record {|
     string tags;
     # Active status of the app - "1" for active, "0" for inactive
     @sql:Column {name: "is_active"}
-    int isActive?;
+    boolean isActive?;
 |};
 
 # [Database] App record.
@@ -89,7 +89,7 @@ public type App record {|
     Tag[] tags;
     # Active status of the app - "1" for active, "0" for inactive
     @sql:Column {name: "is_active"}
-    int isActive?;
+    boolean isActive?;
 |};
 
 public type UserAppStr record {|
