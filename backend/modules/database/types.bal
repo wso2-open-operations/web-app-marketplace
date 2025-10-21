@@ -34,14 +34,18 @@ type DatabaseConfig record {|
     sql:ConnectionPool connectionPool?;
 |};
 
+# [Database] Tag record.
 public type Tag record {|
+    # Unique identifier of the tag
     int id;
+    # Display name of the tag
     string name;
+    # Color code of the tag
     string color;
 |};
 
 # [Database] App record.
-public type AppStr record {|
+public type AppRecord record {|
     # Unique identifier of the link
     int id;
     # Display title
@@ -92,8 +96,9 @@ public type App record {|
     boolean isActive?;
 |};
 
-public type UserAppStr record {|
-    *AppStr;
+# [Database] Extended user app record containing all app fields.
+public type UserAppRecord record {|
+    *AppRecord;
     # Email of the user who last updated the app
     @sql:Column {name: "is_favourite"}
     int isFavourite;
@@ -134,14 +139,14 @@ public type CreateApp record {|
     boolean isActive;
 |};
 
-# Result record for app ID validation queries.
+# [Database] record for app ID validation queries.
 type ValidAppResult record {|
     # 1 if app exists and is active, 0 otherwise
     @sql:Column {name: "is_valid"}
     int isValid;
 |};
 
-# Filter criteria for querying apps with optional conditions.
+# [Database] Filter criteria for querying apps with optional conditions.
 public type AppsFilter record {|
     # Unique identifier of the app to filter by
     int? id = ();
@@ -157,7 +162,7 @@ public type AppsFilter record {|
     string[]? userGroups = ();
 |};
 
-# Filter criteria for querying a app with optional conditions.
+# [Database] Filter criteria for querying a app with optional conditions.
 public type AppFilter record {|
     # Unique identifier of the app to filter by
     int? id = ();
