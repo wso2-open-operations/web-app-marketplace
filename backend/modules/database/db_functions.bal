@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-import ballerina/sql;
 import ballerina/log;
 
 # Fetch all apps visible to the given roles.
@@ -26,7 +25,7 @@ public isolated function fetchApps() returns App[]|error {
             do{
                 Tag[]|error tag = appStr.tags.fromJsonStringWithType();
                 if tag is error {
-                    string customError = string `An error occured when retrieving tags of ${appStr.name}`;
+                    string customError = string `An error occurred when retrieving tags of ${appStr.name}`;
                     log:printError(customError, tag);
                     return error(customError);
                 }
@@ -43,7 +42,7 @@ public isolated function fetchApps() returns App[]|error {
                 });
             };
         
-    if iterateError is sql:Error {
+    if iterateError is error {
         string errorMsg = string `An error occurred when retrieving apps!`;
         log:printError(errorMsg, iterateError);
         return error(errorMsg);
@@ -60,11 +59,11 @@ public isolated function fetchApps() returns App[]|error {
 public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApps[]|error {
     UserApps[] userApps = [];
     stream<UserAppStr, error?> result =  databaseClient->query(fetchUserAppsQuery(email, filters));
-    error? iterateError = from UserAppStr app in result
+    check from UserAppStr app in result
         do {
             Tag[]|error tag = app.tags.fromJsonStringWithType();
             if tag is error {
-                string customError = string `An error occured when retrieving tags of ${app.name}`;
+                string customError = string `An error occurred when retrieving tags of ${app.name}`;
                 log:printError(customError, tag);
                 return error(customError);
             }
@@ -81,12 +80,6 @@ public isolated function fetchUserApps(string email, AppsFilter filters) returns
             });
         };
 
-    if iterateError is sql:Error {
-        string errorMsg = string `An error occurred when retrieving apps!`;
-        log:printError(errorMsg, iterateError);
-        return error(errorMsg);
-    }
-
     return userApps;
     
 }
@@ -97,8 +90,8 @@ public isolated function fetchUserApps(string email, AppsFilter filters) returns
 public isolated function fetchApp(AppFilter filters) returns App|error? {
     stream<AppStr, error?> result = databaseClient->query(fetchAppQuery(filters));
     
-    // Get the next record from the stream
     record {|AppStr value;|}? appRecord = check result.next();
+    check result.close();
 
     if appRecord is () {
         return; 
