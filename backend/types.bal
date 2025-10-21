@@ -36,7 +36,7 @@ public type App record {|
     # Short description
     string description;
     # Version label of the target app
-    string versionName;
+    string? versionName;
     # Icon asset name/key
     string icon;
     # User who added the link
@@ -44,7 +44,7 @@ public type App record {|
     # Tags as JSON string containing array of tag details
     Tag[] tags;
     # Active status of the app - "1" for active, "0" for inactive
-    int isActive?;
+    boolean isActive?;
 |};
 
 # [Database] Extended app record containing all app fields.
