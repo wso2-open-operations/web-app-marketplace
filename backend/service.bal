@@ -45,11 +45,10 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError|http:NotFound {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            string customError = string `User information header not found!`;
-            log:printError(customError, userInfo);
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
                 body: {
-                    message: customError
+                    message: USER_NOT_FOUND_ERROR
                 }
             };
         }
@@ -105,10 +104,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get apps(http:RequestContext ctx) returns App[]|http:NotFound|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            string customError = string `User information header not found!`;
-            log:printError(customError, userInfo);
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
-                body: {message: customError}
+                body: {message: USER_NOT_FOUND_ERROR}
             };
         }
 
@@ -138,10 +136,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get apps/[string email](http:RequestContext ctx) returns UserApps[]|http:NotFound|http:BadRequest|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            string customError = string `User information header not found!`;
-            log:printError(customError, userInfo);
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
-                body: {message: customError}
+                body: {message: USER_NOT_FOUND_ERROR}
             };
         }
 
@@ -182,10 +179,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            string customError = string `User information header not found!`;
-            log:printError(customError, userInfo);
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
-                body: {message: customError}
+                body: {message: USER_NOT_FOUND_ERROR}
             };
         }
 
@@ -274,10 +270,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get user\-groups(http:RequestContext ctx) returns string[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            string customError = string `User information header not found!`;
-            log:printError(customError, userInfo);
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
-                body: {message: customError}
+                body: {message: USER_NOT_FOUND_ERROR}
             };
         }
 
@@ -321,10 +316,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     resource function get tags(http:RequestContext ctx) returns Tag[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            string customError = string `User information header not found!`;
-            log:printError(customError, userInfo);
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
-                body: {message: customError}
+                body: {message: USER_NOT_FOUND_ERROR}
             };
         }
 
@@ -372,10 +366,9 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            string customError = string `User information header not found!`;
-            log:printError(customError, userInfo);
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
-                body: {message: customError}
+                body: {message: USER_NOT_FOUND_ERROR}
             };
         }
 
