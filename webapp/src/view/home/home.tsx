@@ -114,7 +114,7 @@ export default function Home() {
       <Grid container spacing={2}>
         {filteredApps.length > 0 ? (
           filteredApps.map((app) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4} key={app.id}>
+            <Grid item xs={12} sm={6} md={4} lg={2.4} key={app.id}>
               <AppCard
                 title={app.name}
                 description={app.description}
