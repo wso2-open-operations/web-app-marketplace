@@ -56,10 +56,10 @@ DROP TABLE IF EXISTS user_groups;
 CREATE TABLE `user_groups` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(256) NOT NULL,
-  `is_active` tinyint(1) DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
   `created_by` varchar(45) NOT NULL,
   `updated_by` varchar(45) NOT NULL,
-  `created_on` timestamp(6) NOT NULL,
-  `updated_on` timestamp(6) NOT NULL,
+  `created_on` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `updated_on` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`id`)
 ) ;
