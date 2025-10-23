@@ -168,11 +168,11 @@ export default function AppCard({
     >
       <CardContent
         sx={{
-          padding: 3,
-          paddingTop: 4,
+          padding: 2.5,
+          paddingTop: 3,
           display: "flex",
           flexDirection: "column",
-          gap: 3,
+          gap: 2,
           height: "100%",
         }}
       >
