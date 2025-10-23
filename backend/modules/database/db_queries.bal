@@ -120,7 +120,8 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
     mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
     
     // Add GROUP BY clause after WHERE conditions
-    mainQuery = sql:queryConcat(mainQuery, ` GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by, a.is_active, uf.app_id`);
+    mainQuery = sql:queryConcat(mainQuery, ` GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, 
+    a.added_by, a.is_active, uf.app_id`);
 
     return mainQuery;
 }
@@ -171,7 +172,8 @@ isolated function fetchAppQuery(AppFilter filters) returns sql:ParameterizedQuer
     mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
     
     // Add GROUP BY clause after WHERE conditions
-    mainQuery = sql:queryConcat(mainQuery, ` GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by`);
+    mainQuery = sql:queryConcat(mainQuery, ` GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon,
+     a.added_by`);
     
     return mainQuery;
 }
