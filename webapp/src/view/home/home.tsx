@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { Box, CircularProgress, Grid, Typography, Button } from "@mui/material";
+import { Box, CircularProgress, Grid, Button } from "@mui/material";
 
 import { useEffect, useState, useMemo } from "react";
 
