@@ -20,30 +20,19 @@ import ballerina/sql;
 #
 # + return - App[] or an error? on failure
 public isolated function fetchApps() returns App[]|error {
-    App[] apps = [];
     stream<AppRecord, error?> result = databaseClient->query(fetchAppsQuery());
-        check from AppRecord appStr in result
-            do{
-                Tag[]|error tag = appStr.tags.fromJsonStringWithType();
-                if tag is error {
-                    string customError = string `An error occurred when retrieving tags of ${appStr.name}`;
-                    log:printError(customError, tag);
-                    return error(customError);
-                }
-                apps.push({
-                    id: appStr.id,
-                    name: appStr.name,
-                    url: appStr.url,
-                    description: appStr.description,
-                    versionName: appStr.versionName,
-                    icon: appStr.icon,
-                    addedBy: appStr.addedBy,
-                    tags: tag,
-                    isActive: appStr.isActive
-                });
-            };
-
-    return apps;
+    return from AppRecord app in result
+        select {
+            id: app.id,
+            name: app.name,
+            url: app.url,
+            description: app.description,
+            versionName: app.versionName,
+            icon: app.icon,
+            addedBy: app.addedBy,
+            tags: check app.tags.fromJsonStringWithType(),
+            isActive: app.isActive
+        };
 }
 
 # Fetch app details by applying filters for validation and admin operations.
@@ -53,30 +42,19 @@ public isolated function fetchApps() returns App[]|error {
 # + return - Array of extended app records
 public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApps[]|error {
     UserApps[] userApps = [];
-    stream<UserAppRecord, error?> result =  databaseClient->query(fetchUserAppsQuery(email, filters));
+    stream<UserAppRecord, error?> result = databaseClient->query(fetchUserAppsQuery(email, filters));
     check from UserAppRecord app in result
-        do {
-            Tag[]|error tag = app.tags.fromJsonStringWithType();
-            if tag is error {
-                string customError = string `An error occurred when retrieving tags of ${app.name}`;
-                log:printError(customError, tag);
-                return error(customError);
-            }
-            userApps.push({
-                id: app.id,
-                name: app.name,
-                url: app.url,
-                description: app.description,
-                versionName: app.versionName,
-                icon: app.icon,
-                addedBy: app.addedBy,
-                tags: tag,
-                isFavourite: app.isFavourite
-            });
+        select {
+            id: app.id,
+            name: app.name,
+            url: app.url,
+            description: app.description,
+            versionName: app.versionName,
+            icon: app.icon,
+            addedBy: app.addedBy,
+            tags: app.tags.fromJsonStringWithType(),
+            isFavourite: app.isFavourite
         };
-
-    return userApps;
-    
 }
 
 public isolated function fetchApp(AppFilter filters) returns App|error? {
@@ -84,11 +62,11 @@ public isolated function fetchApp(AppFilter filters) returns App|error? {
 
     if appRecord is error {
         if appRecord is sql:NoRowsError {
-            return; 
+            return;
         }
         return appRecord;
     }
-    
+
     return {
         id: appRecord.id,
         name: appRecord.name,
@@ -112,7 +90,7 @@ public isolated function upsertFavourites(string email, int appId, boolean isFav
 }
 
 # Create a new app in the database.
-# 
+#
 # + app - App data to create
 # + return - Error if creation fails
 public isolated function createApp(CreateApp app) returns error? {
@@ -120,7 +98,7 @@ public isolated function createApp(CreateApp app) returns error? {
 }
 
 # Retrieve user groups.
-# 
+#
 # + return - Array of user groups or error
 public isolated function fetchUserGroups() returns string[]|error {
     stream<record {|string name;|}, error?> result = databaseClient->query(fetchUserGroupsQuery());
@@ -129,7 +107,7 @@ public isolated function fetchUserGroups() returns string[]|error {
 }
 
 # Fetch all active tags.
-# 
+#
 # + return - Array of tags or error
 public isolated function fetchTags() returns Tag[]|error? {
     stream<Tag, error?> result = databaseClient->query(fetchTagsQuery());
