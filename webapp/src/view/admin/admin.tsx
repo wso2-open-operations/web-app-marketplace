@@ -3,7 +3,7 @@ import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettin
 import DrawOutlinedIcon from '@mui/icons-material/DrawOutlined';
 import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined';
 
-import CommonPage from "@root/src/layout/pages/CommonPage";
+import TabsPage from "@root/src/layout/pages/TabsPage";
 
 import CreateApp from "./panel/createApp";
 import UpdateApp from "./panel/updateApp";
@@ -12,10 +12,9 @@ import CreateTags from "./panel/createTags";
 
 export default function Admin() {
     return (
-        <CommonPage
+        <TabsPage
             title={"Admin"}
-            icon={<AdminPanelSettingsOutlinedIcon />}
-            commonPageTabs={[
+            tabsPage={[
                 {
                     tabTitle: "Create App",
                     tabPath: "create-app",
