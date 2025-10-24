@@ -22,8 +22,7 @@ import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { UpdateAction, State } from "@/types/types";
-
-import { UserState } from "../authSlice/auth";
+import { UserState } from "@slices/authSlice/auth";
 
 export type Tag = {
   id: number;
