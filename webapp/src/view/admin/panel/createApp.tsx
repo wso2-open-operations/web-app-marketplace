@@ -205,14 +205,7 @@ export default function CreateApp() {
             <Box sx={{ overflowY: "auto", flex: 1 }}>
                 <form onSubmit={formik.handleSubmit}>
                     <Box sx={{ p: 3, display: "flex", flexDirection: "row", gap: 3 }}>
-                        <Box sx={{display: "flex", flexDirection: "column", width: "100%", gap: 3}}>
-                            {/* Show general error */}
-                            {submitState === State.failed && stateMessage && (
-                                <Alert severity="error" >
-                                    {stateMessage}
-                                </Alert>
-                            )}
-
+                        <Box sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 3 }}>
                             {/* App Name */}
                             <Box>
                                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
@@ -370,169 +363,179 @@ export default function CreateApp() {
                             </Box>
                         </Box>
 
-                        {/* App Icon Upload */}
-                        <Box sx={{width: "100%" }}>
-                            <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                                App Icon
-                            </Typography>
+                        <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
+                            {/* App Icon Upload */}
+                            <Box sx={{ width: "100%" }}>
+                                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                                    App Icon
+                                </Typography>
 
-                            {/* File Upload Area */}
-                            {!filePreview && (
-                                <Box
-                                    onDragEnter={handleDrag}
-                                    onDragLeave={handleDrag}
-                                    onDragOver={handleDrag}
-                                    onDrop={handleDrop}
-                                    sx={{
-                                        border: "2px dashed",
-                                        borderColor: dragActive
-                                            ? "primary.main"
-                                            : formik.touched.icon && formik.errors.icon
-                                                ? "error.main"
-                                                : "divider",
-                                        borderRadius: 2,
-                                        p: 6,
-                                        textAlign: "center",
-                                        bgcolor: dragActive ? "action.hover" : "background.paper",
-                                        cursor: "pointer",
-                                        transition: "all 0.3s",
-                                    }}
-                                    onClick={() =>
-                                        document.getElementById("file-upload")?.click()
-                                    }
-                                >
+                                {/* File Upload Area */}
+                                {!filePreview && (
                                     <Box
+                                        onDragEnter={handleDrag}
+                                        onDragLeave={handleDrag}
+                                        onDragOver={handleDrag}
+                                        onDrop={handleDrop}
                                         sx={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            gap: 2,
+                                            border: "2px dashed",
+                                            borderColor: dragActive
+                                                ? "primary.main"
+                                                : formik.touched.icon && formik.errors.icon
+                                                    ? "error.main"
+                                                    : "divider",
+                                            borderRadius: 2,
+                                            p: 6,
+                                            textAlign: "center",
+                                            bgcolor: dragActive ? "action.hover" : "background.paper",
+                                            cursor: "pointer",
+                                            transition: "all 0.3s",
                                         }}
+                                        onClick={() =>
+                                            document.getElementById("file-upload")?.click()
+                                        }
                                     >
                                         <Box
                                             sx={{
-                                                width: 48,
-                                                height: 48,
-                                                borderRadius: "50%",
-                                                bgcolor: "primary.main",
                                                 display: "flex",
+                                                flexDirection: "column",
                                                 alignItems: "center",
-                                                justifyContent: "center",
-                                                color: "white",
+                                                gap: 2,
                                             }}
                                         >
-                                            <UploadFileIcon />
-                                        </Box>
-                                        <Typography>
-                                            Drag and drop file or{" "}
-                                            <Box
-                                                component="span"
-                                                sx={{ color: "primary.main", cursor: "pointer" }}
-                                            >
-                                                select file
-                                            </Box>
-                                        </Typography>
-                                    </Box>
-                                    <input
-                                        id="file-upload"
-                                        type="file"
-                                        accept=".svg,image/svg+xml"
-                                        onChange={handleFileChange}
-                                        style={{ display: "none" }}
-                                    />
-                                </Box>
-                            )}
-
-                            {/* File Preview */}
-                            {filePreview && (
-                                <Box
-                                    sx={{
-                                        border: "1px solid",
-                                        borderColor: "divider",
-                                        borderRadius: 2,
-                                        p: 2,
-                                    }}
-                                >
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                        }}
-                                    >
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                                             <Box
                                                 sx={{
                                                     width: 48,
                                                     height: 48,
-                                                    bgcolor: "action.selected",
-                                                    borderRadius: 1,
+                                                    borderRadius: "50%",
+                                                    bgcolor: "primary.main",
                                                     display: "flex",
                                                     alignItems: "center",
                                                     justifyContent: "center",
-                                                    overflow: "hidden",
+                                                    color: "white",
                                                 }}
                                             >
-                                                {filePreview.preview && (
-                                                    <img
-                                                        src={filePreview.preview}
-                                                        alt="Preview"
-                                                        style={{ width: "100%", height: "100%" }}
-                                                    />
-                                                )}
+                                                <UploadFileIcon />
                                             </Box>
-                                            <Box>
-                                                <Typography variant="body2" fontWeight={500}>
-                                                    App Icon
-                                                </Typography>
-                                                <Typography variant="caption" color="text.secondary">
-                                                    {(filePreview.file.size / (1024 * 1024)).toFixed(2)}mb
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                        <IconButton
-                                            onClick={handleRemoveFile}
-                                            disabled={submitState === State.loading}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </Box>
-                                    {filePreview.uploading && (
-                                        <Box sx={{ mt: 2 }}>
-                                            <LinearProgress
-                                                variant="determinate"
-                                                value={filePreview.progress}
-                                            />
-                                            <Typography variant="caption" color="text.secondary">
-                                                {filePreview.progress}%
+                                            <Typography>
+                                                Drag and drop file or{" "}
+                                                <Box
+                                                    component="span"
+                                                    sx={{ color: "primary.main", cursor: "pointer" }}
+                                                >
+                                                    select file
+                                                </Box>
                                             </Typography>
                                         </Box>
-                                    )}
-                                </Box>
-                            )}
+                                        <input
+                                            id="file-upload"
+                                            type="file"
+                                            accept=".svg,image/svg+xml"
+                                            onChange={handleFileChange}
+                                            style={{ display: "none" }}
+                                        />
+                                    </Box>
+                                )}
 
-                            {/* File validation info */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    mt: 1,
-                                }}
-                            >
-                                <Typography variant="caption" color="text.secondary">
-                                    Supported formats : svg
-                                </Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                    Maximum size : 10mb
-                                </Typography>
+                                {/* File Preview */}
+                                {filePreview && (
+                                    <Box
+                                        sx={{
+                                            border: "1px solid",
+                                            borderColor: "divider",
+                                            borderRadius: 2,
+                                            p: 2,
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "space-between",
+                                            }}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                                <Box
+                                                    sx={{
+                                                        width: 48,
+                                                        height: 48,
+                                                        bgcolor: "action.selected",
+                                                        borderRadius: 1,
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        overflow: "hidden",
+                                                    }}
+                                                >
+                                                    {filePreview.preview && (
+                                                        <img
+                                                            src={filePreview.preview}
+                                                            alt="Preview"
+                                                            style={{ width: "100%", height: "100%" }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                                <Box>
+                                                    <Typography variant="body2" fontWeight={500}>
+                                                        App Icon
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {(filePreview.file.size / (1024 * 1024)).toFixed(2)}mb
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                            <IconButton
+                                                onClick={handleRemoveFile}
+                                                disabled={submitState === State.loading}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </Box>
+                                        {filePreview.uploading && (
+                                            <Box sx={{ mt: 2 }}>
+                                                <LinearProgress
+                                                    variant="determinate"
+                                                    value={filePreview.progress}
+                                                />
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {filePreview.progress}%
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                    </Box>
+                                )}
+
+                                {/* File validation info */}
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        mt: 1,
+                                    }}
+                                >
+                                    <Typography variant="caption" color="text.secondary">
+                                        Supported formats : svg
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Maximum size : 10mb
+                                    </Typography>
+                                </Box>
+
+                                {/* Error message */}
+                                {formik.touched.icon && formik.errors.icon && (
+                                    <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
+                                        {formik.errors.icon as string}
+                                    </Typography>
+                                )}
                             </Box>
 
-                            {/* Error message */}
-                            {formik.touched.icon && formik.errors.icon && (
-                                <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
-                                    {formik.errors.icon as string}
-                                </Typography>
+                            {/* Show general error */}
+                            {submitState === State.failed && stateMessage && (
+                                <Alert severity="error" >
+                                    {stateMessage}
+                                </Alert>
                             )}
+
                         </Box>
                     </Box>
 
