@@ -108,7 +108,7 @@ export default function Home() {
           availableTags={availableTags}
           selectedTags={selectedTags}
         />
-        {isAdmin && <Button variant="contained" sx={{whiteSpace: "nowrap"}} onClick={handleOpenModal}>Add New Card</Button>}
+        {isAdmin && <Button variant="contained" sx={{ whiteSpace: "nowrap" }} onClick={handleOpenModal}>Add New Card</Button>}
       </Box>
 
       <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
