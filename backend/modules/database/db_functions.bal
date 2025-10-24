@@ -19,9 +19,20 @@ import ballerina/sql;
 #
 # + return - App[] or an error? on failure
 public isolated function fetchApps() returns App[]|error {
-    stream<App, error?> result = databaseClient->query(fetchAppsQuery());
-    return from App app in result
-        select app;
+    stream<AppRecord, error?> result = databaseClient->query(fetchAppsQuery());
+    return from AppRecord app in result
+        let Tag[] tags = check app.tags.fromJsonStringWithType()
+        select {
+            id: app.id,
+            name: app.name,
+            url: app.url,
+            description: app.description,
+            versionName: app.versionName,
+            icon: app.icon,
+            addedBy: app.addedBy,
+            tags,
+            isActive: app.isActive
+        };
 }
 
 # Fetch app details by applying filters for validation and admin operations.
@@ -30,24 +41,42 @@ public isolated function fetchApps() returns App[]|error {
 # + email - Email of the user
 # + return - Array of extended app records
 public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApps[]|error {
-    stream<UserApps, error?> result =  databaseClient->query(fetchUserAppsQuery(email, filters));
-    return from UserApps app in result
-        select app;
+    stream<UserAppRecord, error?> result = databaseClient->query(fetchUserAppsQuery(email, filters));
+    return from UserAppRecord app in result
+        let Tag[] tags = check app.tags.fromJsonStringWithType()
+        select {
+            id: app.id,
+            name: app.name,
+            url: app.url,
+            description: app.description,
+            versionName: app.versionName,
+            icon: app.icon,
+            addedBy: app.addedBy,
+            tags,
+            isFavourite: app.isFavourite
+        };
 }
-# Retrieves a single app from the database based on filter criteria.
-#
-# + filters - Filter conditions for searching the app
-# + return - Returns UserApps, nil or error
-public isolated function fetchApp(AppFilter filters) returns UserApps|error? {
-    UserApps|error result =  databaseClient->queryRow(fetchAppQuery(filters));
 
-    if result is error {
-        if result is sql:NoRowsError {
+public isolated function fetchApp(AppFilter filters) returns App|error? {
+    AppRecord|error appRecord = databaseClient->queryRow(fetchAppQuery(filters));
+
+    if appRecord is error {
+        if appRecord is sql:NoRowsError {
             return;
         }
-        return  result;
+        return appRecord;
     }
-    return result;
+
+    return {
+        id: appRecord.id,
+        name: appRecord.name,
+        url: appRecord.url,
+        description: appRecord.description,
+        versionName: appRecord.versionName,
+        icon: appRecord.icon,
+        addedBy: appRecord.addedBy,
+        tags: check appRecord.tags.fromJsonStringWithType()
+    };
 }
 
 # Insert or update user's favourite status for an app.
@@ -61,7 +90,7 @@ public isolated function upsertFavourites(string email, int appId, boolean isFav
 }
 
 # Create a new app in the database.
-# 
+#
 # + app - App data to create
 # + return - Error if creation fails
 public isolated function createApp(CreateApp app) returns error? {
@@ -69,7 +98,7 @@ public isolated function createApp(CreateApp app) returns error? {
 }
 
 # Retrieve user groups.
-# 
+#
 # + return - Array of user groups or error
 public isolated function fetchUserGroups() returns string[]|error {
     stream<record {|string name;|}, error?> result = databaseClient->query(fetchUserGroupsQuery());
@@ -78,13 +107,14 @@ public isolated function fetchUserGroups() returns string[]|error {
 }
 
 # Fetch all active tags.
-# 
+#
 # + return - Array of tags or error
 public isolated function fetchTags() returns Tag[]|error? {
     stream<Tag, error?> result = databaseClient->query(fetchTagsQuery());
     return from Tag tag in result
         select {
             id: tag.id,
-            name: tag.name
+            name: tag.name,
+            color: tag.color
         };
 }

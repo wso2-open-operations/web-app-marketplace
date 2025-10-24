@@ -34,6 +34,41 @@ type DatabaseConfig record {|
     sql:ConnectionPool connectionPool?;
 |};
 
+# [Database] Tag record.
+public type Tag record {|
+    # Unique identifier of the tag
+    int id;
+    # Display name of the tag
+    string name;
+    # Color code of the tag
+    string color;
+|};
+
+# [Database] App record.
+public type AppRecord record {|
+    # Unique identifier of the link
+    int id;
+    # Display title
+    string name;
+    # Target URL 
+    string url;
+    # Short description
+    string description;
+    # Version label of the target app
+    @sql:Column {name: "version_name"}
+    string versionName;
+    # Icon asset name/key
+    string icon;
+    # User who added the link
+    @sql:Column {name: "added_by"}
+    string addedBy;
+    # Tags as JSON array containing tag details
+    string tags;
+    # Active status of the app - "1" for active, "0" for inactive
+    @sql:Column {name: "is_active"}
+    boolean isActive?;
+|};
+
 # [Database] App record.
 public type App record {|
     # Unique identifier of the link
@@ -53,15 +88,20 @@ public type App record {|
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
-    # Tag ID of the target app
-    @sql:Column {name: "tag_id"}
-    int tagId;
-    # Tag name of the target app
-    @sql:Column {name: "tag_name"}
-    string tagName;
-    # Tag color of the target app
-    @sql:Column {name: "color"}
-    string tagColor;
+    # Tags as JSON array containing tag details
+    @sql:Column {name: "tags"}
+    Tag[] tags;
+    # Active status of the app - "1" for active, "0" for inactive
+    @sql:Column {name: "is_active"}
+    boolean isActive?;
+|};
+
+# [Database] Extended user app record containing all app fields.
+public type UserAppRecord record {|
+    *AppRecord;
+    # Email of the user who last updated the app
+    @sql:Column {name: "is_favourite"}
+    int isFavourite;
 |};
 
 # [Database] Extended app record containing all app fields.
@@ -70,9 +110,6 @@ public type UserApps record {|
     # Email of the user who last updated the app
     @sql:Column {name: "is_favourite"}
     int isFavourite;
-    # Active status of the app - "1" for active, "0" for inactive
-    @sql:Column {name: "is_active"}
-    string isActive;
 |};
 
 # [Database] Create App record.
@@ -91,12 +128,9 @@ public type CreateApp record {|
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
-    # Tag ID of the target app
-    @sql:Column {name: "tag_id"}
-    int tagId;
-    # Tag name of the target app
-    @sql:Column {name: "name"}
-    string tagName;
+    # Tag IDs of the target app (comma-separated)
+    @sql:Column {name: "tags"}
+    int[] tags;
     # User groups of the target app
     @sql:Column {name: "user_groups"}
     string[] userGroups;
@@ -105,24 +139,14 @@ public type CreateApp record {|
     boolean isActive;
 |};
 
-# Result record for app ID validation queries.
+# [Database] record for app ID validation queries.
 type ValidAppResult record {|
     # 1 if app exists and is active, 0 otherwise
     @sql:Column {name: "is_valid"}
     int isValid;
 |};
 
-# [Database] Tag record.
-public type Tag record {|
-    # Unique identifier of the tag
-    @sql:Column {name: "id"}
-    int id;
-    # Display name of the tag
-    @sql:Column {name: "name"}
-    string name;
-|};
-
-# Filter criteria for querying apps with optional conditions.
+# [Database] Filter criteria for querying apps with optional conditions.
 public type AppsFilter record {|
     # Unique identifier of the app to filter by
     int? id = ();
@@ -138,7 +162,7 @@ public type AppsFilter record {|
     string[]? userGroups = ();
 |};
 
-# Filter criteria for querying a app with optional conditions.
+# [Database] Filter criteria for querying a app with optional conditions.
 public type AppFilter record {|
     # Unique identifier of the app to filter by
     int? id = ();
