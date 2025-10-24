@@ -133,7 +133,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
       reader.onload = async () => {
         const base64Icon = reader.result as string;
         
-        const payload:CreateAppPayload = {
+        const payload: CreateAppPayload = {
           name: values.title.trim(),
           url: values.link.trim(),
           description: values.description.trim(),
@@ -141,6 +141,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
           tags: values.tags,
           icon: base64Icon,
           userGroups: values.groupIds,
+          isActive: true
         };
 
         const result = await dispatch(createApp({payload, userEmail}));
