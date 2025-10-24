@@ -22,6 +22,7 @@ import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { UpdateAction, State } from "@/types/types";
+
 import { UserState } from "../authSlice/auth";
 
 export type Tag = {
@@ -41,7 +42,7 @@ export type App = {
   iconName: string;
   addedBy: string;
   isFavourite: 0 | 1;
-  isActive?: 0 | 1;
+  isActive?: boolean;
 };
 
 export type CreateAppPayload = {
@@ -52,6 +53,7 @@ export type CreateAppPayload = {
   tags: number[];
   icon: string;
   userGroups: string[];
+  isActive: boolean
 };
 
 interface AppState {
@@ -166,7 +168,7 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         icon: payload.icon,
         addedBy: userEmail,
         userGroups: payload.userGroups,
-        isActive: 1
+        isActive: payload.isActive
       };
 
       const res = await APIService.getInstance().post(
