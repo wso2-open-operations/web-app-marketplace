@@ -1,14 +1,34 @@
+// Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
+//
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 import { Box, Typography, IconButton, Alert, TextField, Autocomplete, Chip, LinearProgress, Button } from "@mui/material";
-import { resetCreateState, CreateAppPayload, createApp, fetchApps } from "@root/src/slices/appSlice/app";
-import groups, { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import CloseIcon from "@mui/icons-material/Close";
-import { useAppDispatch, useAppSelector, RootState } from "@root/src/slices/store";
-import { State } from "@root/src/types/types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useState, useEffect } from "react";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+
+import { useState, useEffect } from "react";
+
+import { CreateAppPayload, createApp } from "@root/src/slices/appSlice/app";
+import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
+import { useAppDispatch, useAppSelector, RootState } from "@root/src/slices/store";
+import { State } from "@root/src/types/types";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
+
+const fileSize = 10 * 1024 * 1024;
 
 interface FileWithPreview {
     file: File;
@@ -57,7 +77,7 @@ const validationSchema = Yup.object({
         .test("fileSize", "File size must not exceed 10MB", (value) => {
             if (!value) return false;
             const file = value as File;
-            return file.size <= 10 * 1024 * 1024; // 10MB
+            return file.size <= fileSize; // 10MB
         }),
 });
 
@@ -77,9 +97,7 @@ export default function CreateApp() {
     useEffect(() => {
         dispatch(fetchGroups());
         dispatch(fetchTags());
-    }, [])
-
-    console.log("Test")
+    }, [dispatch])
 
     const formik = useFormik({
         initialValues: {
@@ -113,10 +131,6 @@ export default function CreateApp() {
                 };
 
                 const result = await dispatch(createApp({ payload, userEmail }));
-
-                if (createApp.fulfilled.match(result)) {
-                    handleClose();
-                }
             };
 
             reader.onerror = () => {
@@ -125,19 +139,13 @@ export default function CreateApp() {
         },
     });
 
-    const handleClose = () => {
-        formik.resetForm();
-        setFilePreview(null);
-        dispatch(resetCreateState());
-    };
-
     const handleFileSelect = (file: File) => {
         if (file.type !== "image/svg+xml" || !file.name.toLowerCase().endsWith(".svg")) {
             formik.setFieldError("icon", "Only SVG files are allowed");
             return;
         }
 
-        if (file.size > 10 * 1024 * 1024) {
+        if (file.size > fileSize) {
             formik.setFieldError("icon", "File size must not exceed 10MB");
             return;
         }
@@ -480,7 +488,7 @@ export default function CreateApp() {
                                                         App Icon
                                                     </Typography>
                                                     <Typography variant="caption" color="text.secondary">
-                                                        {(filePreview.file.size / (1024 * 1024)).toFixed(2)}mb
+                                                        {(filePreview.file.size / (1024 * 1024)).toFixed(2)}MB
                                                     </Typography>
                                                 </Box>
                                             </Box>
@@ -517,7 +525,7 @@ export default function CreateApp() {
                                         Supported formats : svg
                                     </Typography>
                                     <Typography variant="caption" color="text.secondary">
-                                        Maximum size : 10mb
+                                        Maximum size : 10MB
                                     </Typography>
                                 </Box>
 
@@ -550,7 +558,6 @@ export default function CreateApp() {
                         }}
                     >
                         <Button
-                            onClick={handleClose}
                             disabled={submitState === State.loading}
                         >
                             Cancel
