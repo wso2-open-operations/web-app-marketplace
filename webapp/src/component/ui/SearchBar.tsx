@@ -42,8 +42,6 @@ interface SearchBarProps {
   onTagsChange: (selectedTagIds: number[]) => void;
   availableTags: Tag[];
   selectedTags: number[];
-  isOpen?: boolean;
-  onToggle?: () => void;
 }
 
 export default function SearchBar({
