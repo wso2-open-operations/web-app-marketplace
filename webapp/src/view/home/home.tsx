@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { Box, CircularProgress, Grid, Typography, Button } from "@mui/material";
+import { Box, CircularProgress, Grid, Button } from "@mui/material";
 
 import { useEffect, useState, useMemo } from "react";
 
@@ -46,7 +46,6 @@ export default function Home() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => setIsModalOpen(true);
@@ -89,14 +88,14 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{ paddingBottom: 4, position: "relative" }}>
+    <Box sx={{ paddingBottom: 4, position: "relative"}}>
       <Box
         sx={{
           mb: 3,
           display: "flex",
           flexDirection: "row",
           position: "sticky",
-          top: 0,
+          top: 60,
           zIndex: 1000,
           justifyContent: "space-between",
           alignItems: "start",
@@ -108,10 +107,8 @@ export default function Home() {
           onTagsChange={setSelectedTags}
           availableTags={availableTags}
           selectedTags={selectedTags}
-          isOpen={isSearchOpen}
-          onToggle={() => setIsSearchOpen(!isSearchOpen)}
         />
-        {isAdmin && <Button variant="contained" onClick={handleOpenModal}>Add New Card</Button>}
+        {isAdmin && <Button variant="contained" sx={{ whiteSpace: "nowrap" }} onClick={handleOpenModal}>Add New Card</Button>}
       </Box>
 
       <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
@@ -119,7 +116,7 @@ export default function Home() {
       <Grid container spacing={2}>
         {filteredApps.length > 0 ? (
           filteredApps.map((app) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={app.id}>
+            <Grid item xs={12} sm={6} md={4} lg={2.4} key={app.id}>
               <AppCard
                 title={app.name}
                 description={app.description}
@@ -142,9 +139,7 @@ export default function Home() {
                 minHeight: "40vh",
               }}
             >
-              <Typography color="text.secondary">
-                No applications found matching your search criteria
-              </Typography>
+              <ErrorHandler message="No applications found matching your search criteria" />
             </Box>
           </Grid>
         )}

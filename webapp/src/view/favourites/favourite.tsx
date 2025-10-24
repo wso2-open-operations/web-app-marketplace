@@ -13,7 +13,7 @@ function Favourites() {
         <Grid container spacing={2}>
             {favApps.length > 0 ? (
                 favApps.map((app) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={app.id}>
+                    <Grid item xs={12} sm={6} md={4} lg={2.4} key={app.id}>
                         <AppCard
                             title={app.name}
                             description={app.description}
