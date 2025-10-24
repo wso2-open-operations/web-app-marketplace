@@ -86,14 +86,14 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{ paddingBottom: 4, position: "relative" }}>
+    <Box sx={{ paddingBottom: 4, position: "relative"}}>
       <Box
         sx={{
           mb: 3,
           display: "flex",
           flexDirection: "row",
           position: "sticky",
-          top: 0,
+          top: 60,
           zIndex: 1000,
           justifyContent: "space-between",
           alignItems: "start",
@@ -106,7 +106,7 @@ export default function Home() {
           availableTags={availableTags}
           selectedTags={selectedTags}
         />
-        {isAdmin && <Button variant="contained" onClick={handleOpenModal}>Add New Card</Button>}
+        {isAdmin && <Button variant="contained" sx={{whiteSpace: "nowrap"}} onClick={handleOpenModal}>Add New Card</Button>}
       </Box>
 
       <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
