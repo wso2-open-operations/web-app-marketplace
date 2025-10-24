@@ -168,11 +168,11 @@ export default function AppCard({
     >
       <CardContent
         sx={{
-          padding: 3,
-          paddingTop: 4,
+          padding: 2.5,
+          paddingTop: 3,
           display: "flex",
           flexDirection: "column",
-          gap: 3,
+          gap: 2,
           height: "100%",
         }}
       >
@@ -207,7 +207,7 @@ export default function AppCard({
           component="h1"
           sx={{
             fontWeight: 600,
-            fontSize: "18px",
+            fontSize: "16px",
           }}
         >
           {title}
@@ -246,7 +246,7 @@ export default function AppCard({
                 scrollbarColor: "#cbd5e0 #f7fafc",
               },
               "&::-webkit-scrollbar": {
-                height: "6px",
+                height: "3px",
               },
               "&::-webkit-scrollbar-track": {
                 background: "transparent",
@@ -270,11 +270,11 @@ export default function AppCard({
                 key={tag.id}
                 label={tag.name}
                 sx={{
-                  backgroundColor: `${tag.color}1A`,
-                  border: `2px solid ${tag.color}80`,
+                  backgroundColor: "#FFF",
+                  border: `1.5px solid ${tag.color}80`,
                   color: `${tag.color}`,
                   fontWeight: 500,
-                  fontSize: "0.9rem",
+                  fontSize: "14px",
                   padding: "4px",
                   height: "auto",
                   borderRadius: 1,
