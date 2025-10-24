@@ -112,7 +112,8 @@ export default function SearchBar({
       {/* Search Bar */}
       <Paper
         sx={{
-          width: "650px",
+          width: "100%",
+          maxWidth: "650px",
           display: "flex",
           alignItems: "center",
           paddingY: "8px",
