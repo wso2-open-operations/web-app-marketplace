@@ -246,7 +246,7 @@ export default function AppCard({
                 scrollbarColor: "#cbd5e0 #f7fafc",
               },
               "&::-webkit-scrollbar": {
-                height: "6px",
+                height: "3px",
               },
               "&::-webkit-scrollbar-track": {
                 background: "transparent",
