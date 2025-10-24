@@ -67,7 +67,7 @@ export default function Layout() {
 
   return (
     <ConfirmationModalContextProvider>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", backgroundColor: "#FAFAFA" }}>
         <CssBaseline />
         <Sidebar
           roles={roles}

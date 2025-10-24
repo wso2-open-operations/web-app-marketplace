@@ -24,7 +24,8 @@ import { enqueueSnackbarMessage } from "../commonSlice/common"
 
 export type Tag = {
     id: number,
-    name: string
+    name: string,
+    color: string
 }
 
 interface TagState {

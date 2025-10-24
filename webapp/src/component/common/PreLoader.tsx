@@ -15,13 +15,14 @@
 // under the License.
 
 import Grid from "@mui/material/Grid";
-import { APP_NAME } from "@config/config";
-import StateWithImage from "@component/ui/StateWithImage";
 import { Box, Container, Paper, alpha, useTheme } from "@mui/material";
 import CircularProgress, {
   circularProgressClasses,
   CircularProgressProps,
 } from "@mui/material/CircularProgress";
+
+import { APP_NAME } from "@config/config";
+import StateWithImage from "@component/ui/StateWithImage";
 
 interface PreLoaderProps {
   message: string | null;

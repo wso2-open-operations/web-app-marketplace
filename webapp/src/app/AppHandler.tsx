@@ -26,6 +26,7 @@ import { getActiveRoutesV2, routes } from "@src/route";
 
 const AppHandler = () => {
   const auth = useAppSelector((state: RootState) => state.auth);
+  const app = useAppSelector((state: RootState) => state.app);
   const router = createBrowserRouter([
     {
       path: "/",

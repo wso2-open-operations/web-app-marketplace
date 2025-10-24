@@ -24,19 +24,24 @@ import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { UpdateAction, State } from "@/types/types";
 import { UserState } from "../authSlice/auth";
 
+export type Tag = {
+  id: number;
+  name: string;
+  color: string;
+};
+
 export type App = {
   id: number;
   name: string;
-  urlName: string;
+  url: string;
   description: string;
   versionName: string;
   icon?: string;
-  tagId: number;
-  tagName: string;
-  tagColor: string;
+  tags: Tag[];
   iconName: string;
   addedBy: string;
   isFavourite: 0 | 1;
+  isActive?: 0 | 1;
 };
 
 export type CreateAppPayload = {
@@ -44,8 +49,7 @@ export type CreateAppPayload = {
   url: string;
   description: string;
   versionName: string;
-  tagId: number;
-  tagName: string;
+  tags: number[];
   icon: string;
   userGroups: string[];
 };
@@ -53,7 +57,6 @@ export type CreateAppPayload = {
 interface AppState {
   state: State;
   stateMessage: string | null;
-  errorMessage: string | null;
   apps: App[] | null;
   submitState: State
 }
@@ -61,7 +64,6 @@ interface AppState {
 const initialState: AppState = {
   state: State.idle,
   stateMessage: null,
-  errorMessage: null,
   apps: null,
   submitState: State.idle
 };
@@ -158,12 +160,11 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         url: payload.url,
         description: payload.description,
         versionName: payload.versionName,
-        tagId: payload.tagId,
-        tagName: payload.tagName,
+        tags: payload.tags,
         icon: payload.icon,
         addedBy: userEmail,
         userGroups: payload.userGroups,
-        isActive: true
+        isActive: 1
       };
 
       const res = await APIService.getInstance().post(
@@ -181,7 +182,6 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         })
       );
 
-      // Refetch apps list to get the newly created app
       dispatch(fetchApps());
 
       return;
@@ -224,18 +224,18 @@ export const appSlice = createSlice({
     builder
       .addCase(fetchApps.pending, (state) => {
         state.state = State.loading;
-        state.stateMessage = "Fetching app links...";
+        state.stateMessage = "Loading applications...";
       })
 
       .addCase(fetchApps.fulfilled, (state, action) => {
         state.state = State.success;
-        state.stateMessage = "Successfully fetched";
+        state.stateMessage = null;
         state.apps = action.payload;
       })
 
-      .addCase(fetchApps.rejected, (state) => {
+      .addCase(fetchApps.rejected, (state, action) => {
         state.state = State.failed;
-        state.stateMessage = "Failed to fetch";
+        state.stateMessage = "Failed to load applications. Please try again later.";
       })
 
       .addCase(upsertAppFavourite.fulfilled, (state, action) => {
@@ -250,19 +250,17 @@ export const appSlice = createSlice({
 
       .addCase(createApp.pending, (state) => {
         state.submitState = State.loading;
-        state.stateMessage = null;
+        state.stateMessage = "Creating application...";
       })
 
       .addCase(createApp.fulfilled, (state) => {
-
         state.submitState = State.success;
         state.stateMessage = null;
       })
 
       .addCase(createApp.rejected, (state, action) => {
-
         state.submitState = State.failed;
-        state.stateMessage = action.payload as string;
+        state.stateMessage = "Failed to create application. Please try again.";
       });
   },
 });

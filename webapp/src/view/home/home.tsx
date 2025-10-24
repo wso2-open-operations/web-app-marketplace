@@ -25,7 +25,6 @@ import {
   useAppSelector,
 } from "@slices/store";
 import ErrorHandler from "@component/common/ErrorHandler";
-import { fetchApps } from "@slices/appSlice/app";
 import { State } from "@root/src/types/types";
 import {
   filterAndSortApps,
@@ -37,10 +36,11 @@ import AddAppModal from "@root/src/view/home/components/AddAppModal";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import { Role } from "@root/src/slices/authSlice/auth";
+import { fetchApps } from "@root/src/slices/appSlice/app";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { state, apps } = useAppSelector((state: RootState) => state.app);
+  const { state, apps, stateMessage } = useAppSelector((state: RootState) => state.app);
   const roles = useAppSelector((state: RootState) => state.auth.roles);
   const isAdmin = roles.includes(Role.ADMIN);
 
@@ -85,7 +85,7 @@ export default function Home() {
   }
 
   if (state === State.failed) {
-    return <ErrorHandler message="Failed to load applications. Please try again later." />;
+    return <ErrorHandler message={stateMessage} />;
   }
 
   return (
@@ -125,12 +125,10 @@ export default function Home() {
                 description={app.description}
                 logoUrl={app.icon || `/icons/${app.iconName}`}
                 logoAlt={`${app.name} Icon`}
-                category={app.tagName}
-                appUrl={app.urlName}
+                tags={app.tags}
+                appUrl={app.url}
                 isFavourite={app.isFavourite}
                 appId={app.id}
-                tagId={app.tagId}
-                tagColor={app.tagColor}
               />
             </Grid>
           ))
