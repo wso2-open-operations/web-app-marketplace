@@ -49,32 +49,38 @@ const initialState: AppConfigState = {
 export const fetchAppConfig = createAsyncThunk(
   "appConfig/fetchAppConfig",
   async (_, { dispatch, rejectWithValue }) => {
-    APIService.getCancelToken().cancel();
-    const newCancelTokenSource = APIService.updateCancelToken();
-    return new Promise<AppConfigInfo>((resolve, reject) => {
-      APIService.getInstance()
-        .get(AppConfig.serviceUrls.appConfig, {
+    try {
+      APIService.getCancelToken().cancel();
+      const newCancelTokenSource = APIService.updateCancelToken();
+      
+      const response = await APIService.getInstance().get(
+        AppConfig.serviceUrls.appConfig,
+        {
           cancelToken: newCancelTokenSource.token,
-        })
-        .then((response) => {
-          resolve(response.data);
-        })
-        .catch((error) => {
-          if (axios.isCancel(error)) {
-            return rejectWithValue("Request canceled");
-          }
-          dispatch(
-            enqueueSnackbarMessage({
-              message:
-                error.response?.status === HttpStatusCode.InternalServerError
-                  ? SnackMessage.error.fetchAppConfigMessage
-                  : "An unknown error occurred.",
-              type: "error",
-            })
-          );
-          reject(error.response.data.message);
-        });
-    });
+        }
+      );
+      
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request canceled");
+      }
+      
+      if (axios.isAxiosError(error)) {
+        dispatch(
+          enqueueSnackbarMessage({
+            message:
+              error.response?.status === HttpStatusCode.InternalServerError
+                ? SnackMessage.error.fetchAppConfigMessage
+                : "An unknown error occurred.",
+            type: "error",
+          })
+        );
+        
+        return rejectWithValue(error.response?.data?.message || "An error occurred");
+      }
+      return rejectWithValue("An unexpected error occurred");
+    }
   }
 );
 
