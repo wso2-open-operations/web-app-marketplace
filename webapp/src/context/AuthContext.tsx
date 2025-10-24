@@ -27,7 +27,6 @@ import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getUserInfo } from "@slices/userSlice/user";
 import { APIService } from "@utils/apiService";
 import { redirectUrl } from "@config/constant";
-import { fetchApps } from "@slices/appSlice/app";
 
 type AuthContextType = {
   appSignIn: () => void;
