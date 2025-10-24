@@ -147,7 +147,7 @@ export function TabPanel({ children, value, index }: TabPanelProps) {
       hidden={!isActive}
       id={`tabpanel-${index}`}
       aria-labelledby={`tab-${index}`}
-      sx={{ p: 2 }}
+      sx={{ py: 2 }}
     >
       {isActive && (
         <motion.div
