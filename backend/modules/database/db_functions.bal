@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-import ballerina/log;
 import ballerina/sql;
 
 # Fetch all apps visible to the given roles.
@@ -22,6 +21,7 @@ import ballerina/sql;
 public isolated function fetchApps() returns App[]|error {
     stream<AppRecord, error?> result = databaseClient->query(fetchAppsQuery());
     return from AppRecord app in result
+        let Tag[] tags = check app.tags.fromJsonStringWithType()
         select {
             id: app.id,
             name: app.name,
@@ -30,7 +30,7 @@ public isolated function fetchApps() returns App[]|error {
             versionName: app.versionName,
             icon: app.icon,
             addedBy: app.addedBy,
-            tags: check app.tags.fromJsonStringWithType(),
+            tags,
             isActive: app.isActive
         };
 }
@@ -41,9 +41,9 @@ public isolated function fetchApps() returns App[]|error {
 # + email - Email of the user
 # + return - Array of extended app records
 public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApps[]|error {
-    UserApps[] userApps = [];
     stream<UserAppRecord, error?> result = databaseClient->query(fetchUserAppsQuery(email, filters));
-    check from UserAppRecord app in result
+    return from UserAppRecord app in result
+        let Tag[] tags = check app.tags.fromJsonStringWithType()
         select {
             id: app.id,
             name: app.name,
@@ -52,7 +52,7 @@ public isolated function fetchUserApps(string email, AppsFilter filters) returns
             versionName: app.versionName,
             icon: app.icon,
             addedBy: app.addedBy,
-            tags: app.tags.fromJsonStringWithType(),
+            tags,
             isFavourite: app.isFavourite
         };
 }
