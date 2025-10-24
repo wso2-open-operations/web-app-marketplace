@@ -17,6 +17,7 @@
 import AppsIcon from '@mui/icons-material/Apps';
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 
 import React from "react";
 import { NonIndexRouteObject, RouteObject } from "react-router-dom";
@@ -59,6 +60,13 @@ export const routes: RouteObjectWithRole[] = [
     icon: React.createElement(FavoriteBorderIcon),
     element: React.createElement(View.favourites),
     allowRoles: [Role.ADMIN, Role.EMPLOYEE],
+  },
+    {
+    path: "/admin",
+    text: "Admin",
+    icon: React.createElement(AdminPanelSettingsOutlinedIcon),
+    element: React.createElement(View.admin),
+    allowRoles: [Role.ADMIN],
   },
   /*
    TODO: Implement User Guide page when the user guide content is ready.
