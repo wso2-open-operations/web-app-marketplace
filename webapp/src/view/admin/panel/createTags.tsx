@@ -14,23 +14,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import HelpIcon from "@mui/icons-material/Help";
-import TabsPage from "@root/src/layout/pages/TabsPage";
-import UserGuide from "@view/help/panel/userGuide";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-
-export default function Help() {
-  return (
-    <TabsPage
-      title="Help"
-      tabsPage={[
-        {
-          tabTitle: "User Guide",
-          tabPath: "user-guide",
-          icon: <MenuBookIcon />,
-          page: <UserGuide />,
-        },
-      ]}
-    />
-  );
+export default function CreateTags() {
+    return (
+        <div>
+            <h1>Create Tags</h1>
+        </div>
+    )
 }

@@ -25,6 +25,8 @@ import {
   LinearProgress,
   Alert,
   Chip,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
@@ -122,6 +124,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
       tags: [] as number[],
       groupIds: [] as string[],
       icon: null as File | null,
+      isActive: true
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -132,8 +135,8 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
       reader.readAsDataURL(values.icon);
       reader.onload = async () => {
         const base64Icon = reader.result as string;
-        
-        const payload:CreateAppPayload = {
+
+        const payload: CreateAppPayload = {
           name: values.title.trim(),
           url: values.link.trim(),
           description: values.description.trim(),
@@ -141,15 +144,16 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
           tags: values.tags,
           icon: base64Icon,
           userGroups: values.groupIds,
+          isActive: values.isActive
         };
 
-        const result = await dispatch(createApp({payload, userEmail}));
-        
+        const result = await dispatch(createApp({ payload, userEmail }));
+
         if (createApp.fulfilled.match(result)) {
           handleClose();
         }
       };
-      
+
       reader.onerror = () => {
         formik.setFieldError("icon", "Failed to read icon file");
       };
@@ -177,7 +181,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
     }
 
     formik.setFieldValue("icon", file);
-    
+
     // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -282,333 +286,377 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                 App Information
               </Typography>
 
-            {/* Show general error */}
-            {submitState === State.failed && stateMessage && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {stateMessage}
-              </Alert>
-            )}
+              {/* Show general error */}
+              {submitState === State.failed && stateMessage && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  {stateMessage}
+                </Alert>
+              )}
 
-            {/* App Name */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                App Name
-              </Typography>
-              <TextField
-                fullWidth
-                name="title"
-                placeholder="Web App Marketplace"
-                value={formik.values.title}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.title && Boolean(formik.errors.title)}
-                helperText={formik.touched.title && formik.errors.title}
-                disabled={submitState === State.loading}
-              />
-            </Box>
-
-            {/* App URL and Version Name in Row */}
-            <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-              <Box sx={{ flex: 1 }}>
+              {/* App Name */}
+              <Box sx={{ mb: 3 }}>
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  App Url
+                  App Name
                 </Typography>
                 <TextField
                   fullWidth
-                  name="link"
-                  placeholder="www.meet-hris.wso2.com"
-                  value={formik.values.link}
+                  name="title"
+                  placeholder="Web App Marketplace"
+                  value={formik.values.title}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.link && Boolean(formik.errors.link)}
-                  helperText={formik.touched.link && formik.errors.link}
+                  error={formik.touched.title && Boolean(formik.errors.title)}
+                  helperText={formik.touched.title && formik.errors.title}
                   disabled={submitState === State.loading}
                 />
               </Box>
-              <Box sx={{ flex: 1 }}>
+
+              {/* App URL and Version Name in Row */}
+              <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                    App Url
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="link"
+                    placeholder="www.meet-hris.wso2.com"
+                    value={formik.values.link}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.link && Boolean(formik.errors.link)}
+                    helperText={formik.touched.link && formik.errors.link}
+                    disabled={submitState === State.loading}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                    App Version Name
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="versionName"
+                    placeholder="Beta"
+                    value={formik.values.versionName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.versionName && Boolean(formik.errors.versionName)}
+                    helperText={formik.touched.versionName && formik.errors.versionName}
+                    disabled={submitState === State.loading}
+                  />
+                </Box>
+              </Box>
+
+              {/* App Description */}
+              <Box sx={{ mb: 3 }}>
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  App Version Name
+                  App Description
                 </Typography>
                 <TextField
                   fullWidth
-                  name="versionName"
-                  placeholder="Beta"
-                  value={formik.values.versionName}
+                  name="description"
+                  placeholder="Web App Marketplace"
+                  multiline
+                  rows={3}
+                  value={formik.values.description}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.versionName && Boolean(formik.errors.versionName)}
-                  helperText={formik.touched.versionName && formik.errors.versionName}
-                  disabled={submitState === State.loading}
-                />
-              </Box>
-            </Box>
-
-            {/* App Description */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                App Description
-              </Typography>
-              <TextField
-                fullWidth
-                name="description"
-                placeholder="Web App Marketplace"
-                multiline
-                rows={3}
-                value={formik.values.description}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
-                disabled={submitState === State.loading}
-              />
-            </Box>
-
-            {/* Tag */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                Tags
-              </Typography>
-              <Autocomplete
-                multiple
-                options={tags || []}
-                getOptionLabel={(option) => option.name}
-                value={tags?.filter((t) => formik.values.tags.includes(t.id)) || []}
-                onChange={(_, newValue) => {
-                  formik.setFieldValue("tags", newValue.map((tag) => tag.id));
-                }}
-                onBlur={formik.handleBlur}
-                disabled={submitState === State.loading}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      {...getTagProps({ index })}
-                      key={option.id}
-                      label={option.name}
-                      sx={{
-                        backgroundColor: option.color ? `${option.color}1A` : "#e0e0e0",
-                        border: option.color ? `2px solid ${option.color}80` : "2px solid #bdbdbd",
-                        color: option.color || "#424242",
-                        fontWeight: 500,
-                        "& .MuiChip-deleteIcon": {
-                          color: option.color || "#424242",
-                          "&:hover": {
-                            color: option.color ? `${option.color}CC` : "#616161",
-                          },
-                        },
-                      }}
-                    />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    name="tags"
-                    placeholder="Select one or more tags"
-                    error={formik.touched.tags && Boolean(formik.errors.tags)}
-                    helperText={formik.touched.tags && (formik.errors.tags as string)}
-                  />
-                )}
-              />
-            </Box>
-
-            {/* User Groups */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                User Groups
-              </Typography>
-              <Autocomplete
-                multiple
-                options={groups || []}
-                getOptionLabel={(option) => option}
-                value={formik.values.groupIds}
-                onChange={(_, newValue) => {
-                  formik.setFieldValue("groupIds", newValue);
-                }}
-                onBlur={formik.handleBlur}
-                disabled={submitState === State.loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    name="groupIds"
-                    placeholder="Select user groups"
-                    error={
-                      formik.touched.groupIds && Boolean(formik.errors.groupIds)
-                    }
-                    helperText={formik.touched.groupIds && (formik.errors.groupIds as string)}
-                  />
-                )}
-              />
-            </Box>
-
-            {/* App Icon Upload */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                App Icon
-              </Typography>
-
-              {/* File Upload Area */}
-              {!filePreview && (
-                <Box
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                  sx={{
-                    border: "2px dashed",
-                    borderColor: dragActive
-                      ? "primary.main"
-                      : formik.touched.icon && formik.errors.icon
-                      ? "error.main"
-                      : "divider",
-                    borderRadius: 2,
-                    p: 6,
-                    textAlign: "center",
-                    bgcolor: dragActive ? "action.hover" : "background.paper",
-                    cursor: "pointer",
-                    transition: "all 0.3s",
-                  }}
-                  onClick={() =>
-                    document.getElementById("file-upload")?.click()
+                  error={
+                    formik.touched.description &&
+                    Boolean(formik.errors.description)
                   }
-                >
+                  helperText={
+                    formik.touched.description && formik.errors.description
+                  }
+                  disabled={submitState === State.loading}
+                />
+              </Box>
+
+              {/* Tag */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  Tags
+                </Typography>
+                <Autocomplete
+                  multiple
+                  options={tags || []}
+                  getOptionLabel={(option) => option.name}
+                  value={tags?.filter((t) => formik.values.tags.includes(t.id)) || []}
+                  onChange={(_, newValue) => {
+                    formik.setFieldValue("tags", newValue.map((tag) => tag.id));
+                  }}
+                  onBlur={formik.handleBlur}
+                  disabled={submitState === State.loading}
+                  renderTags={(value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={option.id}
+                        label={option.name}
+                        sx={{
+                          backgroundColor: option.color ? `${option.color}1A` : "#e0e0e0",
+                          border: option.color ? `2px solid ${option.color}80` : "2px solid #bdbdbd",
+                          color: option.color || "#424242",
+                          fontWeight: 500,
+                          "& .MuiChip-deleteIcon": {
+                            color: option.color || "#424242",
+                            "&:hover": {
+                              color: option.color ? `${option.color}CC` : "#616161",
+                            },
+                          },
+                        }}
+                      />
+                    ))
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      name="tags"
+                      placeholder="Select one or more tags"
+                      error={formik.touched.tags && Boolean(formik.errors.tags)}
+                      helperText={formik.touched.tags && (formik.errors.tags as string)}
+                    />
+                  )}
+                />
+              </Box>
+
+              {/* User Groups */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  User Groups
+                </Typography>
+                <Autocomplete
+                  multiple
+                  options={groups || []}
+                  getOptionLabel={(option) => option}
+                  value={formik.values.groupIds}
+                  onChange={(_, newValue) => {
+                    formik.setFieldValue("groupIds", newValue);
+                  }}
+                  onBlur={formik.handleBlur}
+                  disabled={submitState === State.loading}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      name="groupIds"
+                      placeholder="Select user groups"
+                      error={
+                        formik.touched.groupIds && Boolean(formik.errors.groupIds)
+                      }
+                      helperText={formik.touched.groupIds && (formik.errors.groupIds as string)}
+                    />
+                  )}
+                />
+              </Box>
+
+              {/* App Icon Upload */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  App Icon
+                </Typography>
+
+                {/* File Upload Area */}
+                {!filePreview && (
                   <Box
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
                     sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: 2,
+                      border: "2px dashed",
+                      borderColor: dragActive
+                        ? "primary.main"
+                        : formik.touched.icon && formik.errors.icon
+                          ? "error.main"
+                          : "divider",
+                      borderRadius: 2,
+                      p: 6,
+                      textAlign: "center",
+                      bgcolor: dragActive ? "action.hover" : "background.paper",
+                      cursor: "pointer",
+                      transition: "all 0.3s",
                     }}
+                    onClick={() =>
+                      document.getElementById("file-upload")?.click()
+                    }
                   >
                     <Box
                       sx={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: "50%",
-                        bgcolor: "primary.main",
                         display: "flex",
+                        flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "center",
-                        color: "white",
+                        gap: 2,
                       }}
                     >
-                      <UploadFileIcon />
-                    </Box>
-                    <Typography>
-                      Drag and drop file or{" "}
-                      <Box
-                        component="span"
-                        sx={{ color: "primary.main", cursor: "pointer" }}
-                      >
-                        select file
-                      </Box>
-                    </Typography>
-                  </Box>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    accept=".svg,image/svg+xml"
-                    onChange={handleFileChange}
-                    style={{ display: "none" }}
-                  />
-                </Box>
-              )}
-
-              {/* File Preview */}
-              {filePreview && (
-                <Box
-                  sx={{
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 2,
-                    p: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                       <Box
                         sx={{
                           width: 48,
                           height: 48,
-                          bgcolor: "action.selected",
-                          borderRadius: 1,
+                          borderRadius: "50%",
+                          bgcolor: "primary.main",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          overflow: "hidden",
+                          color: "white",
                         }}
                       >
-                        {filePreview.preview && (
-                          <img
-                            src={filePreview.preview}
-                            alt="Preview"
-                            style={{ width: "100%", height: "100%" }}
-                          />
-                        )}
+                        <UploadFileIcon />
                       </Box>
-                      <Box>
-                        <Typography variant="body2" fontWeight={500}>
-                          App Icon
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {(filePreview.file.size / (1024 * 1024)).toFixed(2)}mb
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <IconButton
-                      onClick={handleRemoveFile}
-                      disabled={submitState === State.loading}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </Box>
-                  {filePreview.uploading && (
-                    <Box sx={{ mt: 2 }}>
-                      <LinearProgress
-                        variant="determinate"
-                        value={filePreview.progress}
-                      />
-                      <Typography variant="caption" color="text.secondary">
-                        {filePreview.progress}%
+                      <Typography>
+                        Drag and drop file or{" "}
+                        <Box
+                          component="span"
+                          sx={{ color: "primary.main", cursor: "pointer" }}
+                        >
+                          select file
+                        </Box>
                       </Typography>
                     </Box>
-                  )}
-                </Box>
-              )}
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept=".svg,image/svg+xml"
+                      onChange={handleFileChange}
+                      style={{ display: "none" }}
+                    />
+                  </Box>
+                )}
 
-              {/* File validation info */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  mt: 1,
-                }}
-              >
-                <Typography variant="caption" color="text.secondary">
-                  Supported formats : svg
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Maximum size : 10mb
-                </Typography>
+                {/* File Preview */}
+                {filePreview && (
+                  <Box
+                    sx={{
+                      border: "1px solid",
+                      borderColor: "divider",
+                      borderRadius: 2,
+                      p: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            bgcolor: "action.selected",
+                            borderRadius: 1,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {filePreview.preview && (
+                            <img
+                              src={filePreview.preview}
+                              alt="Preview"
+                              style={{ width: "100%", height: "100%" }}
+                            />
+                          )}
+                        </Box>
+                        <Box>
+                          <Typography variant="body2" fontWeight={500}>
+                            App Icon
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {(filePreview.file.size / (1024 * 1024)).toFixed(2)}mb
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <IconButton
+                        onClick={handleRemoveFile}
+                        disabled={submitState === State.loading}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </Box>
+                    {filePreview.uploading && (
+                      <Box sx={{ mt: 2 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={filePreview.progress}
+                        />
+                        <Typography variant="caption" color="text.secondary">
+                          {filePreview.progress}%
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                )}
+
+                {/* File validation info */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mt: 1,
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    Supported formats : svg
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Maximum size : 10mb
+                  </Typography>
+                </Box>
+
+                {/* Error message */}
+                {formik.touched.icon && formik.errors.icon && (
+                  <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
+                    {formik.errors.icon as string}
+                  </Typography>
+                )}
               </Box>
 
-              {/* Error message */}
-              {formik.touched.icon && formik.errors.icon && (
-                <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
-                  {formik.errors.icon as string}
-                </Typography>
-              )}
-            </Box>
+              <FormControlLabel
+                label={
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {formik.values.isActive ? "Active" : "Not Active"}
+                  </Typography>
+                }
+                labelPlacement="end"
+                control={
+                  <Switch
+                    checked={formik.values.isActive}
+                    onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
+                    disabled={submitState === State.loading}
+                    sx={{
+                      width: 58,
+                      height: 38,
+                      padding: 1,
+                      '& .MuiSwitch-switchBase': {
+                        padding: 0,
+                        margin: '7px',
+                        transitionDuration: '300ms',
+                        '&.Mui-checked': {
+                          transform: 'translateX(20px)',
+                          color: '#fff',
+                          '& + .MuiSwitch-track': {
+                            backgroundColor: 'primary.main',
+                            opacity: 1,
+                            border: 0,
+                          },
+                        },
+                      },
+                      '& .MuiSwitch-thumb': {
+                        width: 24,
+                        height: 24,
+                      },
+                      '& .MuiSwitch-track': {
+                        borderRadius: 38 / 2,
+                        backgroundColor: 'grey.400',
+                        opacity: 1,
+                      },
+                    }}
+                  />
+                }
+              />
             </Box>
 
             {/* Footer Buttons */}
