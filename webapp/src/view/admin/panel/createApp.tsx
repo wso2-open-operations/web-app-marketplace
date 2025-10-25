@@ -559,6 +559,10 @@ export default function CreateApp() {
                     >
                         <Button
                             disabled={submitState === State.loading}
+                            onClick={()=> {
+                                formik.resetForm();
+                                handleRemoveFile();
+                            }}
                         >
                             Cancel
                         </Button>
