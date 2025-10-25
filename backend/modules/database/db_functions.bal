@@ -57,6 +57,10 @@ public isolated function fetchUserApps(string email, AppsFilter filters) returns
         };
 }
 
+# Fetch a single app by applying filter criteria.
+#
+# + filters - Filter criteria to query a specific app
+# + return - App record if found, () if no matching app exists, or error on failure
 public isolated function fetchApp(AppFilter filters) returns App|error? {
     AppRecord|error appRecord = databaseClient->queryRow(fetchAppQuery(filters));
 
