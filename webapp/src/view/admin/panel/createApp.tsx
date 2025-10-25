@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { Box, Typography, IconButton, Alert, TextField, Autocomplete, Chip, LinearProgress, Button } from "@mui/material";
+import { Box, Typography, IconButton, Alert, TextField, Autocomplete, Chip, LinearProgress, Button, FormControlLabel, Switch } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -108,6 +108,7 @@ export default function CreateApp() {
             tags: [] as number[],
             groupIds: [] as string[],
             icon: null as File | null,
+            isActive: true
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -127,7 +128,7 @@ export default function CreateApp() {
                     tags: values.tags,
                     icon: base64Icon,
                     userGroups: values.groupIds,
-                    isActive: true
+                    isActive: values.isActive
                 };
 
                 const result = await dispatch(createApp({ payload, userEmail }));
@@ -216,7 +217,7 @@ export default function CreateApp() {
                         <Box sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 3 }}>
                             {/* App Name */}
                             <Box>
-                                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                                     App Name
                                 </Typography>
                                 <TextField
@@ -235,7 +236,7 @@ export default function CreateApp() {
                             {/* App URL and Version Name in Row */}
                             <Box sx={{ display: "flex", gap: 2 }}>
                                 <Box sx={{ flex: 1 }}>
-                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                                         App Url
                                     </Typography>
                                     <TextField
@@ -251,7 +252,7 @@ export default function CreateApp() {
                                     />
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
-                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                                         App Version Name
                                     </Typography>
                                     <TextField
@@ -270,7 +271,7 @@ export default function CreateApp() {
 
                             {/* App Description */}
                             <Box>
-                                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                                     App Description
                                 </Typography>
                                 <TextField
@@ -295,7 +296,7 @@ export default function CreateApp() {
 
                             {/* Tag */}
                             <Box>
-                                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                                     Tags
                                 </Typography>
                                 <Autocomplete
@@ -343,7 +344,7 @@ export default function CreateApp() {
 
                             {/* User Groups */}
                             <Box>
-                                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                                     User Groups
                                 </Typography>
                                 <Autocomplete
@@ -374,7 +375,7 @@ export default function CreateApp() {
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
                             {/* App Icon Upload */}
                             <Box sx={{ width: "100%" }}>
-                                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                                     App Icon
                                 </Typography>
 
@@ -484,7 +485,7 @@ export default function CreateApp() {
                                                     )}
                                                 </Box>
                                                 <Box>
-                                                    <Typography variant="body2" fontWeight={500}>
+                                                    <Typography variant="body1" fontWeight={500}>
                                                         App Icon
                                                     </Typography>
                                                     <Typography variant="caption" color="text.secondary">
@@ -544,6 +545,50 @@ export default function CreateApp() {
                                 </Alert>
                             )}
 
+                            <FormControlLabel
+                                label={
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        {formik.values.isActive ? "Active" : "Not Active"}
+                                    </Typography>
+                                }
+                                labelPlacement="end"
+                                control={
+                                    <Switch
+                                        checked={formik.values.isActive}
+                                        onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
+                                        disabled={submitState === State.loading}
+                                        sx={{
+                                            width: 58,
+                                            height: 38,
+                                            padding: 1,
+                                            '& .MuiSwitch-switchBase': {
+                                                padding: 0,
+                                                margin: '7px',
+                                                transitionDuration: '300ms',
+                                                '&.Mui-checked': {
+                                                    transform: 'translateX(20px)',
+                                                    color: '#fff',
+                                                    '& + .MuiSwitch-track': {
+                                                        backgroundColor: 'primary.main',
+                                                        opacity: 1,
+                                                        border: 0,
+                                                    },
+                                                },
+                                            },
+                                            '& .MuiSwitch-thumb': {
+                                                width: 24,
+                                                height: 24,
+                                            },
+                                            '& .MuiSwitch-track': {
+                                                borderRadius: 38 / 2,
+                                                backgroundColor: 'grey.400',
+                                                opacity: 1,
+                                            },
+                                        }}
+                                    />
+                                }
+                            />
+
                         </Box>
                     </Box>
 
@@ -559,10 +604,11 @@ export default function CreateApp() {
                     >
                         <Button
                             disabled={submitState === State.loading}
-                            onClick={()=> {
+                            onClick={() => {
                                 formik.resetForm();
                                 handleRemoveFile();
                             }}
+                            variant="outlined"
                         >
                             Cancel
                         </Button>
