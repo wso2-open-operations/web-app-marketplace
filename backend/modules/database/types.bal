@@ -139,6 +139,29 @@ public type CreateApp record {|
     boolean isActive;
 |};
 
+ # [Database] Update App record.
+public type UpdateApp record {|
+    # Display title
+    string name?;
+    # Target URL 
+    string url?;
+    # Short description
+    string description?;
+    # Version label of the target app
+    @sql:Column {name: "version_name"}
+    string versionName?;
+    # Icon asset name/key
+    string icon?;
+    # User who added the link
+    @sql:Column {name: "added_by"}
+    string addedBy?;
+    # Tag IDs of the target app (comma-separated)
+    int[] tags?;
+    # Active status of the app - "1" for active, "0" for inactive
+    @sql:Column {name: "is_active"}
+    boolean isActive?;
+|};
+
 # [Database] record for app ID validation queries.
 type ValidAppResult record {|
     # 1 if app exists and is active, 0 otherwise

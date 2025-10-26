@@ -74,7 +74,7 @@ public type CreateApp record {|
     @constraint:String{
         pattern: {
             value: NON_EMPTY_BASE64_STRING,
-            message: "icon must be base64 (optionally prefixed with data:image/svg+xml;base64"
+            message: "icon must be base64 prefixed with data:image/svg+xml;base64"
         }
     }
     string icon;
@@ -86,6 +86,32 @@ public type CreateApp record {|
     string[] userGroups;
     # Is the App is active or not
     boolean isActive;
+|};
+
+# Structure of UpdateApp record.
+public type UpdateApp record {|
+    # Display title
+    string name?;
+    # Target URL 
+    string url?;
+    # Short description
+    string description?;
+    # Version label of the target app
+    string versionName?;
+    # Icon asset name/key
+    @constraint:String{
+        pattern: {
+            value: NON_EMPTY_BASE64_STRING,
+            message: "icon must be base64 prefixed with data:image/svg+xml;base64"
+        }
+    }
+    string icon?;
+    # User who added the link
+    string addedBy?;
+    # Tag IDs of the target app (comma-separated)
+    int[] tags?;
+    # Active status of the app - "1" for active, "0" for inactive
+    boolean isActive?;
 |};
 
 # Structure of Tag record.
