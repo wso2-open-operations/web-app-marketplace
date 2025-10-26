@@ -256,6 +256,8 @@ isolated function updateAppQuery(int id, UpdateApp payload) returns sql:Paramete
         filters.push(` version_name = ${payload.versionName}`);
     }
 
+    filters.push(` updated_by = ${payload.updatedBy}`);
+
     int[]? payloadTags = payload.tags;
     if payloadTags is int[]{
         string tags = payloadTags.length() > 0 ? string:'join(",", from int tagId in payloadTags select 
