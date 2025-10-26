@@ -30,17 +30,29 @@ export type Tag = {
   color: string;
 };
 
+export type UserApp = {
+  id: number;
+  name: string;
+  url: string;
+  description: string;
+  versionName: string;
+  icon: string;
+  tags: Tag[];
+  addedBy: string;
+  isFavourite: 0 | 1;
+  isActive?: boolean;
+};
+
 export type App = {
   id: number;
   name: string;
   url: string;
   description: string;
   versionName: string;
-  icon?: string;
+  icon: string;
   tags: Tag[];
-  iconName: string;
+  userGroups?: string[]
   addedBy: string;
-  isFavourite: 0 | 1;
   isActive?: boolean;
 };
 
@@ -59,6 +71,7 @@ interface AppState {
   state: State;
   stateMessage: string | null;
   apps: App[] | null;
+  userApps: UserApp[] | null;
   submitState: State
 }
 
@@ -66,6 +79,7 @@ const initialState: AppState = {
   state: State.idle,
   stateMessage: null,
   apps: null,
+  userApps: null,
   submitState: State.idle
 };
 
@@ -77,35 +91,72 @@ interface UpdateArgs {
 export const fetchApps = createAsyncThunk(
   "app/fetchApps",
   async (_, { getState, dispatch, rejectWithValue }) => {
-    const {userInfo} = (getState() as {user: UserState}).user;
+    const { userInfo } = (getState() as { user: UserState }).user;
 
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
-    return new Promise<App[]>((resolve, reject) => {
-      APIService.getInstance()
-        .get(`${AppConfig.serviceUrls.apps}/${userInfo?.workEmail}`, {
-          cancelToken: newCancelTokenSource.token,
-        })
-        .then((response) => {
-          resolve(response.data);
-        })
-        .catch((error) => {
-          if (axios.isCancel(error)) {
-            return rejectWithValue("Request Canceled");
-          }
 
-          dispatch(
-            enqueueSnackbarMessage({
-              message:
-                error.response?.status === HttpStatusCode.InternalServerError
-                  ? SnackMessage.error.fetchApps
-                  : "An unknown error occured",
-              type: "error",
-            })
-          );
-          reject(error.response.data.message);
-        });
-    });
+    try {
+      const res = await APIService.getInstance().get<App[]>(AppConfig.serviceUrls.apps, {
+        cancelToken: newCancelTokenSource.token
+      });
+      return res.data;
+
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request Canceled");
+      }
+
+      const message =
+        error?.response?.data?.message ??
+        (error?.response?.status === HttpStatusCode.InternalServerError
+          ? "Server error while updating"
+          : "Failed to update");
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message,
+          type: "error",
+        })
+      );
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const fetchUserApps = createAsyncThunk(
+  "app/fetchUserApps",
+  async (_, { getState, dispatch, rejectWithValue }) => {
+    const { userInfo } = (getState() as { user: UserState }).user;
+
+    APIService.getCancelToken().cancel();
+    const newCancelTokenSource = APIService.updateCancelToken();
+
+    try {
+      const res = await APIService.getInstance().get<UserApp[]>(`${AppConfig.serviceUrls.apps}/${userInfo?.workEmail}`, {
+        cancelToken: newCancelTokenSource.token
+      });
+      return res.data;
+
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request Canceled");
+      }
+
+      const message =
+        error?.response?.data?.message ??
+        (error?.response?.status === HttpStatusCode.InternalServerError
+          ? "Server error while updating"
+          : "Failed to update");
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message,
+          type: "error",
+        })
+      );
+      return rejectWithValue(message);
+    }
   }
 );
 
@@ -114,7 +165,7 @@ export const upsertAppFavourite = createAsyncThunk<
   UpdateArgs
 >(
   "apps/upsertAppFavourite",
-  async (updateArgs, {dispatch, rejectWithValue }) => {
+  async (updateArgs, { dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
 
@@ -153,7 +204,6 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
   "apps/createApp",
   async ({ payload, userEmail }, { dispatch, rejectWithValue }) => {
     APIService.getCancelToken().cancel();
-    const newCancelTokenSource = APIService.updateCancelToken();
 
     try {
       const requestBody = {
@@ -171,9 +221,6 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
       const res = await APIService.getInstance().post(
         AppConfig.serviceUrls.apps,
         requestBody,
-        {
-          cancelToken: newCancelTokenSource.token,
-        }
       );
 
       dispatch(
@@ -183,7 +230,7 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         })
       );
 
-      dispatch(fetchApps());
+      dispatch(fetchUserApps());
 
       return;
     } catch (error: any) {
@@ -234,6 +281,22 @@ export const appSlice = createSlice({
         state.apps = action.payload;
       })
 
+      .addCase(fetchUserApps.rejected, (state, action) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to load applications. Please try again later.";
+      })
+
+      .addCase(fetchUserApps.pending, (state) => {
+        state.state = State.loading;
+        state.stateMessage = "Loading applications...";
+      })
+
+      .addCase(fetchUserApps.fulfilled, (state, action) => {
+        state.state = State.success;
+        state.stateMessage = null;
+        state.userApps = action.payload;
+      })
+
       .addCase(fetchApps.rejected, (state, action) => {
         state.state = State.failed;
         state.stateMessage = "Failed to load applications. Please try again later.";
@@ -241,8 +304,8 @@ export const appSlice = createSlice({
 
       .addCase(upsertAppFavourite.fulfilled, (state, action) => {
         // Update the favorite status in the apps array
-        if (state.apps) {
-          const app = state.apps.find((app) => app.id === action.payload.id);
+        if (state.userApps) {
+          const app = state.userApps.find((app) => app.id === action.payload.id);
           if (app) {
             app.isFavourite = action.payload.active === UpdateAction.Favorite ? 1 : 0;
           }
