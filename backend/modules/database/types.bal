@@ -196,7 +196,7 @@ public type UpdateApp record {|
     boolean isActive?;
     # User who added the link
     @sql:Column {name: "updated_by"}
-    string updatedBy?;
+    string updatedBy;
 |};
 
 # [Database] Filter criteria for querying apps with optional conditions.
