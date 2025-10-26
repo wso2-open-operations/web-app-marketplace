@@ -269,7 +269,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # + id - The ID of the app to update
     # + updateApp - The update data for the app
     # + return - Success response or error responses
-    resource function patch path/[int id](http:RequestContext ctx, UpdateApp updateApp) returns http:Ok|http:Forbidden|
+    resource function patch apps/[int id](http:RequestContext ctx, UpdateApp updateApp) returns http:Ok|http:Forbidden|
     http:NotFound|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
