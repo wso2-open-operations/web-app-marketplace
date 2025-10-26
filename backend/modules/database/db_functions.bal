@@ -83,6 +83,14 @@ public isolated function fetchApp(AppFilter filters) returns App|error? {
     };
 }
 
+# Create a new app in the database.
+#
+# + app - App data to create
+# + return - Error if creation fails
+public isolated function createApp(CreateApp app) returns error? {
+    _ = check databaseClient->execute(createAppQuery(app));
+}
+
 # Insert or update user's favourite status for an app.
 #
 # + email - User email to associate with the favourite
@@ -91,14 +99,6 @@ public isolated function fetchApp(AppFilter filters) returns App|error? {
 # + return - error? on failure
 public isolated function upsertFavourites(string email, int appId, boolean isFavourite) returns error? {
     _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFavourite));
-}
-
-# Create a new app in the database.
-#
-# + app - App data to create
-# + return - Error if creation fails
-public isolated function createApp(CreateApp app) returns error? {
-    _ = check databaseClient->execute(createAppQuery(app));
 }
 
 # Retrieve user groups.
