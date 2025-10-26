@@ -40,7 +40,6 @@ export type UserApp = {
   tags: Tag[];
   addedBy: string;
   isFavourite: 0 | 1;
-  isActive?: boolean;
 };
 
 export type App = {
