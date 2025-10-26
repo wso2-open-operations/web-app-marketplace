@@ -264,6 +264,11 @@ service http:InterceptableService / on new http:Listener(9090) {
         };
     }
 
+    # Update an existing app.
+    #
+    # + id - The ID of the app to update
+    # + updateApp - The update data for the app
+    # + return - Success response or error responses
     resource function patch path/[int id](http:RequestContext ctx, UpdateApp updateApp) returns http:Ok|http:Forbidden|
     http:NotFound|http:InternalServerError {
 

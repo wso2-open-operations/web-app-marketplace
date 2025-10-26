@@ -214,6 +214,11 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
     return query;
 }
 
+# Build query to update an existing app.
+#
+# + id - The ID of the app to update
+# + payload - The update payload containing fields to update
+# + return - Parameterized query for app update
 isolated function updateAppQuery(int id, UpdateApp payload) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery mainQuery = `
         UPDATE apps
