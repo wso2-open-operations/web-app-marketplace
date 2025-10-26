@@ -21,12 +21,19 @@ import PreLoader from "@component/common/PreLoader";
 import Layout from "@layout/Layout";
 import Error from "@layout/pages/404";
 import MaintenancePage from "@layout/pages/Maintenance";
-import { RootState, useAppSelector } from "@slices/store";
+import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getActiveRoutesV2, routes } from "@src/route";
+import { useEffect } from "react";
+import { fetchApps } from "../slices/appSlice/app";
 
 const AppHandler = () => {
+  const dispatch = useAppDispatch()
   const auth = useAppSelector((state: RootState) => state.auth);
-  const app = useAppSelector((state: RootState) => state.app);
+
+  useEffect(() => {
+    dispatch(fetchApps());
+  }, [dispatch])
+
   const router = createBrowserRouter([
     {
       path: "/",
