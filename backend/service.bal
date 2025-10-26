@@ -133,7 +133,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get apps visible to the user.
     #
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
-    resource function get apps/[string email](http:RequestContext ctx) returns UserApps[]|http:NotFound|http:BadRequest|http:InternalServerError {
+    resource function get apps/[string email](http:RequestContext ctx) returns UserApp[]|http:NotFound|http:BadRequest|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -152,7 +152,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        UserApps[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups});
+        UserApp[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups});
         if result is error {
             string customError = string `Error while retrieving apps for user: ${email}`;
             log:printError(customError, result);
