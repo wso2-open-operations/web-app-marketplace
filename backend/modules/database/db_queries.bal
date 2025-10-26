@@ -214,6 +214,52 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
     return query;
 }
 
+isolated function updateAppQuery(int id, UpdateApp payload) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery mainQuery = `
+        UPDATE apps
+        SET
+    `;
+
+    sql:ParameterizedQuery subQuery = `
+        WHERE id = ${id}
+    `;
+
+    sql:ParameterizedQuery[] filters = [];
+
+    if payload.name is string {
+        filters.push(` name = ${payload.name}`);
+    }
+
+    if payload.description is string {
+        filters.push(` description = ${payload.description}`);
+    }
+
+    if payload.icon is string {
+        filters.push(` icon = ${payload.icon}`);
+    }
+
+    if payload.isActive is boolean {
+        filters.push(` is_active = ${payload.isActive}`);
+    }
+
+    if payload.url is string {
+        filters.push(` url = ${payload.url}`);
+    }
+
+    if payload.versionName is string {
+        filters.push(` version_name = ${payload.versionName}`);
+    }
+
+    int[]? payloadTags = payload.tags;
+    if payloadTags is int[]{
+        string tags = payloadTags.length() > 0 ? string:'join(",", from int tagId in payloadTags select 
+        tagId.toString()) : "";
+        filters.push(` tags = ${tags}`);
+    }
+
+    return sql:queryConcat(mainQuery, subQuery);
+}
+
 # Build query to insert or update user's favourite status for an app.
 #
 # + email - User email to associate with the favourite
