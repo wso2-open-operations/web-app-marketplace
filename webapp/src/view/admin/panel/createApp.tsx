@@ -86,8 +86,7 @@ export default function CreateApp() {
     const tags = useAppSelector((state: RootState) => state.tag.tags);
     const groups = useAppSelector((state: RootState) => state.group.groups);
     const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
-    const submitState = useAppSelector((state: RootState) => state.app.submitState);
-    const stateMessage = useAppSelector((state: RootState) => state.app.stateMessage);
+    const {stateMessage, submitState} = useAppSelector((state: RootState) => state.app);
 
     const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
     const [dragActive, setDragActive] = useState(false);
