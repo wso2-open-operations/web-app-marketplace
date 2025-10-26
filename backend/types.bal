@@ -43,13 +43,30 @@ public type App record {|
     string addedBy;
     # Tags as JSON string containing array of tag details
     Tag[] tags;
+    # User goups of the target app
+    string[] userGroups?;
     # Active status of the app - "1" for active, "0" for inactive
     boolean isActive?;
 |};
 
 # Structure of Extended app record containing all app fields.
-public type UserApps record {|
-    *App;
+public type UserApp record {|
+    # Unique identifier of the link
+    int id;
+    # Display title
+    string name;
+    # Target URL 
+    string url;
+    # Short description
+    string description;
+    # Version label of the target app
+    string? versionName;
+    # Icon asset name/key
+    string icon;
+    # User who added the link
+    string addedBy;
+    # Tags as JSON string containing array of tag details
+    Tag[] tags;
     # Email of the user who last updated the app
     int isFavourite;
 |};
