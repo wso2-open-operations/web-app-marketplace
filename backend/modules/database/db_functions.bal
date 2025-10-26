@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 import ballerina/sql;
+import ballerina/regex;
 
 # Fetch all apps visible to the given roles.
 #
@@ -22,6 +23,9 @@ public isolated function fetchApps() returns App[]|error {
     stream<AppRecord, error?> result = databaseClient->query(fetchAppsQuery());
     return from AppRecord app in result
         let Tag[] tags = check app.tags.fromJsonStringWithType()
+        let string[] userGroups = (app.userGroups is string && app.userGroups != "") 
+            ? regex:split(<string>app.userGroups, ",") 
+            : []
         select {
             id: app.id,
             name: app.name,
@@ -31,7 +35,8 @@ public isolated function fetchApps() returns App[]|error {
             icon: app.icon,
             addedBy: app.addedBy,
             tags,
-            isActive: app.isActive
+            isActive: app.isActive,
+            userGroups: userGroups
         };
 }
 
@@ -40,7 +45,7 @@ public isolated function fetchApps() returns App[]|error {
 # + filters - Filter criteria to query apps
 # + email - Email of the user
 # + return - Array of extended app records
-public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApps[]|error {
+public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApp[]|error {
     stream<UserAppRecord, error?> result = databaseClient->query(fetchUserAppsQuery(email, filters));
     return from UserAppRecord app in result
         let Tag[] tags = check app.tags.fromJsonStringWithType()
