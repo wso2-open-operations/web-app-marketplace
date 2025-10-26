@@ -40,7 +40,6 @@ import { useAppDispatch, useAppSelector, RootState } from "@root/src/slices/stor
 import { State } from "@root/src/types/types";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import AppCard from "../../home/components/AppCard";
-import { title } from "process";
 
 const fileSize = 10 * 1024 * 1024;
 
@@ -56,32 +55,30 @@ const validationSchema = Yup.object({
     title: Yup.string()
         .trim()
         .min(2, "Title must be at least 2 characters")
-        .required("App name is required"),
+        .nullable(),
     description: Yup.string()
         .trim()
         .min(10, "Description must be at least 10 characters")
         .max(25, "Description must be at most 25 characters")
-        .required("App description is required"),
+        .nullable(),
     link: Yup.string()
         .trim()
         .url("Must be a valid URL")
-        .required("App URL is required"),
+        .nullable(),
     versionName: Yup.string()
         .trim()
         .min(1, "Version name must be at least 1 character")
-        .required("App version name is required"),
+        .nullable(),
     tags: Yup.array()
         .of(Yup.number().required())
-        .min(1, "At least one tag is required")
-        .required("Tags are required"),
+        .nullable(),
     groupIds: Yup.array()
         .of(Yup.string().required())
-        .min(1, "At least one user group is required")
-        .required("User groups are required"),
+        .nullable(),
     icon: Yup.mixed()
-        .required("App icon is required")
+        .nullable()
         .test("fileType", "Only SVG files are allowed", (value) => {
-            if (!value) return false;
+            if (!value) return true; // Allow null for updates
             const file = value as File;
             return (
                 file.type === "image/svg+xml" &&
@@ -89,10 +86,11 @@ const validationSchema = Yup.object({
             );
         })
         .test("fileSize", "File size must not exceed 10MB", (value) => {
-            if (!value) return false;
+            if (!value) return true; // Allow null for updates
             const file = value as File;
             return file.size <= fileSize; // 10MB
         }),
+    isActive: Yup.boolean()
 });
 
 export default function UpdateApp() {
@@ -104,10 +102,16 @@ export default function UpdateApp() {
 
     const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
     const [dragActive, setDragActive] = useState(false);
+    const [selectedApp, setSelectedApp] = useState<any>(null);
 
-    useEffect(() => {
-        dispatch(fetchApps());
-    }, [dispatch])
+    // Lighter border styling for disabled TextFields
+    const disabledTextFieldSx = {
+        '& .MuiOutlinedInput-root.Mui-disabled': {
+            '& fieldset': {
+                borderColor: 'rgba(0, 0, 0, 0.12)',
+            },
+        },
+    };
 
     const dummyApp = {
         title: "Sample",
@@ -123,7 +127,6 @@ export default function UpdateApp() {
         isFavourite: 1,
         logoAlt: "App Logo"
     };
-    const [selectedApp, setSelectedApp] = useState<any>(null);
 
     const userEmail = userInfo?.workEmail ?? "";
 
@@ -160,11 +163,11 @@ export default function UpdateApp() {
         },
         validationSchema,
         onSubmit: async (values) => {
-            if (!values.icon) return;
-
             // Convert icon file to base64 string
             const reader = new FileReader();
-            reader.readAsDataURL(values.icon);
+            if (values.icon) {
+                reader.readAsDataURL(values.icon);
+            }
             reader.onload = async () => {
                 const base64Icon = reader.result as string;
 
@@ -304,13 +307,14 @@ export default function UpdateApp() {
                                 <TextField
                                     fullWidth
                                     name="title"
-                                    placeholder="Web App Marketplace"
+                                    placeholder={!selectedApp ? "Select an app to edit name": "Web App Marketplace"}
                                     value={formik.values.title}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     error={formik.touched.title && Boolean(formik.errors.title)}
                                     helperText={formik.touched.title && (formik.errors.title as string)}
-                                    disabled={submitState === State.loading}
+                                    disabled={!selectedApp || submitState === State.loading}
+                                    sx={disabledTextFieldSx}
                                 />
                             </Box>
 
@@ -322,14 +326,15 @@ export default function UpdateApp() {
                                     </Typography>
                                     <TextField
                                         fullWidth
-                                        name="link"
-                                        placeholder="www.meet-hris.wso2.com"
+                                        name="url"
+                                        placeholder={!selectedApp ? "Select an app to edit url": "www.meet-hris.wso2.com"}
                                         value={formik.values.link}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         error={formik.touched.link && Boolean(formik.errors.link)}
                                         helperText={formik.touched.link && (formik.errors.link as string)}
-                                        disabled={submitState === State.loading}
+                                        disabled={!selectedApp || submitState === State.loading}
+                                        sx={disabledTextFieldSx}
                                     />
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
@@ -339,13 +344,14 @@ export default function UpdateApp() {
                                     <TextField
                                         fullWidth
                                         name="versionName"
-                                        placeholder="Beta"
+                                        placeholder={!selectedApp ? "Select an app to edit version name": "Beta"}
                                         value={formik.values.versionName}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         error={formik.touched.versionName && Boolean(formik.errors.versionName)}
                                         helperText={formik.touched.versionName && (formik.errors.versionName as string)}
-                                        disabled={submitState === State.loading}
+                                        disabled={!selectedApp || submitState === State.loading}
+                                        sx={disabledTextFieldSx}
                                     />
                                 </Box>
                             </Box>
@@ -358,7 +364,7 @@ export default function UpdateApp() {
                                 <TextField
                                     fullWidth
                                     name="description"
-                                    placeholder="Web App Marketplace"
+                                    placeholder={!selectedApp ? "Select an app to edit description": "Web App Marketplace"}
                                     multiline
                                     rows={3}
                                     value={formik.values.description}
@@ -371,7 +377,8 @@ export default function UpdateApp() {
                                     helperText={
                                         formik.touched.description && (formik.errors.description as string)
                                     }
-                                    disabled={submitState === State.loading}
+                                    disabled={!selectedApp || submitState === State.loading}
+                                    sx={disabledTextFieldSx}
                                 />
                             </Box>
 
@@ -389,7 +396,7 @@ export default function UpdateApp() {
                                         formik.setFieldValue("tags", newValue.map((tag) => tag.id));
                                     }}
                                     onBlur={formik.handleBlur}
-                                    disabled={submitState === State.loading}
+                                    disabled={!selectedApp || submitState === State.loading}
                                     renderTags={(value, getTagProps) =>
                                         value.map((option, index) => (
                                             <Chip
@@ -415,7 +422,7 @@ export default function UpdateApp() {
                                         <TextField
                                             {...params}
                                             name="tags"
-                                            placeholder="Select one or more tags"
+                                            placeholder={!selectedApp ? "Select an app to edit tags": "Select one or more tags"}
                                             error={formik.touched.tags && Boolean(formik.errors.tags)}
                                             helperText={formik.touched.tags && (formik.errors.tags as string)}
                                         />
@@ -437,12 +444,12 @@ export default function UpdateApp() {
                                         formik.setFieldValue("groupIds", newValue);
                                     }}
                                     onBlur={formik.handleBlur}
-                                    disabled={submitState === State.loading}
+                                    disabled={!selectedApp || submitState === State.loading}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
                                             name="groupIds"
-                                            placeholder="Select user groups"
+                                            placeholder={!selectedApp ? "Select an app to edit user groups": "Select user groups"}  
                                             error={
                                                 formik.touched.groupIds && Boolean(formik.errors.groupIds)
                                             }
@@ -574,7 +581,7 @@ export default function UpdateApp() {
                                             </Box>
                                             <IconButton
                                                 onClick={handleRemoveFile}
-                                                disabled={submitState === State.loading}
+                                                disabled={!selectedApp || submitState === State.loading}
                                             >
                                                 <CloseIcon />
                                             </IconButton>
@@ -617,13 +624,6 @@ export default function UpdateApp() {
                                 )}
                             </Box>
 
-                            {/* Show general error */}
-                            {submitState === State.failed && stateMessage && (
-                                <Alert severity="error" >
-                                    {stateMessage}
-                                </Alert>
-                            )}
-
                             <FormControlLabel
                                 label={
                                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -635,7 +635,7 @@ export default function UpdateApp() {
                                     <Switch
                                         checked={formik.values.isActive}
                                         onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
-                                        disabled={submitState === State.loading}
+                                        disabled={!selectedApp || submitState === State.loading}
                                         sx={{
                                             width: 58,
                                             height: 38,
@@ -667,6 +667,13 @@ export default function UpdateApp() {
                                     />
                                 }
                             />
+
+                            {/* Show general error */}
+                            {submitState === State.failed && stateMessage && (
+                                <Alert severity="error" >
+                                    {stateMessage}
+                                </Alert>
+                            )}
                         </Box>
 
                         {/* Footer Buttons */}
@@ -680,7 +687,7 @@ export default function UpdateApp() {
                             }}
                         >
                             <Button
-                                disabled={submitState === State.loading}
+                                disabled={!selectedApp || submitState === State.loading}
                                 onClick={() => {
                                     formik.resetForm();
                                     handleRemoveFile();
@@ -692,9 +699,9 @@ export default function UpdateApp() {
                             <Button
                                 type="submit"
                                 variant="contained"
-                                disabled={submitState === State.loading || !formik.isValid}
+                                disabled={submitState === State.loading || !selectedApp}
                             >
-                                {submitState === State.loading ? "Creating..." : "Create App"}
+                                {submitState === State.loading ? "Updating..." : "Update App"}
                             </Button>
                         </Box>
                     </form>
