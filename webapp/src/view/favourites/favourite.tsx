@@ -6,7 +6,7 @@ import ErrorHandler from "@component/common/ErrorHandler";
 import AppCard from "@view/home/components/AppCard";
 
 function Favourites() {
-    const apps = useAppSelector((state: RootState) => state.app.apps);
+    const apps = useAppSelector((state: RootState) => state.app.userApps);
     const favApps = apps?.filter(app => app.isFavourite === 1) || [];
 
     return (
@@ -17,7 +17,7 @@ function Favourites() {
                         <AppCard
                             title={app.name}
                             description={app.description}
-                            logoUrl={app.icon || `/icons/${app.iconName}`}
+                            logoUrl={app.icon}
                             logoAlt={`${app.name} Icon`}
                             tags={app.tags}
                             appUrl={app.url}
