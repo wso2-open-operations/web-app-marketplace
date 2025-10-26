@@ -87,7 +87,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
         } 
-        
+
         UserInfo userInfoResponse = {...employee, privileges};
 
         error? cacheError = cache.put(userInfo.email, userInfoResponse);
@@ -133,7 +133,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get apps visible to the user.
     #
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
-    resource function get apps/[string email](http:RequestContext ctx) returns UserApps[]|http:NotFound|http:BadRequest|http:InternalServerError {
+    resource function get apps/[string email](http:RequestContext ctx) returns UserApp[]|http:NotFound|http:BadRequest|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -145,14 +145,14 @@ service http:InterceptableService / on new http:Listener(9090) {
         if !email.matches(WSO2_EMAIL) || email != userInfo.email {
             string customError = string `Invalid email: ${email}`;
             log:printError(customError);
-            return<http:BadRequest>{
-                body:  {
+            return <http:BadRequest>{
+                body: {
                     message: customError
                 }
             };
         }
 
-        UserApps[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups});
+        UserApp[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups});
         if result is error {
             string customError = string `Error while retrieving apps for user: ${email}`;
             log:printError(customError, result);
@@ -173,7 +173,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     }
 
     # Add a new app.
-    # 
+    #
     # + app - App data to create
     # + return - Created on success, or BadRequest/Forbidden/InternalServerError on failure
     resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|http:Forbidden|http:InternalServerError {
@@ -185,12 +185,12 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
-            log:printWarn(string `Access denied: Only administrators can add new apps. email: ${userInfo.email} groups: ${
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            log:printWarn(string `${ACCESS_DENINED_ERROR}. email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: "Access denied: Only administrators can add new apps."
+                    message: ACCESS_DENINED_ERROR
                 }
             };
         }
@@ -207,7 +207,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !(validApp is ()) {
-            log:printError(string `Application with app name : ${app.name} or url : ${app.url} already exists`);  
+            log:printError(string `Application with app name : ${app.name} or url : ${app.url} already exists`);
             return <http:InternalServerError>{
                 body: {
                     message: "Application with app name and url already exists"
@@ -219,7 +219,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if validUserGroups is error {
             string customError = string `Error occurred while retrieving user groups`;
             log:printError(customError, validUserGroups);
-            return<http:InternalServerError>{
+            return <http:InternalServerError>{
                 body: {
                     message: customError
                 }
@@ -229,7 +229,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if validUserGroups.length() == 0 {
             string customError = string `There are no user groups. Before adding usergroups you have to create new user groups`;
             log:printError(customError);
-            return<http:InternalServerError>{
+            return <http:InternalServerError>{
                 body: {
                     message: customError
                 }
@@ -240,7 +240,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if !isValidUseGroups {
             log:printError(string `Invalid usergroups ${app.userGroups.toString()}`);
             return <http:BadRequest>{
-                body:  {
+                body: {
                     message: "Invalid usergroups"
                 }
             };
@@ -264,8 +264,74 @@ service http:InterceptableService / on new http:Listener(9090) {
         };
     }
 
+    # Update an existing app.
+    #
+    # + id - The ID of the app to update
+    # + payload - The update data for the app
+    # + return - Success response or error responses
+    resource function patch apps/[int id](http:RequestContext ctx, UpdateApp payload) returns http:Ok|http:Forbidden|
+    http:NotFound|http:InternalServerError {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_NOT_FOUND_ERROR}
+            };
+        }
+
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            log:printWarn(string `${ACCESS_DENINED_ERROR}. email: ${userInfo.email} groups: ${
+                    userInfo.groups.toString()}`);
+            return <http:Forbidden>{
+                body: {
+                    message: ACCESS_DENINED_ERROR
+                }
+            };
+        }
+
+        App|error? app = database:fetchApp({id : id});
+
+        if app is error {
+            string customError = string `Error occurred while validating app`;
+            log:printError(customError, app);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if app is (){
+            log:printError("Application not found for given id");
+            return <http:NotFound>{
+                body:  {
+                    message: "Application not found"
+                }
+            };
+        }
+
+        error? appError = database:updateApp(id, payload);
+
+        if appError is error {
+            string customError = string `Error occured while updating app`;
+            log:printError(customError, appError);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        return <http:Ok>{
+            body: {
+                message: "Successfully updated"
+            }
+        };
+    }
+
     # Get valid user groups.
-    # 
+    #
     # + return - Array of user groups, or Forbidden/InternalServerError
     resource function get user\-groups(http:RequestContext ctx) returns string[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -276,12 +342,12 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
-            log:printWarn(string `Access denied: Only administrators can add new apps. email: ${userInfo.email} groups: ${
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            log:printWarn(string `${ACCESS_DENINED_ERROR}. email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: "Access denied: Only administrators can add new apps."
+                    message: ACCESS_DENINED_ERROR
                 }
             };
         }
@@ -290,7 +356,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if validUserGroups is error {
             string customError = string `Error occurred while retrieving user groups`;
             log:printError(customError, validUserGroups);
-            return<http:InternalServerError>{
+            return <http:InternalServerError>{
                 body: {
                     message: customError
                 }
@@ -300,7 +366,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if validUserGroups.length() == 0 {
             string customError = string `There are no user groups. Before adding usergroups you have to create new user groups`;
             log:printError(customError);
-            return<http:InternalServerError>{
+            return <http:InternalServerError>{
                 body: {
                     message: customError
                 }
@@ -311,7 +377,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     }
 
     # Get tags.
-    # 
+    #
     # + return - Array of tags, or Forbidden/InternalServerError
     resource function get tags(http:RequestContext ctx) returns Tag[]|http:Forbidden|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -322,12 +388,12 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups){
-            log:printWarn(string `Access denied: Only administrators can add new apps. email: ${userInfo.email} groups: ${
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            log:printWarn(string `${ACCESS_DENINED_ERROR}. email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: "Access denied: Only administrators can add new apps."
+                    message: ACCESS_DENINED_ERROR
                 }
             };
         }
@@ -385,8 +451,8 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if app is (){
-            log:printError(string `Application with ID: ${id} was not found!`);  
+        if app is () {
+            log:printError(string `Application with ID: ${id} was not found!`);
             return <http:NotFound>{
                 body: {
                     message: "Application not found"
@@ -397,7 +463,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         error? upsertError = database:upsertFavourites(userInfo.email, id, isFavourite);
         if upsertError is error {
             string customError = string `Error occurred while upserting the app with ID: ${id} for user: ${userInfo.email}`;
-            log:printError(customError, upsertError);  
+            log:printError(customError, upsertError);
             return <http:InternalServerError>{
                 body: {
                     message: customError
@@ -405,7 +471,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
         return <http:Ok>{
-            body:  {
+            body: {
                 message: "Successfully updated"
             }
         };

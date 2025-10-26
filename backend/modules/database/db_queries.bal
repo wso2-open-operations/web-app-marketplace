@@ -27,6 +27,7 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
             a.version_name,
             a.icon,
             a.added_by,
+            a.user_groups,
             COALESCE(
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
@@ -39,7 +40,7 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
             ) AS tags
         FROM apps a
         LEFT JOIN tags t ON FIND_IN_SET(t.id, a.tags) > 0
-        GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by`;
+        GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by, a.user_groups`;
 
 # Build query to fetch app details with filters for validation and admin operations.
 #
@@ -53,9 +54,9 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
             a.name,
             a.url,
             a.description,
-            a.version_name AS versionName,
+            a.version_name,
             a.icon,
-            a.added_by AS addedBy,
+            a.added_by,
             COALESCE(
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
@@ -212,6 +213,60 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
         )`
     );
     return query;
+}
+
+# Build query to update an existing app.
+#
+# + id - The ID of the app to update
+# + payload - The update payload containing fields to update
+# + return - Parameterized query for app update
+isolated function updateAppQuery(int id, UpdateApp payload) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery mainQuery = `
+        UPDATE apps
+        SET
+    `;
+
+    sql:ParameterizedQuery subQuery = `
+        WHERE id = ${id}
+    `;
+
+    sql:ParameterizedQuery[] filters = [];
+
+    if payload.name is string {
+        filters.push(` name = ${payload.name}`);
+    }
+
+    if payload.description is string {
+        filters.push(` description = ${payload.description}`);
+    }
+
+    if payload.icon is string {
+        filters.push(` icon = ${payload.icon}`);
+    }
+
+    if payload.isActive is boolean {
+        filters.push(` is_active = ${payload.isActive}`);
+    }
+
+    if payload.url is string {
+        filters.push(` url = ${payload.url}`);
+    }
+
+    if payload.versionName is string {
+        filters.push(` version_name = ${payload.versionName}`);
+    }
+
+    filters.push(` updated_by = ${payload.updatedBy}`);
+
+    int[]? payloadTags = payload.tags;
+    if payloadTags is int[]{
+        string tags = payloadTags.length() > 0 ? string:'join(",", from int tagId in payloadTags select tagId.toString()) : "";
+        filters.push(` tags = ${tags}`);
+    }
+
+    mainQuery = buildSqlUpdateQuery(mainQuery, filters);
+
+    return sql:queryConcat(mainQuery, subQuery);
 }
 
 # Build query to insert or update user's favourite status for an app.

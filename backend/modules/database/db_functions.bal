@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 import ballerina/sql;
+import ballerina/regex;
 
 # Fetch all apps visible to the given roles.
 #
@@ -22,6 +23,9 @@ public isolated function fetchApps() returns App[]|error {
     stream<AppRecord, error?> result = databaseClient->query(fetchAppsQuery());
     return from AppRecord app in result
         let Tag[] tags = check app.tags.fromJsonStringWithType()
+        let string[] userGroups = (app.userGroups is string && app.userGroups != "") 
+            ? regex:split(<string>app.userGroups, ",") 
+            : []
         select {
             id: app.id,
             name: app.name,
@@ -31,7 +35,8 @@ public isolated function fetchApps() returns App[]|error {
             icon: app.icon,
             addedBy: app.addedBy,
             tags,
-            isActive: app.isActive
+            isActive: app.isActive,
+            userGroups: userGroups
         };
 }
 
@@ -40,7 +45,7 @@ public isolated function fetchApps() returns App[]|error {
 # + filters - Filter criteria to query apps
 # + email - Email of the user
 # + return - Array of extended app records
-public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApps[]|error {
+public isolated function fetchUserApps(string email, AppsFilter filters) returns UserApp[]|error {
     stream<UserAppRecord, error?> result = databaseClient->query(fetchUserAppsQuery(email, filters));
     return from UserAppRecord app in result
         let Tag[] tags = check app.tags.fromJsonStringWithType()
@@ -83,6 +88,23 @@ public isolated function fetchApp(AppFilter filters) returns App|error? {
     };
 }
 
+# Create a new app in the database.
+#
+# + app - App data to create
+# + return - Error if creation fails
+public isolated function createApp(CreateApp app) returns error? {
+    _ = check databaseClient->execute(createAppQuery(app));
+}
+
+# Update an existing app in the database.
+#
+# + id - The ID of the app to update
+# + payload - The update data
+# + return - Error if update fails
+public isolated function updateApp(int id, UpdateApp payload) returns error? {
+    _ = check databaseClient->execute(updateAppQuery(id, payload));
+}
+
 # Insert or update user's favourite status for an app.
 #
 # + email - User email to associate with the favourite
@@ -91,14 +113,6 @@ public isolated function fetchApp(AppFilter filters) returns App|error? {
 # + return - error? on failure
 public isolated function upsertFavourites(string email, int appId, boolean isFavourite) returns error? {
     _ = check databaseClient->execute(upsertFavouritesQuery(email, appId, isFavourite));
-}
-
-# Create a new app in the database.
-#
-# + app - App data to create
-# + return - Error if creation fails
-public isolated function createApp(CreateApp app) returns error? {
-    _ = check databaseClient->execute(createAppQuery(app));
 }
 
 # Retrieve user groups.
