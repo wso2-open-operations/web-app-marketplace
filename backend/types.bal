@@ -123,12 +123,12 @@ public type UpdateApp record {|
         }
     }
     string icon?;
-    # User who added the link
-    string addedBy?;
     # Tag IDs of the target app (comma-separated)
     int[] tags?;
     # Active status of the app - "1" for active, "0" for inactive
     boolean isActive?;
+    # User who added the link
+    string updatedBy;
 |};
 
 # Structure of Tag record.

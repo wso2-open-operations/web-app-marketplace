@@ -192,14 +192,14 @@ public type UpdateApp record {|
     string versionName?;
     # Icon asset name/key
     string icon?;
-    # User who added the link
-    @sql:Column {name: "added_by"}
-    string addedBy?;
     # Tag IDs of the target app (comma-separated)
     int[] tags?;
     # Active status of the app - "1" for active, "0" for inactive
     @sql:Column {name: "is_active"}
     boolean isActive?;
+    # User who added the link
+    @sql:Column {name: "updated_by"}
+    string updatedBy?;
 |};
 
 # [Database] Filter criteria for querying apps with optional conditions.
