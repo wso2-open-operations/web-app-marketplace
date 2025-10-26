@@ -264,6 +264,67 @@ service http:InterceptableService / on new http:Listener(9090) {
         };
     }
 
+    resource function patch path/[int id](http:RequestContext ctx, UpdateApp updateApp) returns http:Ok|http:Forbidden|
+    http:NotFound|http:InternalServerError {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_NOT_FOUND_ERROR}
+            };
+        }
+
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            log:printWarn(string `${ACCESS_DENINED_ERROR}. email: ${userInfo.email} groups: ${
+                    userInfo.groups.toString()}`);
+            return <http:Forbidden>{
+                body: {
+                    message: ACCESS_DENINED_ERROR
+                }
+            };
+        }
+
+        App|error? app = database:fetchApp({id : id});
+
+        if app is error {
+            string customError = string `Error occurred while validating app`;
+            log:printError(customError, app);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        if app is (){
+            log:printError("Application not found for given id");
+            return <http:NotFound>{
+                body:  {
+                    message: "Application not found"
+                }
+            };
+        }
+
+        error? appError = database:updateApp(id, updateApp);
+
+        if appError is error {
+            string customError = string `Error occured while updating app`;
+            log:printError(customError, appError);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        return <http:Ok>{
+            body: {
+                message: "Successfully updated"
+            }
+        };
+    }
+
     # Get valid user groups.
     #
     # + return - Array of user groups, or Forbidden/InternalServerError
