@@ -44,7 +44,7 @@ public type Tag record {|
     string color;
 |};
 
-# [Database] App record.
+# [Database] App record to fetch apps with comma seperated tags.
 public type AppRecord record {|
     # Unique identifier of the link
     int id;
@@ -64,6 +64,9 @@ public type AppRecord record {|
     string addedBy;
     # Tags as JSON array containing tag details
     string tags;
+    # User goups of the target app
+    @sql:Column {name: "user_groups"}
+    string userGroups?;
     # Active status of the app - "1" for active, "0" for inactive
     @sql:Column {name: "is_active"}
     boolean isActive?;
@@ -72,7 +75,6 @@ public type AppRecord record {|
 # [Database] App record.
 public type App record {|
     # Unique identifier of the link
-    @sql:Column {name: "id"}
     int id;
     # Display title
     string name;
@@ -91,22 +93,60 @@ public type App record {|
     # Tags as JSON array containing tag details
     @sql:Column {name: "tags"}
     Tag[] tags;
+    # User goups of the target app
+    @sql:Column {name: "user_groups"}
+    string[] userGroups?;
     # Active status of the app - "1" for active, "0" for inactive
     @sql:Column {name: "is_active"}
     boolean isActive?;
 |};
 
-# [Database] Extended user app record containing all app fields.
+# [Database] Extended user app record with comma seperated tags.
 public type UserAppRecord record {|
-    *AppRecord;
+    # Unique identifier of the link
+    int id;
+    # Display title
+    string name;
+    # Target URL 
+    string url;
+    # Short description
+    string description;
+    # Version label of the target app
+    @sql:Column {name: "version_name"}
+    string versionName;
+    # Icon asset name/key
+    string icon;
+    # User who added the link
+    @sql:Column {name: "added_by"}
+    string addedBy;
+    # Tags as JSON array containing tag details
+    string tags;
     # Email of the user who last updated the app
     @sql:Column {name: "is_favourite"}
     int isFavourite;
 |};
 
-# [Database] Extended app record containing all app fields.
-public type UserApps record {|
-    *App;
+# [Database] Extended app record.
+public type UserApp record {|
+    # Unique identifier of the link
+    int id;
+    # Display title
+    string name;
+    # Target URL 
+    string url;
+    # Short description
+    string description;
+    # Version label of the target app
+    @sql:Column {name: "version_name"}
+    string versionName;
+    # Icon asset name/key
+    string icon;
+    # User who added the link
+    @sql:Column {name: "added_by"}
+    string addedBy;
+    # Tags as JSON array containing tag details
+    @sql:Column {name: "tags"}
+    Tag[] tags;
     # Email of the user who last updated the app
     @sql:Column {name: "is_favourite"}
     int isFavourite;
@@ -139,7 +179,7 @@ public type CreateApp record {|
     boolean isActive;
 |};
 
- # [Database] Update App record.
+# [Database] Update App record.
 public type UpdateApp record {|
     # Display title
     string name?;
@@ -160,13 +200,6 @@ public type UpdateApp record {|
     # Active status of the app - "1" for active, "0" for inactive
     @sql:Column {name: "is_active"}
     boolean isActive?;
-|};
-
-# [Database] record for app ID validation queries.
-type ValidAppResult record {|
-    # 1 if app exists and is active, 0 otherwise
-    @sql:Column {name: "is_valid"}
-    int isValid;
 |};
 
 # [Database] Filter criteria for querying apps with optional conditions.
