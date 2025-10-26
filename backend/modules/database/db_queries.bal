@@ -27,6 +27,7 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
             a.version_name,
             a.icon,
             a.added_by,
+            a.user_groups,
             COALESCE(
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
@@ -39,7 +40,7 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
             ) AS tags
         FROM apps a
         LEFT JOIN tags t ON FIND_IN_SET(t.id, a.tags) > 0
-        GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by`;
+        GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by, a.user_groups`;
 
 # Build query to fetch app details with filters for validation and admin operations.
 #
@@ -53,9 +54,9 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
             a.name,
             a.url,
             a.description,
-            a.version_name AS versionName,
+            a.version_name,
             a.icon,
-            a.added_by AS addedBy,
+            a.added_by,
             COALESCE(
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
