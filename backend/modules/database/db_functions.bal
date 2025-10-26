@@ -99,7 +99,7 @@ public isolated function createApp(CreateApp app) returns error? {
 # Update an existing app in the database.
 #
 # + id - The ID of the app to update
-# + app - The update data
+# + payload - The update data
 # + return - Error if update fails
 public isolated function updateApp(int id, UpdateApp payload) returns error? {
     _ = check databaseClient->execute(updateAppQuery(id, payload));
