@@ -91,7 +91,6 @@ public type App record {|
     @sql:Column {name: "added_by"}
     string addedBy;
     # Tags as JSON array containing tag details
-    @sql:Column {name: "tags"}
     Tag[] tags;
     # User goups of the target app
     @sql:Column {name: "user_groups"}
@@ -145,7 +144,6 @@ public type UserApp record {|
     @sql:Column {name: "added_by"}
     string addedBy;
     # Tags as JSON array containing tag details
-    @sql:Column {name: "tags"}
     Tag[] tags;
     # Email of the user who last updated the app
     @sql:Column {name: "is_favourite"}
@@ -169,7 +167,6 @@ public type CreateApp record {|
     @sql:Column {name: "added_by"}
     string addedBy;
     # Tag IDs of the target app (comma-separated)
-    @sql:Column {name: "tags"}
     int[] tags;
     # User groups of the target app
     @sql:Column {name: "user_groups"}
