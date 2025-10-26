@@ -267,9 +267,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Update an existing app.
     #
     # + id - The ID of the app to update
-    # + updateApp - The update data for the app
+    # + payload - The update data for the app
     # + return - Success response or error responses
-    resource function patch apps/[int id](http:RequestContext ctx, UpdateApp updateApp) returns http:Ok|http:Forbidden|
+    resource function patch apps/[int id](http:RequestContext ctx, UpdateApp payload) returns http:Ok|http:Forbidden|
     http:NotFound|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -311,7 +311,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        error? appError = database:updateApp(id, updateApp);
+        error? appError = database:updateApp(id, payload);
 
         if appError is error {
             string customError = string `Error occured while updating app`;

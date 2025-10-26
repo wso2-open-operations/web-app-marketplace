@@ -101,8 +101,8 @@ public isolated function createApp(CreateApp app) returns error? {
 # + id - The ID of the app to update
 # + app - The update data
 # + return - Error if update fails
-public isolated function updateApp(int id, UpdateApp app) returns error? {
-    _ = check databaseClient->execute(updateAppQuery(id, app));
+public isolated function updateApp(int id, UpdateApp payload) returns error? {
+    _ = check databaseClient->execute(updateAppQuery(id, payload));
 }
 
 # Insert or update user's favourite status for an app.
