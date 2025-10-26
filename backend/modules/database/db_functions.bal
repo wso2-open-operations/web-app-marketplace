@@ -91,6 +91,10 @@ public isolated function createApp(CreateApp app) returns error? {
     _ = check databaseClient->execute(createAppQuery(app));
 }
 
+public isolated function updateApp(int id, UpdateApp app) returns error? {
+    _ = check databaseClient->execute(updateAppQuery(id, app));
+}
+
 # Insert or update user's favourite status for an app.
 #
 # + email - User email to associate with the favourite
