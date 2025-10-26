@@ -262,6 +262,8 @@ isolated function updateAppQuery(int id, UpdateApp payload) returns sql:Paramete
         filters.push(` tags = ${tags}`);
     }
 
+    mainQuery = buildSqlUpdateQuery(mainQuery, filters);
+
     return sql:queryConcat(mainQuery, subQuery);
 }
 
