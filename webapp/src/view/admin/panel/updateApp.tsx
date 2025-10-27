@@ -34,11 +34,12 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 import { useState, useEffect } from "react";
 
-import { CreateAppPayload, createApp, fetchApps } from "@root/src/slices/appSlice/app";
+import { App, UpdateAppPayload, updateApp } from "@root/src/slices/appSlice/app";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import { useAppDispatch, useAppSelector, RootState } from "@root/src/slices/store";
 import { State } from "@root/src/types/types";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
+
 import AppCard from "../../home/components/AppCard";
 
 const fileSize = 10 * 1024 * 1024;
@@ -59,9 +60,9 @@ const validationSchema = Yup.object({
     description: Yup.string()
         .trim()
         .min(10, "Description must be at least 10 characters")
-        .max(25, "Description must be at most 25 characters")
+        .max(50, "Description must be at most 25 characters")
         .nullable(),
-    link: Yup.string()
+    url: Yup.string()
         .trim()
         .url("Must be a valid URL")
         .nullable(),
@@ -78,7 +79,7 @@ const validationSchema = Yup.object({
     icon: Yup.mixed()
         .nullable()
         .test("fileType", "Only SVG files are allowed", (value) => {
-            if (!value) return true; 
+            if (!value) return true;
             const file = value as File;
             return (
                 file.type === "image/svg+xml" &&
@@ -86,7 +87,7 @@ const validationSchema = Yup.object({
             );
         })
         .test("fileSize", "File size must not exceed 10MB", (value) => {
-            if (!value) return true; 
+            if (!value) return true;
             const file = value as File;
             return file.size <= fileSize; // 10MB
         }),
@@ -102,31 +103,7 @@ export default function UpdateApp() {
 
     const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
     const [dragActive, setDragActive] = useState(false);
-    const [selectedApp, setSelectedApp] = useState<any>(null);
-
-    // Lighter border styling for disabled TextFields
-    const disabledTextFieldSx = {
-        '& .MuiOutlinedInput-root.Mui-disabled': {
-            '& fieldset': {
-                borderColor: 'rgba(0, 0, 0, 0.12)',
-            },
-        },
-    };
-
-    const dummyApp = {
-        title: "Sample",
-        description: "sample app description",
-        logoUrl: "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/appstore.svg",
-        tags: [{
-            "id": 1,
-            "name": "Sample Tag",
-            "color": "#544675"
-        }],
-        appUrl: "www.sample.com",
-        appId: 0,
-        isFavourite: 1,
-        logoAlt: "App Logo"
-    };
+    const [selectedApp, setSelectedApp] = useState<App | null>(null);
 
     const userEmail = userInfo?.workEmail ?? "";
 
@@ -149,12 +126,110 @@ export default function UpdateApp() {
         }
     }, [selectedApp]);
 
+    useEffect(() => {
+        if (selectedApp && apps) {
+            const updatedApp = apps.find(app => app.id === selectedApp.id);
+            if (updatedApp) {
+                if (JSON.stringify(updatedApp) !== JSON.stringify(selectedApp)) {
+                    setSelectedApp(updatedApp);
+                }
+            }
+        }
+    }, [apps, selectedApp]);
+
+    // Lighter border styling for disabled TextFields
+    const disabledTextFieldSx = {
+        '& .MuiOutlinedInput-root.Mui-disabled': {
+            '& fieldset': {
+                borderColor: 'rgba(0, 0, 0, 0.12)',
+            },
+        },
+    };
+
+    const dummyApp: App = {
+        name: "Sample",
+        description: "sample app description",
+        icon: "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/appstore.svg",
+        tags: [{
+            "id": 1,
+            "name": "Sample Tag",
+            "color": "#544675"
+        }],
+        url: "www.sample.com",
+        id: 0,
+        versionName: "1.0.0",
+        addedBy: "demo@example.com",
+        userGroups: [],
+        isActive: true
+    };
+
+    // Build payload with only chaned fields
+    const buildUpdatePayload = (values: typeof formik.values): Partial<UpdateAppPayload> => {
+        if (!selectedApp) return {};
+
+        const payload: Partial<UpdateAppPayload> = {};
+
+        // Check and add changed fields
+        if (values.title.trim() !== selectedApp.name) {
+            payload.name = values.title.trim();
+        }
+
+        if (values.url.trim() !== selectedApp.url) {
+            payload.url = values.url.trim();
+        }
+
+        if (values.description.trim() !== selectedApp.description) {
+            payload.description = values.description.trim();
+        }
+
+        if (values.versionName.trim() !== selectedApp.versionName) {
+            payload.versionName = values.versionName.trim();
+        }
+
+        // Compare tags arrays
+        const originalTagIds = selectedApp.tags?.map((tag: any) => tag.id) || [];
+        const tagsChanged = JSON.stringify([...values.tags].sort()) !== JSON.stringify([...originalTagIds].sort());
+        if (tagsChanged) {
+            payload.tags = values.tags;
+        }
+
+        // Compare user groups arrays
+        const originalGroupIds = selectedApp.userGroups || [];
+        const groupsChanged = JSON.stringify([...values.groupIds].sort()) !== JSON.stringify([...originalGroupIds].sort());
+        if (groupsChanged) {
+            payload.userGroups = values.groupIds;
+        }
+
+        const originalIsActive = selectedApp.isActive ?? true
+        if (values.isActive !== originalIsActive) {
+            payload.isActive = values.isActive;
+        }
+
+        // Only add updatedBy if there are actual changes
+        if (Object.keys(payload).length > 0) {
+            payload.updatedBy = userEmail;
+        }
+
+        return payload;
+    };
+
+    // Submits app update if changes are detected.
+    const submitUpdate = async (payload: Partial<UpdateAppPayload>) => {
+        if (!selectedApp) return;
+
+        if (Object.keys(payload).length === 0) {
+            formik.setFieldError("title", "No changes detected");
+            return;
+        }
+        await dispatch(updateApp({ id: selectedApp.id, payload: payload as UpdateAppPayload }));
+    };
+
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
             title: selectedApp?.name || "",
             description: selectedApp?.description || "",
-            link: selectedApp?.url || "",
+            url: selectedApp?.url || "",
             versionName: selectedApp?.versionName || "",
             tags: selectedApp?.tags?.map((tag: any) => tag.id) || [],
             groupIds: selectedApp?.userGroups || [],
@@ -163,31 +238,27 @@ export default function UpdateApp() {
         },
         validationSchema,
         onSubmit: async (values) => {
-            // Convert icon file to base64 string
-            const reader = new FileReader();
+            if (!selectedApp) return;
+
+            // Build payload with only changed fields
+            const payload = buildUpdatePayload(values);
+
+            // Handle icon file if changed
             if (values.icon) {
+                const reader = new FileReader();
                 reader.readAsDataURL(values.icon);
-            }
-            reader.onload = async () => {
-                const base64Icon = reader.result as string;
-
-                const payload: CreateAppPayload = {
-                    name: values.title.trim(),
-                    url: values.link.trim(),
-                    description: values.description.trim(),
-                    versionName: values.versionName.trim(),
-                    tags: values.tags,
-                    icon: base64Icon,
-                    userGroups: values.groupIds,
-                    isActive: values.isActive
+                reader.onload = async () => {
+                    const base64Icon = reader.result as string;
+                    payload.icon = base64Icon;
+                    await submitUpdate(payload);
                 };
-
-                const result = await dispatch(createApp({ payload, userEmail }));
-            };
-
-            reader.onerror = () => {
-                formik.setFieldError("icon", "Failed to read icon file");
-            };
+                reader.onerror = () => {
+                    formik.setFieldError("icon", "Failed to read icon file");
+                };
+            } else {
+                // Submit without icon change
+                await submitUpdate(payload);
+            }
         },
     });
 
@@ -287,11 +358,20 @@ export default function UpdateApp() {
                                 tags={selectedApp.tags || []}
                                 appUrl={selectedApp.url || ""}
                                 appId={selectedApp.id || 0}
-                                isFavourite={selectedApp.isFavourite || 0}
+                                isFavourite={1}
                                 logoAlt={selectedApp.name || "App Logo"}
                             />
                         ) : (
-                            <AppCard {...dummyApp} />
+                            <AppCard
+                                title={dummyApp.name}
+                                description={dummyApp.description}
+                                logoUrl={dummyApp.icon}
+                                tags={dummyApp.tags}
+                                appUrl={dummyApp.url}
+                                appId={dummyApp.id}
+                                isFavourite={1}
+                                logoAlt="Sample App Logo"
+                            />
                         )}
 
                     </Box>
@@ -307,7 +387,7 @@ export default function UpdateApp() {
                                 <TextField
                                     fullWidth
                                     name="title"
-                                    placeholder={!selectedApp ? "Select an app to edit name": "Web App Marketplace"}
+                                    placeholder={!selectedApp ? "Select an app to edit name" : "Web App Marketplace"}
                                     value={formik.values.title}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
@@ -327,12 +407,12 @@ export default function UpdateApp() {
                                     <TextField
                                         fullWidth
                                         name="url"
-                                        placeholder={!selectedApp ? "Select an app to edit url": "www.meet-hris.wso2.com"}
-                                        value={formik.values.link}
+                                        placeholder={!selectedApp ? "Select an app to edit url" : "www.meet-hris.wso2.com"}
+                                        value={formik.values.url}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        error={formik.touched.link && Boolean(formik.errors.link)}
-                                        helperText={formik.touched.link && (formik.errors.link as string)}
+                                        error={formik.touched.url && Boolean(formik.errors.url)}
+                                        helperText={formik.touched.url && (formik.errors.url as string)}
                                         disabled={!selectedApp || submitState === State.loading}
                                         sx={disabledTextFieldSx}
                                     />
@@ -344,7 +424,7 @@ export default function UpdateApp() {
                                     <TextField
                                         fullWidth
                                         name="versionName"
-                                        placeholder={!selectedApp ? "Select an app to edit version name": "Beta"}
+                                        placeholder={!selectedApp ? "Select an app to edit version name" : "Beta"}
                                         value={formik.values.versionName}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
@@ -364,7 +444,7 @@ export default function UpdateApp() {
                                 <TextField
                                     fullWidth
                                     name="description"
-                                    placeholder={!selectedApp ? "Select an app to edit description": "Web App Marketplace"}
+                                    placeholder={!selectedApp ? "Select an app to edit description" : "Web App Marketplace"}
                                     multiline
                                     rows={3}
                                     value={formik.values.description}
@@ -422,7 +502,7 @@ export default function UpdateApp() {
                                         <TextField
                                             {...params}
                                             name="tags"
-                                            placeholder={!selectedApp ? "Select an app to edit tags": "Select one or more tags"}
+                                            placeholder={!selectedApp ? "Select an app to edit tags" : "Select one or more tags"}
                                             error={formik.touched.tags && Boolean(formik.errors.tags)}
                                             helperText={formik.touched.tags && (formik.errors.tags as string)}
                                             sx={disabledTextFieldSx}
@@ -450,7 +530,7 @@ export default function UpdateApp() {
                                         <TextField
                                             {...params}
                                             name="groupIds"
-                                            placeholder={!selectedApp ? "Select an app to edit user groups": "Select user groups"}  
+                                            placeholder={!selectedApp ? "Select an app to edit user groups" : "Select user groups"}
                                             error={
                                                 formik.touched.groupIds && Boolean(formik.errors.groupIds)
                                             }
@@ -516,7 +596,7 @@ export default function UpdateApp() {
                                                 <UploadFileIcon />
                                             </Box>
                                             <Typography>
-                                                {!selectedApp ? "Select an app to edit icon" : "Drag and drop file or select file" } 
+                                                {!selectedApp ? "Select an app to edit icon" : "Drag and drop file or select file"}
                                             </Typography>
                                         </Box>
                                         <input
