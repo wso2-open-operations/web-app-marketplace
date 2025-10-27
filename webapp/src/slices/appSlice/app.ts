@@ -17,7 +17,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { HttpStatusCode } from "axios";
 
-import { SnackMessage } from "@config/constant";
 import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
@@ -52,8 +51,21 @@ export type App = {
   tags: Tag[];
   userGroups?: string[]
   addedBy: string;
-  isActive?: boolean;
+  isActive: boolean;
 };
+
+export type UpdateAppPayload = {
+  id?: number;
+  name?: string;
+  url?: string;
+  description?: string;
+  versionName?: string;
+  icon?: string;
+  tags?: Tag[];
+  userGroups?: string[]
+  isActive?: boolean;
+  updatedBy: string;
+}
 
 export type CreateAppPayload = {
   name: string;
@@ -214,6 +226,48 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
   }
 );
 
+export const updateApp = createAsyncThunk<void, { payload: UpdateAppPayload, id: number }>(
+  "app/updateApp",
+  async ({ payload, id }, { dispatch, rejectWithValue }) => {
+
+    try {
+      const res = await APIService.getInstance().patch(`${AppConfig.serviceUrls.apps}/${id}`,
+        payload
+      );
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message: res.data.message || "Application created successfully",
+          type: "success",
+        })
+      );
+
+      dispatch(fetchApps());
+      dispatch(fetchUserApps());
+
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request Canceled");
+      }
+
+      const message =
+        error?.response?.data?.message ??
+        (error?.response?.status === HttpStatusCode.InternalServerError
+          ? "Server error while creating application"
+          : "Failed to create application");
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message,
+          type: "error",
+        })
+      );
+
+      return rejectWithValue(message);
+    }
+  }
+)
+
 export const upsertAppFavourite = createAsyncThunk<
   UpdateArgs,
   UpdateArgs
@@ -273,35 +327,43 @@ export const appSlice = createSlice({
         state.state = State.loading;
         state.stateMessage = "Loading applications...";
       })
-
       .addCase(fetchApps.fulfilled, (state, action) => {
         state.state = State.success;
         state.stateMessage = null;
         state.apps = action.payload;
+      })
+      .addCase(fetchApps.rejected, (state, action) => {
+        state.state = State.failed;
+        state.stateMessage = "Failed to load applications. Please try again later.";
       })
 
       .addCase(fetchUserApps.rejected, (state, action) => {
         state.state = State.failed;
         state.stateMessage = "Failed to load applications. Please try again later.";
       })
-
       .addCase(fetchUserApps.pending, (state) => {
         state.state = State.loading;
         state.stateMessage = "Loading applications...";
       })
-
       .addCase(fetchUserApps.fulfilled, (state, action) => {
         state.state = State.success;
         state.stateMessage = null;
         state.userApps = action.payload;
       })
 
-      .addCase(fetchApps.rejected, (state, action) => {
-        state.state = State.failed;
-        state.stateMessage = "Failed to load applications. Please try again later.";
+      .addCase(upsertAppFavourite.pending, (state) => {
+        state.submitState = State.loading;
+        state.stateMessage = "Updating favorites...";
       })
-
+      .addCase(upsertAppFavourite.rejected, (state, action) => {
+        state.submitState = State.failed;
+        state.stateMessage = "Unable to update favorites. Please try again.";
+      })
       .addCase(upsertAppFavourite.fulfilled, (state, action) => {
+        state.submitState = State.success;
+        state.stateMessage = action.payload.active === UpdateAction.Favorite
+          ? "Added to favorites"
+          : "Removed from favorites";
         // Update the favorite status in the apps array
         if (state.userApps) {
           const app = state.userApps.find((app) => app.id === action.payload.id);
@@ -315,15 +377,26 @@ export const appSlice = createSlice({
         state.submitState = State.loading;
         state.stateMessage = "Creating application...";
       })
-
       .addCase(createApp.fulfilled, (state) => {
         state.submitState = State.success;
         state.stateMessage = null;
       })
-
-      .addCase(createApp.rejected, (state, action) => {
+      .addCase(createApp.rejected, (state) => {
         state.submitState = State.failed;
         state.stateMessage = "Failed to create application. Please try again.";
+      })
+
+      .addCase(updateApp.pending, (state) => {
+        state.submitState = State.loading;
+        state.stateMessage = "Updating application...";
+      })
+      .addCase(updateApp.fulfilled, (state, action) => {
+        state.submitState = State.success;
+        state.stateMessage = "Successfully updated app";
+      })
+      .addCase(updateApp.rejected, (state) => {
+        state.submitState = State.failed;
+        state.stateMessage = "Failed to update application. Please try again.";
       });
   },
 });
