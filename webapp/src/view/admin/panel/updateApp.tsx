@@ -78,7 +78,7 @@ const validationSchema = Yup.object({
     icon: Yup.mixed()
         .nullable()
         .test("fileType", "Only SVG files are allowed", (value) => {
-            if (!value) return true; // Allow null for updates
+            if (!value) return true; 
             const file = value as File;
             return (
                 file.type === "image/svg+xml" &&
@@ -86,7 +86,7 @@ const validationSchema = Yup.object({
             );
         })
         .test("fileSize", "File size must not exceed 10MB", (value) => {
-            if (!value) return true; // Allow null for updates
+            if (!value) return true; 
             const file = value as File;
             return file.size <= fileSize; // 10MB
         }),
@@ -425,6 +425,7 @@ export default function UpdateApp() {
                                             placeholder={!selectedApp ? "Select an app to edit tags": "Select one or more tags"}
                                             error={formik.touched.tags && Boolean(formik.errors.tags)}
                                             helperText={formik.touched.tags && (formik.errors.tags as string)}
+                                            sx={disabledTextFieldSx}
                                         />
                                     )}
                                 />
@@ -454,6 +455,7 @@ export default function UpdateApp() {
                                                 formik.touched.groupIds && Boolean(formik.errors.groupIds)
                                             }
                                             helperText={formik.touched.groupIds && (formik.errors.groupIds as string)}
+                                            sx={disabledTextFieldSx}
                                         />
                                     )}
                                 />
@@ -485,6 +487,7 @@ export default function UpdateApp() {
                                             bgcolor: dragActive ? "action.hover" : "background.paper",
                                             cursor: "pointer",
                                             transition: "all 0.3s",
+                                            disabledTextFieldSx
                                         }}
                                         onClick={() =>
                                             document.getElementById("file-upload")?.click()
@@ -513,13 +516,7 @@ export default function UpdateApp() {
                                                 <UploadFileIcon />
                                             </Box>
                                             <Typography>
-                                                Drag and drop file or{" "}
-                                                <Box
-                                                    component="span"
-                                                    sx={{ color: "primary.main", cursor: "pointer" }}
-                                                >
-                                                    select file
-                                                </Box>
+                                                {!selectedApp ? "Select an app to edit icon" : "Drag and drop file or select file" } 
                                             </Typography>
                                         </Box>
                                         <input
@@ -528,6 +525,7 @@ export default function UpdateApp() {
                                             accept=".svg,image/svg+xml"
                                             onChange={handleFileChange}
                                             style={{ display: "none" }}
+                                            disabled={!selectedApp || submitState === State.loading}
                                         />
                                     </Box>
                                 )}
