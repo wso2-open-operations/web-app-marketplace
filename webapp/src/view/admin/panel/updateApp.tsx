@@ -77,9 +77,9 @@ const validationSchema = Yup.object({
         .of(Yup.string().required())
         .nullable(),
     icon: Yup.mixed()
-        .nullable()
+        .required("App icon is required")
         .test("fileType", "Only SVG files are allowed", (value) => {
-            if (!value) return true;
+            if (!value) return false;
             const file = value as File;
             return (
                 file.type === "image/svg+xml" &&
@@ -87,7 +87,7 @@ const validationSchema = Yup.object({
             );
         })
         .test("fileSize", "File size must not exceed 10MB", (value) => {
-            if (!value) return true;
+            if (!value) return false;
             const file = value as File;
             return file.size <= fileSize; // 10MB
         }),
@@ -121,8 +121,11 @@ export default function UpdateApp() {
                 progress: 100,
                 error: null,
             });
+            // Set a placeholder file for existing icon to pass validation
+            formik.setFieldValue("icon", new File([], "existing-icon.svg", { type: "image/svg+xml" }));
         } else {
             setFilePreview(null);
+            formik.setFieldValue("icon", null);
         }
     }, [selectedApp]);
 
@@ -250,6 +253,10 @@ export default function UpdateApp() {
                 reader.onload = async () => {
                     const base64Icon = reader.result as string;
                     payload.icon = base64Icon;
+                    // Ensure updatedBy is added when icon changes
+                    if (!payload.updatedBy) {
+                        payload.updatedBy = userEmail;
+                    }
                     await submitUpdate(payload);
                 };
                 reader.onerror = () => {
@@ -777,7 +784,7 @@ export default function UpdateApp() {
                             <Button
                                 type="submit"
                                 variant="contained"
-                                disabled={submitState === State.loading || !selectedApp}
+                                disabled={submitState === State.loading || !selectedApp || !formik.values.icon}
                             >
                                 {submitState === State.loading ? "Updating..." : "Update App"}
                             </Button>
