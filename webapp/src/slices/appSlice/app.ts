@@ -159,46 +159,6 @@ export const fetchUserApps = createAsyncThunk(
   }
 );
 
-export const upsertAppFavourite = createAsyncThunk<
-  UpdateArgs,
-  UpdateArgs
->(
-  "apps/upsertAppFavourite",
-  async (updateArgs, { dispatch, rejectWithValue }) => {
-    APIService.getCancelToken().cancel();
-    const newCancelTokenSource = APIService.updateCancelToken();
-
-    try {
-      const res = await APIService.getInstance().post(
-        `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${updateArgs.active}`,
-        {
-          cancelToken: newCancelTokenSource.token,
-        }
-      );
-      return { id: updateArgs.id, active: updateArgs.active };
-
-    } catch (error: any) {
-      if (axios.isCancel(error)) {
-        return rejectWithValue("Request Canceled");
-      }
-
-      const message =
-        error?.response?.data?.message ??
-        (error?.response?.status === HttpStatusCode.InternalServerError
-          ? "Server error while updating"
-          : "Failed to update");
-
-      dispatch(
-        enqueueSnackbarMessage({
-          message,
-          type: "error",
-        })
-      );
-      return rejectWithValue(message);
-    }
-  }
-);
-
 export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, userEmail: string }>(
   "apps/createApp",
   async ({ payload, userEmail }, { dispatch, rejectWithValue }) => {
@@ -242,6 +202,46 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         (error?.response?.status === HttpStatusCode.InternalServerError
           ? "Server error while creating application"
           : "Failed to create application");
+
+      dispatch(
+        enqueueSnackbarMessage({
+          message,
+          type: "error",
+        })
+      );
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const upsertAppFavourite = createAsyncThunk<
+  UpdateArgs,
+  UpdateArgs
+>(
+  "apps/upsertAppFavourite",
+  async (updateArgs, { dispatch, rejectWithValue }) => {
+    APIService.getCancelToken().cancel();
+    const newCancelTokenSource = APIService.updateCancelToken();
+
+    try {
+      const res = await APIService.getInstance().post(
+        `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${updateArgs.active}`,
+        {
+          cancelToken: newCancelTokenSource.token,
+        }
+      );
+      return { id: updateArgs.id, active: updateArgs.active };
+
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        return rejectWithValue("Request Canceled");
+      }
+
+      const message =
+        error?.response?.data?.message ??
+        (error?.response?.status === HttpStatusCode.InternalServerError
+          ? "Server error while updating"
+          : "Failed to update");
 
       dispatch(
         enqueueSnackbarMessage({
