@@ -191,6 +191,8 @@ public type UpdateApp record {|
     string icon?;
     # Tag IDs of the target app (comma-separated)
     int[] tags?;
+    # User groups of the target app
+    string[] userGroups?;
     # Active status of the app - "1" for active, "0" for inactive
     @sql:Column {name: "is_active"}
     boolean isActive?;
