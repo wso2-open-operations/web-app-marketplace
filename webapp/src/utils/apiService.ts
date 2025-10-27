@@ -22,12 +22,12 @@ export class APIService {
   private static _idToken: string;
   private static _cancelTokenSource = axios.CancelToken.source();
   private static _cancelTokenMap: Map<string, CancelTokenSource> = new Map();
-  private static callback: () => Promise<{ idToken: string }>;
+  private static callback: () => Promise<{ accessToken: string }>;
 
   private static _isRefreshing = false;
-  private static _refreshPromise: Promise<{ idToken: string }> | null = null;
+  private static _refreshPromise: Promise<{ accessToken: string }> | null = null;
 
-  constructor(idToken: string, callback: () => Promise<{ idToken: string }>) {
+  constructor(idToken: string, callback: () => Promise<{ accessToken: string }>) {
     APIService._instance = axios.create();
     rax.attach(APIService._instance);
 
@@ -54,7 +54,7 @@ export class APIService {
           APIService._isRefreshing = true;
           APIService._refreshPromise = APIService.callback()
             .then((res) => {
-              APIService.updateTokens(res.idToken);
+              APIService.updateTokens(res.accessToken);
               APIService._instance.interceptors.request.clear();
               APIService.updateRequestInterceptor();
               return res;

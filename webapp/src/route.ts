@@ -14,12 +14,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import React from "react";
+import AppsIcon from '@mui/icons-material/Apps';
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
+import React from "react";
 import { NonIndexRouteObject, RouteObject } from "react-router-dom";
 
-import DuoIcon from "@mui/icons-material/Duo";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Role } from "@slices/authSlice/auth";
 import { isIncludedRole } from "@utils/utils";
 import { View } from "@view/index";
@@ -48,18 +49,31 @@ export const routes: RouteObjectWithRole[] = [
   {
     path: "/",
     text: "Home",
-    icon: React.createElement(DuoIcon),
+    icon: React.createElement(AppsIcon),
     element: React.createElement(View.home),
-    allowRoles: [Role.ADMIN, Role.TEAM],
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
   },
+  {
+    path: "/favourites",
+    text: "Favourites",
+    icon: React.createElement(FavoriteBorderIcon),
+    element: React.createElement(View.favourites),
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
+  },
+  /*
+   TODO: Implement User Guide page when the user guide content is ready.
+   The /help route is commented out for now and will be re-enabled once the
+   user guide page (View.help) is implemented.
+
   {
     path: "/help",
     text: "Help",
     icon: React.createElement(HelpOutlineIcon),
     element: React.createElement(View.help),
-    allowRoles: [Role.ADMIN, Role.TEAM],
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
     bottomNav: true,
-  },
+  }
+  */
 ];
 export const getActiveRoutesV2 = (
   routes: RouteObjectWithRole[] | undefined,

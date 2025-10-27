@@ -14,16 +14,17 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { State } from "@/types/types";
 import { BasicUserInfo, DecodedIDTokenPayload } from "@asgardeo/auth-spa";
-import { SnackMessage } from "@config/constant";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { State } from "@/types/types";
+import { SnackMessage } from "@config/constant";
 import { enqueueSnackbarMessage } from "@slices/commonSlice/common";
 import { RootState } from "@slices/store";
 
 export enum Role {
   ADMIN = "ADMIN",
-  TEAM = "TEAM",
+  EMPLOYEE = "EMPLOYEE",
 }
 
 interface AuthState {
@@ -38,7 +39,6 @@ interface AuthState {
 
 interface AuthData {
   userInfo: BasicUserInfo;
-  idToken: string;
   decodedIdToken: DecodedIDTokenPayload;
 }
 
@@ -88,11 +88,11 @@ export const loadPrivileges = createAsyncThunk(
     const userPrivileges = userInfo?.privileges || [];
     const roles: Role[] = [];
 
-    if (userPrivileges.includes(762)) {
+    if (userPrivileges.includes(789)) {
       roles.push(Role.ADMIN);
     }
     if (userPrivileges.includes(987)) {
-      roles.push(Role.TEAM);
+      roles.push(Role.EMPLOYEE);
     }
 
     if (roles.length === 0) {
@@ -117,6 +117,12 @@ export const authSlice = createSlice({
       state.decodedIdToken = action.payload.decodedIdToken;
       state.status = State.success;
     },
+    setAuthError: (state) => {
+      state.status = State.failed;
+      state.userInfo = null;
+      state.decodedIdToken = null;
+      state.roles = []; 
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -134,6 +140,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setUserAuthData } = authSlice.actions;
+export const { setUserAuthData, setAuthError } = authSlice.actions;
 export const selectRoles = (state: RootState) => state.auth.roles;
 export default authSlice.reducer;

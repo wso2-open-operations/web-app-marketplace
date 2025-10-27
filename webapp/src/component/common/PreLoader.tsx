@@ -15,13 +15,7 @@
 // under the License.
 
 import Grid from "@mui/material/Grid";
-import { APP_NAME } from "@config/config";
-import StateWithImage from "@component/ui/StateWithImage";
-import { Box, Container, Paper, alpha, useTheme } from "@mui/material";
-import CircularProgress, {
-  circularProgressClasses,
-  CircularProgressProps,
-} from "@mui/material/CircularProgress";
+import { Box, Container, LinearProgress, Typography } from "@mui/material";
 
 interface PreLoaderProps {
   message: string | null;
@@ -29,89 +23,52 @@ interface PreLoaderProps {
   isLoading?: boolean;
 }
 
-function CustomCircularProgress(props: CircularProgressProps) {
-  return (
-    <Box sx={{ position: "relative" }}>
-      <CircularProgress
-        variant="determinate"
-        sx={{
-          color: (theme) => theme.palette.grey[800],
-        }}
-        size={40}
-        thickness={4}
-        {...props}
-        value={100}
-      />
-      <CircularProgress
-        variant="indeterminate"
-        disableShrink
-        sx={{
-          color: (theme) => theme.palette.primary.main,
-          animationDuration: "550ms",
-          position: "absolute",
-          left: 0,
-          [`& .${circularProgressClasses.circle}`]: {
-            strokeLinecap: "round",
-          },
-        }}
-        size={40}
-        thickness={4}
-        {...props}
-      />
-    </Box>
-  );
-}
-
 const PreLoader = (props: PreLoaderProps) => {
-  const theme = useTheme();
   return (
-    <Paper
-      elevation={4}
+    <Box
       sx={{
-        background: alpha(
-          theme.palette.primary.main,
-          theme.palette.action.hoverOpacity
-        ),
+        background: (theme) => theme.palette.background.default,
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
-        borderRadius: 2,
-        paddingY: 5,
-        position: "relative",
-        top: 60,
-        m: "auto",
-        maxWidth: "40vw",
+        height: "100vh",
       }}
     >
       <Container maxWidth="md">
-        <Grid
-          container
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          gap={2}
-        >
-          <Grid item xs={12}>
-            {!props.hideLogo && (
-              <img
-                alt="logo"
-                width="150"
-                height="auto"
-                src={require("@assets/images/wso2-logo.svg").default}
-              />
-            )}
+        <Box>
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            spacing={2}
+          >
+            <Grid item xs={12}>
+              {props.isLoading && (
+                <LinearProgress
+                  sx={{
+                    width: "150px",
+                  }}
+                />
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <Typography
+                variant="inherit"
+                sx={{
+                  color: (theme) =>
+                    theme.palette.mode === "light"
+                      ? theme.palette.common.black
+                      : theme.palette.common.white,
+                }}
+              >
+                {props.message}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <StateWithImage
-              message={"Loading " + APP_NAME + " Data..."}
-              imageUrl={require("@assets/images/loading.svg").default}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            {props.isLoading && <CustomCircularProgress />}
-          </Grid>
-        </Grid>
+        </Box>
       </Container>
-    </Paper>
+    </Box>
   );
 };
 

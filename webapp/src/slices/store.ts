@@ -16,13 +16,15 @@
 
 import { enableMapSet } from "immer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-
 import { configureStore } from "@reduxjs/toolkit";
+
 import authReducer from "@slices/authSlice/auth";
 import commonReducer from "@slices/commonSlice/common";
 import appConfigReducer from "@slices/configSlice/config";
-import employeeReducer from "@slices/employeeSlice/employee";
 import userReducer from "@slices/userSlice/user";
+import appsReducer from "@slices/appSlice/app";
+import tagReducer from "@slices/tagSlice/tag"
+import groupReducer from "@slices/groupsSlice/groups"
 
 enableMapSet();
 
@@ -31,11 +33,12 @@ export const store = configureStore({
     auth: authReducer,
     user: userReducer,
     common: commonReducer,
-    employee: employeeReducer,
     appConfig: appConfigReducer,
+    app: appsReducer,
+    tag: tagReducer,
+    group: groupReducer
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

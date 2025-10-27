@@ -14,26 +14,27 @@
 // specific language governing permissions and limitations
 // under the License.
 
-export enum State {
-  failed = "failed",
-  success = "success",
-  loading = "loading",
-  idle = "idle",
+declare module "*.svg" {
+  const content: string;
+  export default content;
 }
 
-export enum ConfirmationType {
-  update = "update",
-  send = "send",
-  upload = "upload",
-  accept = "accept",
+declare module "*.png" {
+  const content: string;
+  export default content;
 }
 
-export interface CommonCardProps {
-  actions: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-  dataCardIndex: number;
+declare module "*.jpg" {
+  const content: string;
+  export default content;
 }
 
-export enum UpdateAction {
-  Favorite = "favourite",
-  Unfavourite = "unfavourite"
+declare module "*.jpeg" {
+  const content: string;
+  export default content;
+}
+
+declare module "*.gif" {
+  const content: string;
+  export default content;
 }

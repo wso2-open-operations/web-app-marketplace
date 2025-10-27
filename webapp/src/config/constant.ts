@@ -14,8 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { fetchEmployees } from "../slices/employeeSlice/employee";
-
 export const SnackMessage = {
   success: {
     addEmployee: "Successfully created the employee",
@@ -26,6 +24,11 @@ export const SnackMessage = {
     insufficientPrivileges: "You don't have sufficient privileges to access this resource",
     fetchAppConfigMessage: "Error while fetching app config",
     addEmployee: "Unable to add employee",
+    fetchApps: "Unable to fetch apps",
   },
   warning: {},
 };
+
+export const APP_DESC = "Web App Store";
+
+export const redirectUrl = "web-app-marketplace-redirect-url";
