@@ -18,8 +18,9 @@ import {
 
 export default function Profile() {
   const dispatch = useAppDispatch();
-  const { groups } = useAppSelector((state: RootState) => state.group);
   const user = useAppSelector((state: RootState) => state.user.userInfo);
+  const token = useAppSelector((state: RootState) => state.auth.decodedIdToken);
+  const groups = token?.groups;
 
   useEffect(() => {
     dispatch(fetchGroups());
@@ -53,7 +54,10 @@ export default function Profile() {
                 gap: 1,
               }}
             >
-              <Typography sx={{ fontWeight: 600, color: "text.secondary" }} variant="h4">
+              <Typography
+                sx={{ fontWeight: 600, color: "text.secondary" }}
+                variant="h4"
+              >
                 {`${user?.firstName} ${user?.lastName}`}
               </Typography>
               <Typography sx={{ color: "text.tertiary" }} variant="body1">
@@ -65,7 +69,7 @@ export default function Profile() {
         <Box
           sx={{
             "& > *:not(:last-child)": {
-              marginBottom: 2,
+              marginBottom: 1,
             },
           }}
         >
@@ -84,19 +88,24 @@ export default function Profile() {
               gap: 1,
             }}
           >
-            {groups?.map((grp) => (
-              <Chip
-                sx={{
-                  "& .MuiChip-label": {
-                    fontSize: "12px",
-                  },
-                  color: "text.tertiary",
-                }}
-                variant="outlined"
-                size="small"
-                label={grp}
-              />
-            ))}
+            {groups ? (
+              groups.map((grp: string, index: number) => (
+                <Chip
+                  key={index}
+                  sx={{
+                    "& .MuiChip-label": {
+                      fontSize: "12px",
+                    },
+                    color: "text.tertiary",
+                  }}
+                  variant="outlined"
+                  size="small"
+                  label={grp}
+                />
+              ))
+            ) : (
+              <Typography>User has no roles to display</Typography>
+            )}
           </Box>
         </Box>
       </CardContent>
