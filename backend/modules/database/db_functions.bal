@@ -13,8 +13,8 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
-import ballerina/sql;
 import ballerina/regex;
+import ballerina/sql;
 
 # Fetch all apps visible to the given roles.
 #
