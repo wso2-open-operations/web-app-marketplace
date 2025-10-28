@@ -314,7 +314,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         error? appError = database:updateApp(id, payload);
 
         if appError is error {
-            string customError = string `Error occurred while updating app`;
+            string customError = string `Error occurred while updating app with ID : ${id}`;
             log:printError(customError, appError);
             return <http:InternalServerError>{
                 body: {
