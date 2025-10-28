@@ -44,7 +44,7 @@ public type Tag record {|
     string color;
 |};
 
-# Structure of Tag record.
+# Database] Create Tag record.
 public type CreateTag record {|
     # Display name of the tag
     string name;
