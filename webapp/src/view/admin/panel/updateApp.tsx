@@ -360,7 +360,7 @@ export default function UpdateApp() {
       }}
     >
       {/* Form Content */}
-      <Box sx={{ display: "flex", flexDirection: "row,", p: 3, gap: 3 }}>
+      <Box sx={{ display: "flex", flexDirection: "row", p: 3, gap: 3 }}>
         <Box
           sx={{
             width: "fit-content",
