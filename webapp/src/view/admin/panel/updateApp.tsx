@@ -68,7 +68,7 @@ const validationSchema = Yup.object({
   description: Yup.string()
     .trim()
     .min(10, "Description must be at least 10 characters")
-    .max(100, "Description must be at most 50 characters")
+    .max(100, "Description must be at most 100 characters")
     .nullable(),
   url: Yup.string().trim().url("Must be a valid URL").nullable(),
   versionName: Yup.string()
