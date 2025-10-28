@@ -391,6 +391,9 @@ export default function UpdateApp() {
                 appId={selectedApp.id || 0}
                 isFavourite={1}
                 logoAlt={selectedApp.name || "App Logo"}
+                cardSx={{
+                  border: ".5px solid #ccc",
+                }}
               />
             ) : (
               <AppCard
@@ -404,7 +407,7 @@ export default function UpdateApp() {
                 logoAlt="Sample App Logo"
                 isClickable = {false}
                 cardSx={{
-                  border: "1px solid #ccc",
+                  border: ".5px solid #ccc",
                   "&:hover": {
                     boxShadow: "none",
                     transform: "none",
