@@ -21,4 +21,4 @@ public final string:RegExp NON_EMPTY_HEX_VALUE = re `^#(?:[0-9a-fA-F]{3}){1,2}$`
 public final string:RegExp NON_EMPTY_BASE64_STRING = re `^data:image/svg\+xml;base64,(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$`;
 
 public const USER_NOT_FOUND_ERROR = "User information header not found!";
-public const ACCESS_DENINED_ERROR = "Access denied: Only administrators can add new apps.";
+public const ACCESS_DENIED_ERROR = "Access denied: Only administrators can add new apps.";

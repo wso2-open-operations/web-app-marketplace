@@ -64,7 +64,7 @@ public type AppRecord record {|
     string addedBy;
     # Tags as JSON array containing tag details
     string tags;
-    # User goups of the target app
+    # User groups of the target app
     @sql:Column {name: "user_groups"}
     string userGroups?;
     # Active status of the app - "1" for active, "0" for inactive
@@ -92,7 +92,7 @@ public type App record {|
     string addedBy;
     # Tags as JSON array containing tag details
     Tag[] tags;
-    # User goups of the target app
+    # User groups of the target app
     @sql:Column {name: "user_groups"}
     string[] userGroups?;
     # Active status of the app - "1" for active, "0" for inactive

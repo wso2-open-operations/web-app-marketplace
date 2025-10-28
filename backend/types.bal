@@ -43,7 +43,7 @@ public type App record {|
     string addedBy;
     # Tags as JSON string containing array of tag details
     Tag[] tags;
-    # User goups of the target app
+    # User groups of the target app
     string[] userGroups?;
     # Active status of the app - "1" for active, "0" for inactive
     boolean isActive?;
