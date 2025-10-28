@@ -136,3 +136,7 @@ public isolated function fetchTags() returns Tag[]|error? {
             color: tag.color
         };
 }
+
+public isolated function createTag(CreateTag payload) returns error? {
+    _ = check databaseClient->execute(createTagQuery(payload));
+}
