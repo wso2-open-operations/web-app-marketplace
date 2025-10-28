@@ -119,7 +119,7 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
     }
 
     mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
-    
+
     // Add GROUP BY clause after WHERE conditions
     mainQuery = sql:queryConcat(mainQuery, ` GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, 
     a.added_by, a.is_active, uf.app_id`);
@@ -171,24 +171,25 @@ isolated function fetchAppQuery(AppFilter filters) returns sql:ParameterizedQuer
     }
 
     mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
-    
+
     // Add GROUP BY clause after WHERE conditions
     mainQuery = sql:queryConcat(mainQuery, ` GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon,
      a.added_by`);
-    
+
     return mainQuery;
 }
 
 # Build query to create a new app.
-# 
+#
 # + app - App data to insert
 # + return - Parameterized query for app creation
 isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
     string userGroups = app.userGroups.length() > 0 ? string:'join(",", ...app.userGroups) : "";
-    string tags = app.tags.length() > 0 ? string:'join(",", ...from int tagId in app.tags select tagId.toString()) : "";
+    string tags = app.tags.length() > 0 ? string:'join(",", ...from int tagId in app.tags
+                    select tagId.toString()) : "";
 
     sql:ParameterizedQuery query = sql:queryConcat(
-        `INSERT INTO apps (
+            `INSERT INTO apps (
             name,
             url,
             description,
@@ -263,8 +264,9 @@ isolated function updateAppQuery(int id, UpdateApp payload) returns sql:Paramete
     }
 
     int[]? payloadTags = payload.tags;
-    if payloadTags is int[]{
-        string tags = payloadTags.length() > 0 ? string:'join(",", ...from int tagId in payloadTags select tagId.toString()) : "";
+    if payloadTags is int[] {
+        string tags = payloadTags.length() > 0 ? string:'join(",", ...from int tagId in payloadTags
+                        select tagId.toString()) : "";
         filters.push(` tags = ${tags}`);
     }
 
@@ -296,7 +298,7 @@ isolated function upsertFavouritesQuery(string email, int appId, boolean isFavou
         is_favourite = ${isFavourite}`;
 
 # Build query to fetch active user groups.
-# 
+#
 # + return - Parameterized query for user groups
 isolated function fetchUserGroupsQuery() returns sql:ParameterizedQuery {
     sql:ParameterizedQuery query = `
@@ -308,7 +310,7 @@ isolated function fetchUserGroupsQuery() returns sql:ParameterizedQuery {
 }
 
 # Build query to fetch active tags.
-# 
+#
 # + return - Parameterized query for tags
 isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
     SELECT 
@@ -317,3 +319,32 @@ isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
         color
     FROM tags
     WHERE is_active = 1`;
+
+# Build query to fetch a tag by its name.
+#
+# + name - The name of the tag to fetch
+# + return - Parameterized SQL query to select the tag with the given name
+isolated function fetchTagByNameQuery(string name) returns sql:ParameterizedQuery => `
+        SELECT 
+            id, 
+            name,
+            color
+        FROM tags
+        WHERE name = ${name}`;
+
+# Build query to create a new tag.
+#
+# + payload - The tag data to insert (name, color, added_by, updated_by)
+# + return - Parameterized SQL query for tag creation
+isolated function createTagQuery(CreateTag payload) returns sql:ParameterizedQuery => `
+    INSERT INTO tags (
+        name,
+        color,
+        added_by,
+        updated_by
+    ) VALUES (
+        ${payload.name},
+        ${payload.color},
+        ${payload.addedBy},
+        ${payload.addedBy}
+    )`;

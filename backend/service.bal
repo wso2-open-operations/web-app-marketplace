@@ -86,7 +86,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
-        } 
+        }
 
         UserInfo userInfoResponse = {...employee, privileges};
 
@@ -133,7 +133,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get apps visible to the user.
     #
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
-    resource function get apps/[string email](http:RequestContext ctx) returns UserApp[]|http:NotFound|http:BadRequest|http:InternalServerError {
+    resource function get apps/[string email](http:RequestContext ctx) returns UserApp[]|http:NotFound|http:BadRequest
+    |http:InternalServerError {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -176,7 +178,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     #
     # + app - App data to create
     # + return - Created on success, or BadRequest/Forbidden/InternalServerError on failure
-    resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|http:Forbidden|http:InternalServerError {
+    resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|
+    http:Forbidden|http:InternalServerError {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -290,7 +294,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        App|error? app = database:fetchApp({id : id});
+        App|error? app = database:fetchApp({id: id});
 
         if app is error {
             string customError = string `Error occurred while validating app with ID : ${id}`;
@@ -302,10 +306,10 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if app is (){
+        if app is () {
             log:printError("Application not found for given id");
             return <http:NotFound>{
-                body:  {
+                body: {
                     message: "Application not found"
                 }
             };
@@ -422,7 +426,74 @@ service http:InterceptableService / on new http:Listener(9090) {
         return tags;
     }
 
-    # Update user's favourite status for a specific app.
+    # Create a new tag.
+    #
+    # + tagPayload - The tag data to create
+    # + return - Ok on success, Forbidden/BadRequest/InternalServerError on failure
+    resource function post tags(http:RequestContext ctx, CreateTag tagPayload) returns http:Ok|http:Forbidden|
+    http:BadRequest|http:InternalServerError {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_NOT_FOUND_ERROR}
+            };
+        }
+
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            log:printWarn(string `${ACCESS_DENIED_ERROR}. email: ${userInfo.email} groups: ${
+                    userInfo.groups.toString()}`);
+            return <http:Forbidden>{
+                body: {
+                    message: ACCESS_DENIED_ERROR
+                }
+            };
+        }
+
+        Tag|error? tag = database:fetchTagByName(tagPayload.name);
+
+        if tag is error {
+            string customError = "Error while validating tags";
+            log:printError(customError, tag);
+            return <http:InternalServerError> {
+                body:  {
+                    message: customError
+                }
+            };
+        }
+
+        if tag is Tag {
+            string customError = string `Tag already exist for name : ${tagPayload.name}`;
+            log:printError(customError);
+            return <http:BadRequest> {
+                body:  {
+                    message: customError
+                }
+            };
+        }
+
+        error? tagError = database:createTag(tagPayload);
+
+        if tagError is error {
+            string customError = "An error occurred while creating tags";
+            log:printError(customError, tagError);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        return <http:Ok>{
+            body: {
+                message: string `Tag ${tagPayload.name} successfully created`
+            }
+        };
+
+    }
+
+    # Upsert user's favourite status for a specific app.
     #
     # + id - Application ID to update favourite status for
     # + action - Enum containing the favourite status to set
