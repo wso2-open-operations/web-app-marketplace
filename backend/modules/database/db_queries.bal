@@ -27,12 +27,20 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
             a.version_name,
             a.icon,
             a.added_by,
-            t.id AS tag_id,
-            t.name as tag_name,
-            t.color
+            a.user_groups,
+            COALESCE(
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', t.id,
+                        'name', t.name,
+                        'color', t.color
+                    )
+                ),
+                JSON_ARRAY()
+            ) AS tags
         FROM apps a
-        LEFT JOIN tags t ON a.tag_id = t.id
-    `;
+        LEFT JOIN tags t ON FIND_IN_SET(t.id, a.tags) > 0
+        GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by, a.user_groups`;
 
 # Build query to fetch app details with filters for validation and admin operations.
 #
@@ -46,19 +54,25 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
             a.name,
             a.url,
             a.description,
-            a.version_name AS versionName,
+            a.version_name,
             a.icon,
-            a.added_by AS addedBy,
-            a.is_active,
-            t.id as tagId,
-            t.name as tagName,
-            t.color as tagColor,
+            a.added_by,
+            COALESCE(
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', t.id,
+                        'name', t.name,
+                        'color', t.color
+                    )
+                ),
+                JSON_ARRAY()
+            ) AS tags,
             CASE WHEN uf.app_id IS NOT NULL THEN 1 ELSE 0 END AS is_favourite
         FROM apps a
         LEFT JOIN user_favourites uf ON a.id = uf.app_id 
             AND uf.user_email = ${email}
             AND uf.is_favourite = 1
-        LEFT JOIN tags t ON a.tag_id = t.id
+        LEFT JOIN tags t ON FIND_IN_SET(t.id, a.tags) > 0
     `;
 
     sql:ParameterizedQuery[] filterQueries = [];
@@ -105,6 +119,10 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
     }
 
     mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
+    
+    // Add GROUP BY clause after WHERE conditions
+    mainQuery = sql:queryConcat(mainQuery, ` GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, 
+    a.added_by, a.is_active, uf.app_id`);
 
     return mainQuery;
 }
@@ -120,15 +138,23 @@ isolated function fetchAppQuery(AppFilter filters) returns sql:ParameterizedQuer
             a.name,
             a.url,
             a.description,
-            a.version_name AS versionName,
-            a.tag_id AS tagId,
+            a.version_name,
             a.icon,
-            a.added_by AS addedBy,
-            t.name AS tagName,
-            t.color as tagColor,
-            t.is_active
+            a.added_by,
+            COALESCE(
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', t.id,
+                        'name', t.name,
+                        'color', t.color
+                    )
+                ),
+                JSON_ARRAY()
+            ) AS tags
         FROM apps a
-        LEFT JOIN tags t ON a.tag_id = t.id
+        LEFT JOIN tags t ON FIND_IN_SET(t.id, a.tags) > 0 
+            AND a.tags IS NOT NULL 
+            AND a.tags != ''
     `;
 
     sql:ParameterizedQuery[] filterQueries = [];
@@ -145,7 +171,11 @@ isolated function fetchAppQuery(AppFilter filters) returns sql:ParameterizedQuer
     }
 
     mainQuery = buildSqlSelectQuery(mainQuery, filterQueries);
-
+    
+    // Add GROUP BY clause after WHERE conditions
+    mainQuery = sql:queryConcat(mainQuery, ` GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon,
+     a.added_by`);
+    
     return mainQuery;
 }
 
@@ -155,6 +185,7 @@ isolated function fetchAppQuery(AppFilter filters) returns sql:ParameterizedQuer
 # + return - Parameterized query for app creation
 isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
     string userGroups = app.userGroups.length() > 0 ? string:'join(",", ...app.userGroups) : "";
+    string tags = app.tags.length() > 0 ? string:'join(",", ...from int tagId in app.tags select tagId.toString()) : "";
 
     sql:ParameterizedQuery query = sql:queryConcat(
         `INSERT INTO apps (
@@ -162,7 +193,7 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
             url,
             description,
             version_name,
-            tag_id,
+            tags,
             icon,
             user_groups,
             is_active,
@@ -173,7 +204,7 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
             ${app.url},
             ${app.description},
             ${app.versionName},
-            ${app.tagId},
+            ${tags},
             ${app.icon},
             ${userGroups},
             ${app.isActive},
@@ -182,6 +213,66 @@ isolated function createAppQuery(CreateApp app) returns sql:ParameterizedQuery {
         )`
     );
     return query;
+}
+
+# Build query to update an existing app.
+#
+# + id - The ID of the app to update
+# + payload - The update payload containing fields to update
+# + return - Parameterized query for app update
+isolated function updateAppQuery(int id, UpdateApp payload) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery mainQuery = `
+        UPDATE apps
+        SET
+    `;
+
+    sql:ParameterizedQuery subQuery = `
+        WHERE id = ${id}
+    `;
+
+    sql:ParameterizedQuery[] filters = [];
+
+    if payload.name is string {
+        filters.push(` name = ${payload.name}`);
+    }
+
+    if payload.description is string {
+        filters.push(` description = ${payload.description}`);
+    }
+
+    if payload.icon is string {
+        filters.push(` icon = ${payload.icon}`);
+    }
+
+    if payload.isActive is boolean {
+        filters.push(` is_active = ${payload.isActive}`);
+    }
+
+    if payload.url is string {
+        filters.push(` url = ${payload.url}`);
+    }
+
+    if payload.versionName is string {
+        filters.push(` version_name = ${payload.versionName}`);
+    }
+
+    string[]? payloadUserGroups = payload.userGroups;
+    if payloadUserGroups is string[] {
+        string userGroups = payloadUserGroups.length() > 0 ? string:'join(",", ...payloadUserGroups) : "";
+        filters.push(` user_groups = ${userGroups}`);
+    }
+
+    int[]? payloadTags = payload.tags;
+    if payloadTags is int[]{
+        string tags = payloadTags.length() > 0 ? string:'join(",", ...from int tagId in payloadTags select tagId.toString()) : "";
+        filters.push(` tags = ${tags}`);
+    }
+
+    filters.push(` updated_by = ${payload.updatedBy}`);
+
+    mainQuery = buildSqlUpdateQuery(mainQuery, filters);
+
+    return sql:queryConcat(mainQuery, subQuery);
 }
 
 # Build query to insert or update user's favourite status for an app.
@@ -222,6 +313,7 @@ isolated function fetchUserGroupsQuery() returns sql:ParameterizedQuery {
 isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
     SELECT 
         id,
-        name
+        name,
+        color
     FROM tags
     WHERE is_active = 1`;
