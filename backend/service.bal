@@ -432,11 +432,11 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            log:printWarn(string `${ACCESS_DENINED_ERROR}. email: ${userInfo.email} groups: ${
+            log:printWarn(string `${ACCESS_DENIED_ERROR}. email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: ACCESS_DENINED_ERROR
+                    message: ACCESS_DENIED_ERROR
                 }
             };
         }
@@ -444,7 +444,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         Tag|error? tag = database:fetchTagByName(tagPayload.name);
 
         if tag is error {
-            log:printError("Unknown error occured", tag);
+            log:printError("Unknown error occurred", tag);
         }
 
         if tag is Tag {
@@ -460,7 +460,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         error? tagError = database:createTag(tagPayload);
 
         if tagError is error {
-            string customError = string `An error occured while creating tags`;
+            string customError = "An error occurred while creating tags";
             log:printError(customError, tagError);
             return <http:InternalServerError>{
                 body: {
