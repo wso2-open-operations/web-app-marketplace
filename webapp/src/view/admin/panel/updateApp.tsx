@@ -402,6 +402,15 @@ export default function UpdateApp() {
                 appId={dummyApp.id}
                 isFavourite={1}
                 logoAlt="Sample App Logo"
+                isClickable = {false}
+                cardSx={{
+                  border: "1px solid #ccc",
+                  "&:hover": {
+                    boxShadow: "none",
+                    transform: "none",
+                    background: "#fff",
+                  },
+                }}
               />
             )}
           </Box>
