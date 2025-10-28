@@ -137,6 +137,10 @@ public isolated function fetchTags() returns Tag[]|error? {
         };
 }
 
+# Fetch a tag by its name.
+#
+# + name - The name of the tag to fetch
+# + return - The Tag record if found, () if no tag exists with the given name, or an error on failure
 public isolated function fetchTagByName(string name) returns Tag|error? {
     Tag|error tag = databaseClient->queryRow(fetchTagByIdQuery(name));
 
@@ -147,6 +151,10 @@ public isolated function fetchTagByName(string name) returns Tag|error? {
     return tag;
 }
 
+# Create a new tag in the database.
+#
+# + payload - The tag data to insert (name, color, added_by, updated_by)
+# + return - An error if creation fails, or () on success
 public isolated function createTag(CreateTag payload) returns error? {
     _ = check databaseClient->execute(createTagQuery(payload));
 }

@@ -422,6 +422,10 @@ service http:InterceptableService / on new http:Listener(9090) {
         return tags;
     }
 
+    # Create a new tag.
+    #
+    # + tagPayload - The tag data to create
+    # + return - Ok on success, Forbidden/BadRequest/InternalServerError on failure
     resource function post tags(http:RequestContext ctx, CreateTag tagPayload) returns http:Ok|http:Forbidden|http:BadRequest|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
