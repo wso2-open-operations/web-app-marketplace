@@ -26,11 +26,6 @@ final cache:Cache cache = new ({
     evictionFactor: 0.2
 });
 
-final cache:Cache tagsCache = new ({
-    defaultMaxAge: 86400.0,
-    evictionFactor: 0.2
-});
-
 @display {
     label: "Web_App_Marketplace Service",
     id: "people-ops-suite/Web_App_Marketplace-service"
@@ -424,13 +419,6 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        foreach Tag tag in tags {
-            error? tagCacheError = tagsCache.put(tag.name, tag);
-            if tagCacheError is error {
-                log:printError(string `Error caching tag: ${tag.name}`, tagCacheError);
-            }
-        }
-
         return tags;
     }
 
@@ -453,19 +441,18 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        Tag|error cachedTag = tagsCache.get(tagPayload.name).ensureType();
+        Tag|error? tag = database:fetchTagByName(tagPayload.name);
 
-        if cachedTag is error {
-            string message = string `Error occured while retrieving tags from cache`;
-            log:printError(message, cachedTag);
+        if tag is error {
+            log:printError("Unknown error occured", tag);
         }
 
-        if cachedTag is Tag {
-            string message = string `Tag with ${tagPayload.name} is already exisit`;
-            log:printWarn(message, Tag = cachedTag);
-            return <http:BadRequest>{
-                body: {
-                    message: message
+        if tag is Tag {
+            string customError = string `Tag is already exist for name : ${tagPayload.name}`;
+            log:printError(customError);
+            return <http:BadRequest> {
+                body:  {
+                    message: customError
                 }
             };
         }
