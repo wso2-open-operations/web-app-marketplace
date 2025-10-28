@@ -487,7 +487,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         return <http:Ok>{
             body: {
-                message: string `Tag ${tagPayload.name} Successfully created`
+                message: string `Tag ${tagPayload.name} successfully created`
             }
         };
 
