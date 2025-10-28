@@ -324,7 +324,7 @@ isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
 #
 # + name - The name of the tag to fetch
 # + return - Parameterized SQL query to select the tag with the given name
-isolated function fetchTagByIdQuery(string name) returns sql:ParameterizedQuery => `
+isolated function fetchTagByNameQuery(string name) returns sql:ParameterizedQuery => `
         SELECT 
             id, 
             name,

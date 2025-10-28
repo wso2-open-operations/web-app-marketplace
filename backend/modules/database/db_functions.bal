@@ -142,7 +142,7 @@ public isolated function fetchTags() returns Tag[]|error? {
 # + name - The name of the tag to fetch
 # + return - The Tag record if found, () if no tag exists with the given name, or an error on failure
 public isolated function fetchTagByName(string name) returns Tag|error? {
-    Tag|error tag = databaseClient->queryRow(fetchTagByIdQuery(name));
+    Tag|error tag = databaseClient->queryRow(fetchTagByNameQuery(name));
 
     if tag is sql:NoRowsError {
         return;
