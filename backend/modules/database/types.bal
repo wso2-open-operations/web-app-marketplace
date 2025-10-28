@@ -44,6 +44,16 @@ public type Tag record {|
     string color;
 |};
 
+# Structure of Tag record.
+public type CreateTag record {|
+    # Display name of the tag
+    string name;
+    # Color code of the tag
+    string color;
+    # Email of the tag creator
+    string addedBy;
+|};
+
 # [Database] App record to fetch apps with comma seperated tags.
 public type AppRecord record {|
     # Unique identifier of the link

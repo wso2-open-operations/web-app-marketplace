@@ -23,8 +23,8 @@ public isolated function fetchApps() returns App[]|error {
     stream<AppRecord, error?> result = databaseClient->query(fetchAppsQuery());
     return from AppRecord app in result
         let Tag[] tags = check app.tags.fromJsonStringWithType()
-        let string[] userGroups = (app.userGroups is string && app.userGroups != "") 
-            ? regex:split(<string>app.userGroups, ",") 
+        let string[] userGroups = (app.userGroups is string && app.userGroups != "")
+            ? regex:split(<string>app.userGroups, ",")
             : []
         select {
             id: app.id,
@@ -135,4 +135,18 @@ public isolated function fetchTags() returns Tag[]|error? {
             name: tag.name,
             color: tag.color
         };
+}
+
+public isolated function fetchTagByName(string name) returns Tag|error? {
+    Tag|error tag = databaseClient->queryRow(fetchTagByIdQuery(name));
+
+    if tag is sql:NoRowsError {
+        return;
+    }
+
+    return tag;
+}
+
+public isolated function createTag(CreateTag payload) returns error? {
+    _ = check databaseClient->execute(createTagQuery(payload));
 }
