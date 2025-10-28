@@ -36,11 +36,11 @@ import AddAppModal from "@root/src/view/home/components/AddAppModal";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import { Role } from "@root/src/slices/authSlice/auth";
-import { fetchApps } from "@root/src/slices/appSlice/app";
+import { fetchUserApps } from "@root/src/slices/appSlice/app";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { state, apps, stateMessage } = useAppSelector((state: RootState) => state.app);
+  const { state, userApps, stateMessage } = useAppSelector((state: RootState) => state.app);
   const roles = useAppSelector((state: RootState) => state.auth.roles);
   const isAdmin = roles.includes(Role.ADMIN);
 
@@ -52,21 +52,21 @@ export default function Home() {
   const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    dispatch(fetchApps());
+    dispatch(fetchUserApps());
     dispatch(fetchTags());
     dispatch(fetchGroups());
   }, [dispatch]);
 
   // Extract unique tags from apps
   const availableTags = useMemo(() => {
-    return apps ? extractUniqueTags(apps) : [];
-  }, [apps]);
+    return userApps ? extractUniqueTags(userApps) : [];
+  }, [userApps]);
 
   // Filter and sort apps based on search and tags
   const filteredApps = useMemo(() => {
-    if (!apps) return [];
-    return filterAndSortApps(apps, searchTerm, selectedTags);
-  }, [apps, searchTerm, selectedTags]);
+    if (!userApps) return [];
+    return filterAndSortApps(userApps, searchTerm, selectedTags);
+  }, [userApps, searchTerm, selectedTags]);
 
   if (state === State.loading) {
     return (
@@ -120,7 +120,7 @@ export default function Home() {
               <AppCard
                 title={app.name}
                 description={app.description}
-                logoUrl={app.icon || `/icons/${app.iconName}`}
+                logoUrl={app.icon}
                 logoAlt={`${app.name} Icon`}
                 tags={app.tags}
                 appUrl={app.url}
