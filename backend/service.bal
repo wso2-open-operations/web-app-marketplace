@@ -26,6 +26,11 @@ final cache:Cache cache = new ({
     evictionFactor: 0.2
 });
 
+final cache:Cache tagsCache = new ({
+    defaultMaxAge: 86400.0,
+    evictionFactor: 0.2
+});
+
 @display {
     label: "Web_App_Marketplace Service",
     id: "people-ops-suite/Web_App_Marketplace-service"
@@ -86,7 +91,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
-        } 
+        }
 
         UserInfo userInfoResponse = {...employee, privileges};
 
@@ -290,7 +295,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        App|error? app = database:fetchApp({id : id});
+        App|error? app = database:fetchApp({id: id});
 
         if app is error {
             string customError = string `Error occurred while validating app`;
@@ -302,10 +307,10 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if app is (){
+        if app is () {
             log:printError("Application not found for given id");
             return <http:NotFound>{
-                body:  {
+                body: {
                     message: "Application not found"
                 }
             };
@@ -419,10 +424,73 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
+        foreach Tag tag in tags {
+            error? tagCacheError = tagsCache.put(tag.name, tag);
+            if tagCacheError is error {
+                log:printError(string `Error caching tag: ${tag.name}`, tagCacheError);
+            }
+        }
+
         return tags;
     }
 
-    # Update user's favourite status for a specific app.
+    resource function post tags(http:RequestContext ctx, CreateTag tagPayload) returns http:Ok|http:Forbidden|http:BadRequest|http:InternalServerError {
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_NOT_FOUND_ERROR}
+            };
+        }
+
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            log:printWarn(string `${ACCESS_DENINED_ERROR}. email: ${userInfo.email} groups: ${
+                    userInfo.groups.toString()}`);
+            return <http:Forbidden>{
+                body: {
+                    message: ACCESS_DENINED_ERROR
+                }
+            };
+        }
+
+        Tag|error cachedTag = tagsCache.get(tagPayload.name).ensureType();
+
+        if cachedTag is error {
+            string message = string `Error occured while retrieving tags from cache`;
+            log:printError(message, cachedTag);
+        }
+
+        if cachedTag is Tag {
+            string message = string `Tag with ${tagPayload.name} is already exisit`;
+            log:printWarn(message, Tag = cachedTag);
+            return <http:BadRequest>{
+                body: {
+                    message: message
+                }
+            };
+        }
+
+        error? tagError = database:createTag(tagPayload);
+
+        if tagError is error {
+            string customError = string `An error occured while creating tags`;
+            log:printError(customError, tagError);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        return <http:Ok>{
+            body: {
+                message: string `Tag ${tagPayload.name} Successfuly created`
+            }
+        };
+
+    }
+
+    # Upsert user's favourite status for a specific app.
     #
     # + id - Application ID to update favourite status for
     # + action - Enum containing the favourite status to set
