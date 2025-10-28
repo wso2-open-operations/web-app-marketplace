@@ -317,3 +317,16 @@ isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
         color
     FROM tags
     WHERE is_active = 1`;
+
+isolated function createTagQuery(CreateTag payload) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery query = `
+        INSERT INTO tags (
+            name,
+            color
+        ) VALUES (
+            ${payload.name}
+            ${payload.color}
+        )`;
+
+    return query;
+}
