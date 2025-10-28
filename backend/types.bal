@@ -149,6 +149,8 @@ public type CreateTag record {|
     string name;
     # Color code of the tag
     string color;
+    # Email of the tag creator
+    string addedBy;
 |};
 
 # User action for marking/unmarking apps as favourites.

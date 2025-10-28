@@ -50,6 +50,8 @@ public type CreateTag record {|
     string name;
     # Color code of the tag
     string color;
+    # Email of the tag creator
+    string addedBy;
 |};
 
 # [Database] App record to fetch apps with comma seperated tags.

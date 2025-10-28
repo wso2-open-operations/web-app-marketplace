@@ -322,10 +322,12 @@ isolated function createTagQuery(CreateTag payload) returns sql:ParameterizedQue
     sql:ParameterizedQuery query = `
         INSERT INTO tags (
             name,
-            color
+            color,
+            added_by
         ) VALUES (
             ${payload.name},
-            ${payload.color}
+            ${payload.color},
+            ${payload.addedBy}
         )`;
 
     return query;
