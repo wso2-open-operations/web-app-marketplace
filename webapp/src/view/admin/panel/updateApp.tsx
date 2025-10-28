@@ -175,7 +175,7 @@ export default function UpdateApp() {
     isActive: true,
   };
 
-  // Build payload with only chaned fields
+  // Build payload with only changed fields
   const buildUpdatePayload = (
     values: typeof formik.values
   ): Partial<UpdateAppPayload> => {
