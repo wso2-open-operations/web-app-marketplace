@@ -217,7 +217,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
-            string customError = string `Error occurred while retrieving user groups`;
+            string customError = "Error occurred while retrieving user groups";
             log:printError(customError, validUserGroups);
             return <http:InternalServerError>{
                 body: {
@@ -227,7 +227,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if validUserGroups.length() == 0 {
-            string customError = string `There are no user groups. Before adding usergroups you have to create new user groups`;
+            string customError = "There are no user groups. Before adding usergroups you have to create new user groups";
             log:printError(customError);
             return <http:InternalServerError>{
                 body: {
@@ -293,7 +293,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         App|error? app = database:fetchApp({id : id});
 
         if app is error {
-            string customError = string `Error occurred while validating app`;
+            string customError = "Error occurred while validating app";
             log:printError(customError, app);
             return <http:InternalServerError>{
                 body: {
@@ -354,7 +354,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
-            string customError = string `Error occurred while retrieving user groups`;
+            string customError = "Error occurred while retrieving user groups";
             log:printError(customError, validUserGroups);
             return <http:InternalServerError>{
                 body: {
@@ -364,7 +364,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if validUserGroups.length() == 0 {
-            string customError = string `There are no user groups. Before adding usergroups you have to create new user groups`;
+            string customError = "There are no user groups. Before adding usergroups you have to create new user groups";
             log:printError(customError);
             return <http:InternalServerError>{
                 body: {
@@ -400,7 +400,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         Tag[]|error? tags = database:fetchTags();
         if tags is error {
-            string customError = string `Error occurred while retrieving tags`;
+            string customError = "Error occurred while retrieving tags";
             log:printError(customError, tags);
             return <http:InternalServerError>{
                 body: {
@@ -410,7 +410,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if tags is () {
-            string customError = string `Error occurred while retrieving tags`;
+            string customError = "Error occurred while retrieving tags";
             log:printError(customError);
             return <http:InternalServerError>{
                 body: {
