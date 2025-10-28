@@ -166,7 +166,7 @@ public type CreateApp record {|
     # User who added the link
     @sql:Column {name: "added_by"}
     string addedBy;
-    # Tag IDs of the target app (comma-separated)
+    # Tag IDs of the target app
     int[] tags;
     # User groups of the target app
     @sql:Column {name: "user_groups"}
@@ -189,7 +189,7 @@ public type UpdateApp record {|
     string versionName?;
     # Icon asset name/key
     string icon?;
-    # Tag IDs of the target app (comma-separated)
+    # Tag IDs of the target app
     int[] tags?;
     # User groups of the target app
     string[] userGroups?;
@@ -213,7 +213,7 @@ public type AppsFilter record {|
     string? addedBy = ();
     # Active status filter 
     string? isActive = ();
-    # Comma-separated user groups associated with the app 
+    # user groups associated with the app 
     string[]? userGroups = ();
 |};
 

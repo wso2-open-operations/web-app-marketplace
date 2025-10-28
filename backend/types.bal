@@ -123,7 +123,7 @@ public type UpdateApp record {|
         }
     }
     string icon?;
-    # Tag IDs of the target app (comma-separated)
+    # Tag IDs of the target app
     int[] tags?;
     # User groups of the target app
     string[] userGroups?;
