@@ -133,7 +133,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get apps visible to the user.
     #
     # + return - App[] on success, 404 when no apps, or 500 on internal errors
-    resource function get apps/[string email](http:RequestContext ctx) returns UserApp[]|http:NotFound|http:BadRequest|http:InternalServerError {
+    resource function get apps/[string email](http:RequestContext ctx) returns UserApp[]|http:NotFound|http:BadRequest
+    |http:InternalServerError {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -176,7 +178,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     #
     # + app - App data to create
     # + return - Created on success, or BadRequest/Forbidden/InternalServerError on failure
-    resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|http:Forbidden|http:InternalServerError {
+    resource function post apps(http:RequestContext ctx, CreateApp app) returns http:Created|http:BadRequest|
+    http:Forbidden|http:InternalServerError {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -426,7 +430,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     #
     # + tagPayload - The tag data to create
     # + return - Ok on success, Forbidden/BadRequest/InternalServerError on failure
-    resource function post tags(http:RequestContext ctx, CreateTag tagPayload) returns http:Ok|http:Forbidden|http:BadRequest|http:InternalServerError {
+    resource function post tags(http:RequestContext ctx, CreateTag tagPayload) returns http:Ok|http:Forbidden|
+    http:BadRequest|http:InternalServerError {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -448,11 +454,17 @@ service http:InterceptableService / on new http:Listener(9090) {
         Tag|error? tag = database:fetchTagByName(tagPayload.name);
 
         if tag is error {
-            log:printError("Unknown error occurred", tag);
+            string customError = "Error while validating tags";
+            log:printError(customError, tag);
+            return <http:InternalServerError> {
+                body:  {
+                    message: customError
+                }
+            };
         }
 
         if tag is Tag {
-            string customError = string `Tag is already exist for name : ${tagPayload.name}`;
+            string customError = string `Tag already exist for name : ${tagPayload.name}`;
             log:printError(customError);
             return <http:BadRequest> {
                 body:  {
@@ -475,7 +487,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         return <http:Ok>{
             body: {
-                message: string `Tag ${tagPayload.name} Successfuly created`
+                message: string `Tag ${tagPayload.name} Successfully created`
             }
         };
 
