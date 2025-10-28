@@ -112,7 +112,7 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         App[]|error? result = database:fetchApps();
         if result is error {
-            string customError = string `Error while retrieving apps`;
+            string customError = "Error while retrieving apps";
             log:printError(customError, result);
             return <http:InternalServerError>{
                 body: {message: customError}
