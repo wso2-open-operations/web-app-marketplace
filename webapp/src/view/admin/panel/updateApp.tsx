@@ -48,7 +48,7 @@ import {
 import { State } from "@root/src/types/types";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 
-import AppCard from "../../home/components/AppCard";
+import AppCard from "@view/home/components/AppCard";
 
 const fileSize = 10 * 1024 * 1024;
 
@@ -649,7 +649,7 @@ export default function UpdateApp() {
                       bgcolor: dragActive ? "action.hover" : "background.paper",
                       cursor: "pointer",
                       transition: "all 0.3s",
-                      disabledTextFieldSx,
+                      ...disabledTextFieldSx,
                     }}
                     onClick={() =>
                       document.getElementById("file-upload")?.click()
