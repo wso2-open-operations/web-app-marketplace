@@ -320,7 +320,7 @@ export default function AddAppModal({ open, onClose }: AddAppModalProps) {
                   <TextField
                     fullWidth
                     name="link"
-                    placeholder="www.meet-hris.wso2.com"
+                    placeholder="www.wso2.com"
                     value={formik.values.link}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}

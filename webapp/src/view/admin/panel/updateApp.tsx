@@ -458,7 +458,7 @@ export default function UpdateApp() {
                     placeholder={
                       !selectedApp
                         ? "Select an app to edit url"
-                        : "www.meet-hris.wso2.com"
+                        : "www.wso2.com"
                     }
                     value={formik.values.url}
                     onChange={formik.handleChange}
