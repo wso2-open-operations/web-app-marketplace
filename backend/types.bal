@@ -143,6 +143,14 @@ public type Tag record {|
     string color;
 |};
 
+# Structure of Tag record.
+public type CreateTag record {|
+    # Display name of the tag
+    string name;
+    # Color code of the tag
+    string color;
+|};
+
 # User action for marking/unmarking apps as favourites.
 public enum Action {
     # Mark an app as favourite
