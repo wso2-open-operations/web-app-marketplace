@@ -318,12 +318,24 @@ isolated function fetchTagsQuery() returns sql:ParameterizedQuery => `
     FROM tags
     WHERE is_active = 1`;
 
+isolated function fetchTagByIdQuery(string name) returns sql:ParameterizedQuery {
+    sql:ParameterizedQuery query = `
+        SELECT 
+            id, 
+            name,
+            color
+        FROM tags
+        WHERE name = ${name}`;
+
+    return query;
+}
+
 isolated function createTagQuery(CreateTag payload) returns sql:ParameterizedQuery {
     sql:ParameterizedQuery query = `
         INSERT INTO tags (
             name,
             color,
-            added_by
+            added_by,
             updated_by
         ) VALUES (
             ${payload.name},
