@@ -293,7 +293,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         App|error? app = database:fetchApp({id : id});
 
         if app is error {
-            string customError = "Error occurred while validating app";
+            string customError = string `Error occurred while validating app with ID : ${id}`;
             log:printError(customError, app);
             return <http:InternalServerError>{
                 body: {
