@@ -84,7 +84,7 @@ export default function Profile() {
             sx={{
               display: "flex",
               flexWrap: "wrap",
-              alignItems: "bottom",
+              alignItems: "flex-end",
               gap: 1,
             }}
           >
