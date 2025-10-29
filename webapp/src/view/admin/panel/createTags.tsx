@@ -24,9 +24,6 @@ import {
   useAppSelector,
 } from "@root/src/slices/store";
 import { State } from "@root/src/types/types";
-import { AppConfig } from "@root/src/config/config";
-import { APIService } from "@root/src/utils/apiService";
-import { useDispatch } from "react-redux";
 import { createTags } from "@root/src/slices/tagSlice/tag";
 
 interface Tag {
