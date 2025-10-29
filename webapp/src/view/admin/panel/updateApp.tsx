@@ -275,6 +275,8 @@ export default function UpdateApp() {
             payload.updatedBy = userEmail;
           }
           await submitUpdate(payload);
+          formik.resetForm();
+          setFilePreview(null);
         };
         reader.onerror = () => {
           formik.setFieldError("icon", "Failed to read icon file");
@@ -282,6 +284,8 @@ export default function UpdateApp() {
       } else {
         // Submit without icon change
         await submitUpdate(payload);
+        formik.resetForm();
+        setFilePreview(null);
       }
     },
   });
