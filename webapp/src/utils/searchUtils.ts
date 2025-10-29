@@ -14,17 +14,17 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { App } from "@root/src/slices/appSlice/app";
+import { UserApp } from "@root/src/slices/appSlice/app";
 
 /**
  * Filter and sort apps based on search term and selected tags
  * Priority order: Title > Tag > Description
  */
 export const filterAndSortApps = (
-  apps: App[],
+  apps: UserApp[],
   searchTerm: string,
   selectedTagIds: number[]
-): App[] => {
+): UserApp[] => {
   const normalizedSearch = searchTerm.toLowerCase().trim();
 
   // Filter by selected tags if any
@@ -41,9 +41,9 @@ export const filterAndSortApps = (
   }
 
   // Filter and categorize by match type
-  const titleMatches: App[] = [];
-  const tagMatches: App[] = [];
-  const descriptionMatches: App[] = [];
+  const titleMatches: UserApp[] = [];
+  const tagMatches: UserApp[] = [];
+  const descriptionMatches: UserApp[] = [];
 
   filtered.forEach((app) => {
     const titleMatch = app.name.toLowerCase().includes(normalizedSearch);
@@ -71,7 +71,7 @@ export const filterAndSortApps = (
  * Extract unique tags from apps array
  */
 export const extractUniqueTags = (
-  apps: App[]
+  apps: UserApp[]
 ): Array<{ id: number; name: string; color: string }> => {
   const tagMap = new Map<number, { id: number; name: string; color: string }>();
 

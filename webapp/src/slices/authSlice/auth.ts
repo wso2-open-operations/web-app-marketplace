@@ -27,19 +27,24 @@ export enum Role {
   EMPLOYEE = "EMPLOYEE",
 }
 
+// Custom extended interface
+interface ExtendedDecodedIDTokenPayload extends DecodedIDTokenPayload {
+  groups?: string[];
+}
+
 interface AuthState {
   status: State;
   mode: "active" | "maintenance";
   statusMessage: string | null;
   isAuthenticated: boolean;
   userInfo: BasicUserInfo | null;
-  decodedIdToken: DecodedIDTokenPayload | null;
+  decodedIdToken: ExtendedDecodedIDTokenPayload | null;
   roles: Role[];
 }
 
 interface AuthData {
   userInfo: BasicUserInfo;
-  decodedIdToken: DecodedIDTokenPayload;
+  decodedIdToken: ExtendedDecodedIDTokenPayload;
 }
 
 export interface UserState {
