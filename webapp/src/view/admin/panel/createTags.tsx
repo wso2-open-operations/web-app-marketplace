@@ -155,7 +155,7 @@ export default function CreateTags() {
               }}
               variant="outlined"
             >
-              cancel
+              Cancel
             </Button>
 
             <Button
