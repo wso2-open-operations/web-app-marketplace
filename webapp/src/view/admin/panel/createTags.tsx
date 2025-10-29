@@ -18,7 +18,11 @@ import { Box, Button, Chip, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from "@root/src/slices/store";
 import { State } from "@root/src/types/types";
 import { AppConfig } from "@root/src/config/config";
 import { APIService } from "@root/src/utils/apiService";
@@ -53,15 +57,14 @@ export default function CreateTags() {
     },
     validationSchema,
     onSubmit: async (values) => {
-
       const requestPayload = {
         name: values.name,
         color: values.color,
-        addedBy: userEmail
+        addedBy: userEmail,
       };
 
       dispatch(createTags(requestPayload));
-      
+      formik.resetForm();
     },
   });
 
