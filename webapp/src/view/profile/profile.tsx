@@ -89,9 +89,9 @@ export default function Profile() {
             }}
           >
             {groups ? (
-              groups.map((grp: string, index: number) => (
+              groups.map((grp: string) => (
                 <Chip
-                  key={index}
+                  key={grp}
                   sx={{
                     "& .MuiChip-label": {
                       fontSize: "12px",
