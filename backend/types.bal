@@ -155,7 +155,7 @@ public type CreateTag record {|
     boolean? isActive = true;
 |};
 
-# User action for marking/unmaking apps as favourites.
+# User action for marking/unmarking apps as favourites.
 public enum Action {
     # Mark an app as favourite
     FAVOURITE = "favourite",
