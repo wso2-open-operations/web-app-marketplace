@@ -37,6 +37,8 @@ import { useState, useEffect } from "react";
 import {
   App,
   UpdateAppPayload,
+  fetchApps,
+  fetchUserApps,
   updateApp,
 } from "@root/src/slices/appSlice/app";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
@@ -49,6 +51,7 @@ import { State } from "@root/src/types/types";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 
 import AppCard from "@view/home/components/AppCard";
+import { update } from "lodash";
 
 const fileSize = 10 * 1024 * 1024;
 
@@ -242,6 +245,9 @@ export default function UpdateApp() {
     await dispatch(
       updateApp({ id: selectedApp.id, payload: payload as UpdateAppPayload })
     );
+
+    dispatch(fetchApps());
+    dispatch(fetchUserApps());
   };
 
   const formik = useFormik({
@@ -278,6 +284,7 @@ export default function UpdateApp() {
           formik.resetForm();
           setFilePreview(null);
         };
+
         reader.onerror = () => {
           formik.setFieldError("icon", "Failed to read icon file");
         };
