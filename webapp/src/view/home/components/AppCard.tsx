@@ -21,6 +21,8 @@ import {
   Typography,
   Chip,
   IconButton,
+  SxProps,
+  Theme,
 } from "@mui/material";
 import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 
@@ -39,6 +41,8 @@ interface AppCardProps {
   logoAlt?: string;
   isFavourite?: number;
   appId: number;
+  cardSx?:SxProps<Theme>;
+  isClickable?:boolean
 }
 
 export default function AppCard({
@@ -50,6 +54,8 @@ export default function AppCard({
   logoAlt = "App Logo",
   isFavourite = 0,
   appId,
+  cardSx,
+  isClickable = true
 }: AppCardProps) {
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
   const dispatch = useAppDispatch();
@@ -58,36 +64,42 @@ export default function AppCard({
   const [isSvg, setIsSvg] = useState(false);
 
   useEffect(() => {
-    setIsSvg(logoUrl.toLowerCase().endsWith('.svg'));
+    setIsSvg(logoUrl.toLowerCase().endsWith(".svg"));
     setImageError(false);
-  }, [logoUrl])
+  }, [logoUrl]);
 
   const handleFavoriteClick = () => {
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
     dispatch(
-      upsertAppFavourite({ 
-        id: appId, 
-        active: newFavoriteState ? UpdateAction.Favorite : UpdateAction.Unfavourite 
+      upsertAppFavourite({
+        id: appId,
+        active: newFavoriteState
+          ? UpdateAction.Favorite
+          : UpdateAction.Unfavourite,
       })
     );
   };
 
   const handleLaunchClick = () => {
-    if (!appUrl) return; 
-        const url = appUrl.startsWith('http://') || appUrl.startsWith('https://') 
-      ? appUrl 
-      : `https://${appUrl}`;
-    
+    if (!appUrl) return;
+    const url =
+      appUrl.startsWith("http://") || appUrl.startsWith("https://")
+        ? appUrl
+        : `https://${appUrl}`;
+
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const renderLogo = () => {
     // Check if logoUrl is a base64 string
-    const isBase64 = logoUrl.startsWith('data:image/');
-    
+    const isBase64 = logoUrl.startsWith("data:image/");
+
     // Check if logoUrl contains SVG markup instead of a file path
-    const isRawSvg = logoUrl.includes('<svg') || logoUrl.includes('<rect') || logoUrl.includes('<path');
+    const isRawSvg =
+      logoUrl.includes("<svg") ||
+      logoUrl.includes("<rect") ||
+      logoUrl.includes("<path");
 
     if (isBase64) {
       return (
@@ -118,12 +130,14 @@ export default function AppCard({
             justifyContent: "center",
           }}
           dangerouslySetInnerHTML={{
-            __html: logoUrl.startsWith('<svg') ? logoUrl : `<svg width="40" height="40" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">${logoUrl}</svg>`
+            __html: logoUrl.startsWith("<svg")
+              ? logoUrl
+              : `<svg width="40" height="40" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">${logoUrl}</svg>`,
           }}
         />
       );
     }
-    
+
     // Handle regular image files (PNG, SVG files, etc.)
     return (
       <Box
@@ -138,33 +152,38 @@ export default function AppCard({
           objectFit: "contain",
           ...(isSvg && {
             filter: "none",
-          })
+          }),
         }}
       />
     );
   };
 
+  const defaultCardSx: SxProps<Theme> = {
+    maxWidth: 500,
+    width: "100%",
+    height: "100%",
+    borderRadius: 4,
+    boxShadow: "0 4px 12px rgba(0,0,0,0.0)",
+    position: "relative",
+    border: "0.5px solid #e6e6e6",
+    background: "#fff",
+    cursor: "pointer",
+    transition: "box-shadow 0.3s ease, transform 0.2s ease",
+    "&:hover": {
+      boxShadow: "0 6px 16px rgba(0,0,0,0.05)",
+      transform: "translateY(-2px)",
+      background: "#fff",
+    },
+  };
+
+  const mergedCardSx = Array.isArray(cardSx)
+  ? [defaultCardSx, ...cardSx]
+  : [defaultCardSx, cardSx || {}];
+
   return (
     <Card
-      onClick={handleLaunchClick}
-      sx={{
-        maxWidth: 500,
-        width: "100%",
-        height: "100%",
-        borderRadius: 4,
-        boxShadow: "0 4px 12px rgba(0,0,0,0.0)",
-        position: "relative",
-        border: "0.5px solid #e6e6e6",
-        background: "#fff",
-        cursor: "pointer",
-        transition: "box-shadow 0.3s ease, transform 0.2s ease",
-        "&:hover": {
-          boxShadow: "0 6px 16px rgba(0,0,0,0.05)",
-          transform: "translateY(-2px)",
-          background: "#fff",
-
-        },
-      }}
+      onClick={isClickable ? handleLaunchClick : undefined}
+      sx={mergedCardSx}
     >
       <CardContent
         sx={{

@@ -49,7 +49,7 @@ export type App = {
   versionName: string;
   icon: string;
   tags: Tag[];
-  userGroups?: string[]
+  userGroups?: string[];
   addedBy: string;
   isActive: boolean;
 };
@@ -62,10 +62,10 @@ export type UpdateAppPayload = {
   versionName?: string;
   icon?: string;
   tags?: Tag[];
-  userGroups?: string[]
+  userGroups?: string[];
   isActive?: boolean;
   updatedBy: string;
-}
+};
 
 export type CreateAppPayload = {
   name: string;
@@ -84,7 +84,7 @@ interface AppState {
   apps: App[] | null;
   userApps: UserApp[] | null;
   submitState: State
-}
+};
 
 const initialState: AppState = {
   state: State.idle,
@@ -97,12 +97,11 @@ const initialState: AppState = {
 interface UpdateArgs {
   id: number;
   active: UpdateAction;
-}
+};
 
 export const fetchApps = createAsyncThunk(
   "app/fetchApps",
-  async (_, { getState, dispatch, rejectWithValue }) => {
-    const { userInfo } = (getState() as { user: UserState }).user;
+  async (_, { dispatch, rejectWithValue }) => {
 
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
@@ -253,8 +252,8 @@ export const updateApp = createAsyncThunk<void, { payload: UpdateAppPayload, id:
       const message =
         error?.response?.data?.message ??
         (error?.response?.status === HttpStatusCode.InternalServerError
-          ? "Server error while creating application"
-          : "Failed to create application");
+          ? "Server error while updating application"
+          : "Failed to update application");
 
       dispatch(
         enqueueSnackbarMessage({
@@ -266,7 +265,7 @@ export const updateApp = createAsyncThunk<void, { payload: UpdateAppPayload, id:
       return rejectWithValue(message);
     }
   }
-)
+);
 
 export const upsertAppFavourite = createAsyncThunk<
   UpdateArgs,
@@ -278,7 +277,7 @@ export const upsertAppFavourite = createAsyncThunk<
     const newCancelTokenSource = APIService.updateCancelToken();
 
     try {
-      const res = await APIService.getInstance().post(
+      await APIService.getInstance().post(
         `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${updateArgs.active}`,
         {
           cancelToken: newCancelTokenSource.token,

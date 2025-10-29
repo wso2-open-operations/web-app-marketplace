@@ -80,10 +80,6 @@ declare module "@mui/material/styles" {
     gradient?: string;
   }
 
-  interface TypeText {
-    tertiary?: string;
-  }
-
   interface PaletteOptions {
     background?: Partial<TypeBackground>;
   }

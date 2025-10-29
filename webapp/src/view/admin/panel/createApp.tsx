@@ -46,7 +46,7 @@ const validationSchema = Yup.object({
     description: Yup.string()
         .trim()
         .min(10, "Description must be at least 10 characters")
-        .max(25, "Description must be at most 25 characters")
+        .max(100, "Description must be at most 100 characters")
         .required("App description is required"),
     link: Yup.string()
         .trim()
@@ -241,7 +241,7 @@ export default function CreateApp() {
                                     <TextField
                                         fullWidth
                                         name="link"
-                                        placeholder="www.meet-hris.wso2.com"
+                                        placeholder="www.wso2.com"
                                         value={formik.values.link}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}

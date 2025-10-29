@@ -43,7 +43,7 @@ export default function Profile() {
             src={user?.employeeThumbnail ?? ""}
             alt={user?.firstName}
           >
-            {user?.firstName.slice(0, 1)}
+            {user?.firstName?.slice(0, 1)}
           </Avatar>
           <Box sx={{ display: "flex", gap: 4 }}>
             <Box
@@ -90,14 +90,14 @@ export default function Profile() {
             sx={{
               display: "flex",
               flexWrap: "wrap",
-              alignItems: "bottom",
+              alignItems: "flex-end",
               gap: 1,
             }}
           >
             {groups ? (
-              groups.map((grp: string, index: number) => (
+              groups.map((grp: string) => (
                 <Chip
-                  key={index}
+                  key={grp}
                   sx={{
                     "& .MuiChip-label": {
                       fontSize: "12px",
