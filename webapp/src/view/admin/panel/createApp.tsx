@@ -131,6 +131,9 @@ export default function CreateApp() {
                 };
 
                 const result = await dispatch(createApp({ payload, userEmail }));
+
+                formik.resetForm();
+                setFilePreview(null);
             };
 
             reader.onerror = () => {
