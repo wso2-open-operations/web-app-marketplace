@@ -63,7 +63,7 @@ export const fetchAppConfig = createAsyncThunk(
       return response.data;
     } catch (error) {
       if (axios.isCancel(error)) {
-        return rejectWithValue("Request canceled");
+        return rejectWithValue("Request Cancelled");
       }
       
       if (axios.isAxiosError(error)) {

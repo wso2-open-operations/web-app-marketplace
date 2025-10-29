@@ -95,7 +95,7 @@ export class APIService {
 
         const existingToken = APIService._cancelTokenMap.get(endpoint);
         if (existingToken) {
-          existingToken.cancel(`Request canceled for endpoint: ${endpoint}`);
+          existingToken.cancel(`Request cancelled for endpoint: ${endpoint}`);
         }
 
         const newTokenSource = axios.CancelToken.source();
