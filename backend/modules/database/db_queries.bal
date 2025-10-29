@@ -341,10 +341,12 @@ isolated function createTagQuery(CreateTag payload) returns sql:ParameterizedQue
         name,
         color,
         added_by,
-        updated_by
+        updated_by,
+        is_active
     ) VALUES (
         ${payload.name},
         ${payload.color},
         ${payload.addedBy},
-        ${payload.addedBy}
+        ${payload.addedBy},
+        ${payload.isActive}
     )`;
