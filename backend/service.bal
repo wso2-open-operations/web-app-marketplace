@@ -87,7 +87,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
         }
-
+        
         UserInfo userInfoResponse = {...employee, privileges};
 
         error? cacheError = cache.put(userInfo.email, userInfoResponse);
@@ -231,7 +231,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if validUserGroups.length() == 0 {
-            string customError = "There are no user groups. Before adding usergroups you have to create new user groups";
+            string customError = "There are no user groups. Before adding user groups you have to create new user groups";
             log:printError(customError);
             return <http:InternalServerError>{
                 body: {
@@ -242,10 +242,10 @@ service http:InterceptableService / on new http:Listener(9090) {
 
         boolean isValidUseGroups = checkUserGroups(app.userGroups, validUserGroups);
         if !isValidUseGroups {
-            log:printError(string `Invalid usergroups ${app.userGroups.toString()}`);
+            log:printError(string `Invalid user groups ${app.userGroups.toString()}`);
             return <http:BadRequest>{
                 body: {
-                    message: "Invalid usergroups"
+                    message: "Invalid user groups"
                 }
             };
         }
@@ -368,7 +368,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if validUserGroups.length() == 0 {
-            string customError = "There are no user groups. Before adding usergroups you have to create new user groups";
+            string customError = "There are no user groups. Before adding user groups you have to create new user groups";
             log:printError(customError);
             return <http:InternalServerError>{
                 body: {

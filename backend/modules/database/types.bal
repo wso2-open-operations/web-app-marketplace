@@ -52,9 +52,11 @@ public type CreateTag record {|
     string color;
     # Email of the tag creator
     string addedBy;
+    # Tag active status
+    boolean? isActive = true;
 |};
 
-# [Database] App record to fetch apps with comma seperated tags.
+# [Database] App record to fetch apps with comma separated tags.
 public type AppRecord record {|
     # Unique identifier of the link
     int id;
@@ -110,7 +112,7 @@ public type App record {|
     boolean isActive?;
 |};
 
-# [Database] Extended user app record with comma seperated tags.
+# [Database] Extended user app record with comma separated tags.
 public type UserAppRecord record {|
     # Unique identifier of the link
     int id;

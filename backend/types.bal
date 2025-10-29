@@ -151,6 +151,8 @@ public type CreateTag record {|
     string color;
     # Email of the tag creator
     string addedBy;
+    # Tag active status
+    boolean? isActive = true;
 |};
 
 # User action for marking/unmarking apps as favourites.
