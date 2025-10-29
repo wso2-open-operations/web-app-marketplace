@@ -52,7 +52,6 @@ export default function Home() {
   const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    dispatch(fetchUserApps());
     dispatch(fetchTags());
     dispatch(fetchGroups());
   }, [dispatch]);
