@@ -14,10 +14,144 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import { Box, Button, Chip, TextField, Typography } from "@mui/material";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+import { RootState, useAppSelector } from "@root/src/slices/store";
+import { State } from "@root/src/types/types";
+import { Root } from "react-dom/client";
+
+interface Tag {
+  name: string;
+  color: string;
+}
+
+const validationSchema = Yup.object({
+  name: Yup.string().required("Tag name is required"),
+  color: Yup.string()
+    .required("Tag color is required")
+    .matches(
+      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+      "Must be a valid hex color (e.g., #F5F5F5 or #FFF)"
+    ),
+});
+
 export default function CreateTags() {
-    return (
-        <div>
-            <h1>Create Tags</h1>
-        </div>
-    )
+  const { submitState, tags } = useAppSelector((state: RootState) => state.tag);
+
+  const formik = useFormik<Tag>({
+    initialValues: {
+      name: "",
+      color: "",
+    },
+    validationSchema,
+    onSubmit: async (values) => {},
+  });
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            color: "text.secondary",
+            textDecoration: "underline",
+            textDecorationColor: "primary.secondary",
+            textDecorationThickness: "1px",
+             textUnderlineOffset: "2px", 
+          }}
+        >
+          Existing Tags
+        </Typography>
+        <Box
+          sx={{
+            flex: 2,
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "bottom",
+            gap: 1,
+          }}
+        >
+          {tags?.map((tag, index) => (
+            <Chip
+              key={index}
+              sx={{
+                "& .MuiChip-label": {
+                  fontSize: "12px",
+                },
+                color: "text.tertiary",
+                borderRadius: 2,
+              }}
+              variant="outlined"
+              size="small"
+              label={tag.name}
+            />
+          ))}
+        </Box>
+      </Box>
+      <Box sx={{ maxWidth: "600px" }}>
+        <form onSubmit={formik.handleSubmit}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <Typography variant="body1">Tag Name</Typography>
+              <TextField
+                fullWidth
+                name="name"
+                placeholder="People App"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+                disabled={submitState === State.loading}
+              />
+            </Box>
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <Typography variant="body1">Tag Color</Typography>
+              <TextField
+                fullWidth
+                name="color"
+                placeholder="#F5F5F5"
+                value={formik.values.color}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.color && Boolean(formik.errors.color)}
+                helperText={formik.touched.color && formik.errors.color}
+                disabled={submitState === State.loading}
+              />
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 2,
+              pt: 3,
+            }}
+          >
+            <Button
+              disabled={submitState === State.loading}
+              onClick={() => {
+                formik.resetForm();
+              }}
+              variant="outlined"
+            >
+              cancel
+            </Button>
+
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={submitState === State.loading || !formik.isValid}
+            >
+              {submitState === State.loading ? "Creating..." : "Create App"}
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Box>
+  );
 }
