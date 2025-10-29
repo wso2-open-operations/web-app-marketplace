@@ -78,7 +78,7 @@ export default function Profile() {
             sx={{
               color: "text.secondary",
               textDecoration: "underline",
-              textDecorationColor: "primary.secondary",
+              textDecorationColor: "text.secondary",
               textDecorationThickness: "1px",
               textUnderlineOffset: "2px",
             }}
