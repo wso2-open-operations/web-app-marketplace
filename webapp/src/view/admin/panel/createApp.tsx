@@ -34,7 +34,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 import { useState, useEffect } from "react";
 
-import { CreateAppPayload, createApp } from "@root/src/slices/appSlice/app";
+import { CreateAppPayload, createApp, fetchApps, fetchUserApps } from "@root/src/slices/appSlice/app";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import {
   useAppDispatch,
@@ -153,6 +153,9 @@ export default function CreateApp() {
         if (createApp.fulfilled.match(result)) {
           formik.resetForm();
           setFilePreview(null);
+
+          dispatch(fetchUserApps());
+          dispatch(fetchApps());
         }
       };
 
