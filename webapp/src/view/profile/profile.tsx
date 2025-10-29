@@ -43,7 +43,7 @@ export default function Profile() {
             src={user?.employeeThumbnail ?? ""}
             alt={user?.firstName}
           >
-            {user?.firstName.slice(0, 1)}
+            {user?.firstName?.slice(0, 1)}
           </Avatar>
           <Box sx={{ display: "flex", gap: 4 }}>
             <Box
