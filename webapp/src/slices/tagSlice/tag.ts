@@ -112,7 +112,7 @@ export const createTags = createAsyncThunk(
       const message =
         error?.response?.data?.message ??
         (error?.response?.status === HttpStatusCode.InternalServerError
-          ? "Server error while creating apTagsplication"
+          ? "Server error while creating tags"
           : "Failed to create tag");
 
       dispatch(
