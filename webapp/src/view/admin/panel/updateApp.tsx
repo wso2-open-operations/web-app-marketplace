@@ -166,7 +166,7 @@ export default function UpdateApp() {
         isActive: true
     };
 
-    // Build payload with only chaned fields
+    // Build payload with only changed fields
     const buildUpdatePayload = (values: typeof formik.values): Partial<UpdateAppPayload> => {
         if (!selectedApp) return {};
 
@@ -414,7 +414,7 @@ export default function UpdateApp() {
                                     <TextField
                                         fullWidth
                                         name="url"
-                                        placeholder={!selectedApp ? "Select an app to edit url" : "www.meet-hris.wso2.com"}
+                                        placeholder={!selectedApp ? "Select an app to edit url" : "www.wso2.com"}
                                         value={formik.values.url}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
