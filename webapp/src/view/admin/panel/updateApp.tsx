@@ -405,9 +405,9 @@ export default function UpdateApp() {
                 appId={dummyApp.id}
                 isFavourite={1}
                 logoAlt="Sample App Logo"
-                isClickable = {false}
+                isClickable={false}
                 cardSx={{
-                  border: ".5px solid #ccc",
+                  border: ".5px solid #c cc",
                   "&:hover": {
                     boxShadow: "none",
                     transform: "none",
