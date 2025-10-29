@@ -18,9 +18,12 @@ import { Box, Button, Chip, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-import { RootState, useAppSelector } from "@root/src/slices/store";
+import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
 import { State } from "@root/src/types/types";
-import { Root } from "react-dom/client";
+import { AppConfig } from "@root/src/config/config";
+import { APIService } from "@root/src/utils/apiService";
+import { useDispatch } from "react-redux";
+import { createTags } from "@root/src/slices/tagSlice/tag";
 
 interface Tag {
   name: string;
@@ -39,6 +42,9 @@ const validationSchema = Yup.object({
 
 export default function CreateTags() {
   const { submitState, tags } = useAppSelector((state: RootState) => state.tag);
+  const dispatch = useAppDispatch();
+  const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
+  const userEmail = userInfo?.workEmail ?? "";
 
   const formik = useFormik<Tag>({
     initialValues: {
@@ -46,7 +52,17 @@ export default function CreateTags() {
       color: "",
     },
     validationSchema,
-    onSubmit: async (values) => {},
+    onSubmit: async (values) => {
+
+      const requestPayload = {
+        name: values.name,
+        color: values.color,
+        addedBy: userEmail
+      };
+
+      dispatch(createTags(requestPayload));
+      
+    },
   });
 
   return (
@@ -59,7 +75,7 @@ export default function CreateTags() {
             textDecoration: "underline",
             textDecorationColor: "primary.secondary",
             textDecorationThickness: "1px",
-             textUnderlineOffset: "2px", 
+            textUnderlineOffset: "2px",
           }}
         >
           Existing Tags
@@ -147,7 +163,7 @@ export default function CreateTags() {
               variant="contained"
               disabled={submitState === State.loading || !formik.isValid}
             >
-              {submitState === State.loading ? "Creating..." : "Create App"}
+              {submitState === State.loading ? "Creating..." : "Create Tag"}
             </Button>
           </Box>
         </form>
