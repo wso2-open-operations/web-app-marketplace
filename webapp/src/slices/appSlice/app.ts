@@ -201,6 +201,7 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
       );
 
       dispatch(fetchUserApps());
+      dispatch(fetchApps());
 
       return;
     } catch (error: any) {
