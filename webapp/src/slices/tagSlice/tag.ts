@@ -93,8 +93,6 @@ export const createTags = createAsyncThunk(
   "tag/createTags",
   async (payload: CreateTag, { dispatch, rejectWithValue }) => {
 
-    console.log("Payload : ", payload);
-
     try {
       const res = await APIService.getInstance().post(
         AppConfig.serviceUrls.tags,
