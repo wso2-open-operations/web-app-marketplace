@@ -277,7 +277,7 @@ export const upsertAppFavourite = createAsyncThunk<
     const newCancelTokenSource = APIService.updateCancelToken();
 
     try {
-      const res = await APIService.getInstance().post(
+      await APIService.getInstance().post(
         `${AppConfig.serviceUrls.apps}/${updateArgs.id}/${updateArgs.active}`,
         {
           cancelToken: newCancelTokenSource.token,
