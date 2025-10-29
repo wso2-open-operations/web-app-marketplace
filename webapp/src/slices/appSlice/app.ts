@@ -266,7 +266,7 @@ export const updateApp = createAsyncThunk<void, { payload: UpdateAppPayload, id:
       return rejectWithValue(message);
     }
   }
-)
+);
 
 export const upsertAppFavourite = createAsyncThunk<
   UpdateArgs,
