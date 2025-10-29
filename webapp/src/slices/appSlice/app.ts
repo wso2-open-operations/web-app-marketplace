@@ -101,8 +101,7 @@ interface UpdateArgs {
 
 export const fetchApps = createAsyncThunk(
   "app/fetchApps",
-  async (_, { getState, dispatch, rejectWithValue }) => {
-    const { userInfo } = (getState() as { user: UserState }).user;
+  async (_, { dispatch, rejectWithValue }) => {
 
     APIService.getCancelToken().cancel();
     const newCancelTokenSource = APIService.updateCancelToken();
