@@ -97,189 +97,51 @@ const validationSchema = Yup.object({
 });
 
 export default function UpdateApp() {
-    const dispatch = useAppDispatch();
-    const tags = useAppSelector((state: RootState) => state.tag.tags);
-    const groups = useAppSelector((state: RootState) => state.group.groups);
-    const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
-    const { stateMessage, submitState, apps } = useAppSelector((state: RootState) => state.app);
+  const dispatch = useAppDispatch();
+  const tags = useAppSelector((state: RootState) => state.tag.tags);
+  const groups = useAppSelector((state: RootState) => state.group.groups);
+  const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
+  const { stateMessage, submitState, apps } = useAppSelector(
+    (state: RootState) => state.app
+  );
 
-    const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
-    const [dragActive, setDragActive] = useState(false);
-    const [selectedApp, setSelectedApp] = useState<App | null>(null);
+  const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<App | null>(null);
 
-    const userEmail = userInfo?.workEmail ?? "";
+  const userEmail = userInfo?.workEmail ?? "";
 
-    useEffect(() => {
-        dispatch(fetchGroups());
-        dispatch(fetchTags());
-    }, [dispatch])
+  useEffect(() => {
+    dispatch(fetchGroups());
+    dispatch(fetchTags());
+  }, [dispatch]);
 
-    useEffect(() => {
-        if (selectedApp?.icon) {
-            setFilePreview({
-                file: new File([], "existing-icon.svg", { type: "image/svg+xml" }),
-                preview: selectedApp.icon,
-                uploading: false,
-                progress: 100,
-                error: null,
-            });
-            // Set a placeholder file for existing icon to pass validation
-            formik.setFieldValue("icon", new File([], "existing-icon.svg", { type: "image/svg+xml" }));
-        } else {
-            setFilePreview(null);
-            formik.setFieldValue("icon", null);
-        }
-    }, [selectedApp]);
+  useEffect(() => {
+    if (selectedApp?.icon) {
+      setFilePreview({
+        file: new File([], "existing-icon.svg", { type: "image/svg+xml" }),
+        preview: selectedApp.icon,
+        uploading: false,
+        progress: 100,
+        error: null,
+      });
+      // Set a placeholder file for existing icon to pass validation
+      formik.setFieldValue(
+        "icon",
+        new File([], "existing-icon.svg", { type: "image/svg+xml" })
+      );
+    } else {
+      setFilePreview(null);
+      formik.setFieldValue("icon", null);
+    }
+  }, [selectedApp]);
 
-    useEffect(() => {
-        if (selectedApp && apps) {
-            const updatedApp = apps.find(app => app.id === selectedApp.id);
-            if (updatedApp) {
-                if (JSON.stringify(updatedApp) !== JSON.stringify(selectedApp)) {
-                    setSelectedApp(updatedApp);
-                }
-            }
-        }
-    }, [apps, selectedApp]);
-
-    // Lighter border styling for disabled TextFields
-    const disabledTextFieldSx = {
-        '& .MuiOutlinedInput-root.Mui-disabled': {
-            '& fieldset': {
-                borderColor: 'rgba(0, 0, 0, 0.12)',
-            },
-        },
-    };
-
-    const dummyApp: App = {
-        name: "Sample",
-        description: "sample app description",
-        icon: "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/appstore.svg",
-        tags: [{
-            "id": 1,
-            "name": "Sample Tag",
-            "color": "#544675"
-        }],
-        url: "www.sample.com",
-        id: 0,
-        versionName: "1.0.0",
-        addedBy: "demo@example.com",
-        userGroups: [],
-        isActive: true
-    };
-
-    // Build payload with only changed fields
-    const buildUpdatePayload = (values: typeof formik.values): Partial<UpdateAppPayload> => {
-        if (!selectedApp) return {};
-
-        const payload: Partial<UpdateAppPayload> = {};
-
-        // Check and add changed fields
-        if (values.title.trim() !== selectedApp.name) {
-            payload.name = values.title.trim();
-        }
-
-        if (values.url.trim() !== selectedApp.url) {
-            payload.url = values.url.trim();
-        }
-
-        if (values.description.trim() !== selectedApp.description) {
-            payload.description = values.description.trim();
-        }
-
-        if (values.versionName.trim() !== selectedApp.versionName) {
-            payload.versionName = values.versionName.trim();
-        }
-
-        // Compare tags arrays
-        const originalTagIds = selectedApp.tags?.map((tag: any) => tag.id) || [];
-        const tagsChanged = JSON.stringify([...values.tags].sort()) !== JSON.stringify([...originalTagIds].sort());
-        if (tagsChanged) {
-            payload.tags = values.tags;
-        }
-
-        // Compare user groups arrays
-        const originalGroupIds = selectedApp.userGroups || [];
-        const groupsChanged = JSON.stringify([...values.groupIds].sort()) !== JSON.stringify([...originalGroupIds].sort());
-        if (groupsChanged) {
-            payload.userGroups = values.groupIds;
-        }
-
-        const originalIsActive = selectedApp.isActive ?? true
-        if (values.isActive !== originalIsActive) {
-            payload.isActive = values.isActive;
-        }
-
-        // Only add updatedBy if there are actual changes
-        if (Object.keys(payload).length > 0) {
-            payload.updatedBy = userEmail;
-        }
-
-        return payload;
-    };
-
-    // Submits app update if changes are detected.
-    const submitUpdate = async (payload: Partial<UpdateAppPayload>) => {
-        if (!selectedApp) return;
-
-        if (Object.keys(payload).length === 0) {
-            formik.setFieldError("title", "No changes detected");
-            return;
-        }
-        await dispatch(updateApp({ id: selectedApp.id, payload: payload as UpdateAppPayload }));
-    };
-
-    const formik = useFormik({
-        enableReinitialize: true,
-        initialValues: {
-            title: selectedApp?.name || "",
-            description: selectedApp?.description || "",
-            url: selectedApp?.url || "",
-            versionName: selectedApp?.versionName || "",
-            tags: selectedApp?.tags?.map((tag: any) => tag.id) || [],
-            groupIds: selectedApp?.userGroups || [],
-            icon: null as File | null,
-            isActive: selectedApp?.isActive ?? true
-        },
-        validationSchema,
-        onSubmit: async (values) => {
-            if (!selectedApp) return;
-
-            // Build payload with only changed fields
-            const payload = buildUpdatePayload(values);
-
-            // Handle icon file if changed
-            if (values.icon) {
-                const reader = new FileReader();
-                reader.readAsDataURL(values.icon);
-                reader.onload = async () => {
-                    const base64Icon = reader.result as string;
-                    payload.icon = base64Icon;
-                    // Ensure updatedBy is added when icon changes
-                    if (!payload.updatedBy) {
-                        payload.updatedBy = userEmail;
-                    }
-                    await submitUpdate(payload);
-                };
-                reader.onerror = () => {
-                    formik.setFieldError("icon", "Failed to read icon file");
-                };
-            } else {
-                // Submit without icon change
-                await submitUpdate(payload);
-            }
-        },
-    });
-
-    const handleFileSelect = (file: File) => {
-        if (file.type !== "image/svg+xml" || !file.name.toLowerCase().endsWith(".svg")) {
-            formik.setFieldError("icon", "Only SVG files are allowed");
-            return;
-        }
-
-        if (file.size > fileSize) {
-            formik.setFieldError("icon", "File size must not exceed 10MB");
-            return;
+  useEffect(() => {
+    if (selectedApp && apps) {
+      const updatedApp = apps.find((app) => app.id === selectedApp.id);
+      if (updatedApp) {
+        if (JSON.stringify(updatedApp) !== JSON.stringify(selectedApp)) {
+          setSelectedApp(updatedApp);
         }
       }
     }
@@ -833,386 +695,37 @@ export default function UpdateApp() {
                           : "Drag and drop file or select file"}
                       </Typography>
                     </Box>
-                </Box>
-                <Box sx={{ width: "100%" }} >
-                    <form onSubmit={formik.handleSubmit}>
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                            {/* App Name */}
-                            <Box>
-                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                                    App Name
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    name="title"
-                                    placeholder={!selectedApp ? "Select an app to edit name" : "Web App Marketplace"}
-                                    value={formik.values.title}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.title && Boolean(formik.errors.title)}
-                                    helperText={formik.touched.title && (formik.errors.title as string)}
-                                    disabled={!selectedApp || submitState === State.loading}
-                                    sx={disabledTextFieldSx}
-                                />
-                            </Box>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept=".svg,image/svg+xml"
+                      onChange={handleFileChange}
+                      style={{ display: "none" }}
+                      disabled={!selectedApp || submitState === State.loading}
+                    />
+                  </Box>
+                )}
 
-                            {/* App URL and Version Name in Row */}
-                            <Box sx={{ display: "flex", gap: 2 }}>
-                                <Box sx={{ flex: 1 }}>
-                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                                        App Url
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        name="url"
-                                        placeholder={!selectedApp ? "Select an app to edit url" : "www.wso2.com"}
-                                        value={formik.values.url}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched.url && Boolean(formik.errors.url)}
-                                        helperText={formik.touched.url && (formik.errors.url as string)}
-                                        disabled={!selectedApp || submitState === State.loading}
-                                        sx={disabledTextFieldSx}
-                                    />
-                                </Box>
-                                <Box sx={{ flex: 1 }}>
-                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                                        App Version Name
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        name="versionName"
-                                        placeholder={!selectedApp ? "Select an app to edit version name" : "Beta"}
-                                        value={formik.values.versionName}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched.versionName && Boolean(formik.errors.versionName)}
-                                        helperText={formik.touched.versionName && (formik.errors.versionName as string)}
-                                        disabled={!selectedApp || submitState === State.loading}
-                                        sx={disabledTextFieldSx}
-                                    />
-                                </Box>
-                            </Box>
-
-                            {/* App Description */}
-                            <Box>
-                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                                    App Description
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    name="description"
-                                    placeholder={!selectedApp ? "Select an app to edit description" : "Web App Marketplace"}
-                                    multiline
-                                    rows={3}
-                                    value={formik.values.description}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={
-                                        formik.touched.description &&
-                                        Boolean(formik.errors.description)
-                                    }
-                                    helperText={
-                                        formik.touched.description && (formik.errors.description as string)
-                                    }
-                                    disabled={!selectedApp || submitState === State.loading}
-                                    sx={disabledTextFieldSx}
-                                />
-                            </Box>
-
-                            {/* Tag */}
-                            <Box>
-                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                                    Tags
-                                </Typography>
-                                <Autocomplete
-                                    multiple
-                                    options={tags || []}
-                                    getOptionLabel={(option) => option.name}
-                                    value={tags?.filter((t) => formik.values.tags.includes(t.id)) || []}
-                                    onChange={(_, newValue) => {
-                                        formik.setFieldValue("tags", newValue.map((tag) => tag.id));
-                                    }}
-                                    onBlur={formik.handleBlur}
-                                    disabled={!selectedApp || submitState === State.loading}
-                                    renderTags={(value, getTagProps) =>
-                                        value.map((option, index) => (
-                                            <Chip
-                                                {...getTagProps({ index })}
-                                                key={option.id}
-                                                label={option.name}
-                                                sx={{
-                                                    backgroundColor: option.color ? `${option.color}1A` : "#e0e0e0",
-                                                    border: option.color ? `2px solid ${option.color}80` : "2px solid #bdbdbd",
-                                                    color: option.color || "#424242",
-                                                    fontWeight: 500,
-                                                    "& .MuiChip-deleteIcon": {
-                                                        color: option.color || "#424242",
-                                                        "&:hover": {
-                                                            color: option.color ? `${option.color}CC` : "#616161",
-                                                        },
-                                                    },
-                                                }}
-                                            />
-                                        ))
-                                    }
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            name="tags"
-                                            placeholder={!selectedApp ? "Select an app to edit tags" : "Select one or more tags"}
-                                            error={formik.touched.tags && Boolean(formik.errors.tags)}
-                                            helperText={formik.touched.tags && (formik.errors.tags as string)}
-                                            sx={disabledTextFieldSx}
-                                        />
-                                    )}
-                                />
-                            </Box>
-
-                            {/* User Groups */}
-                            <Box>
-                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                                    User Groups
-                                </Typography>
-                                <Autocomplete
-                                    multiple
-                                    options={groups || []}
-                                    getOptionLabel={(option) => option}
-                                    value={formik.values.groupIds}
-                                    onChange={(_, newValue) => {
-                                        formik.setFieldValue("groupIds", newValue);
-                                    }}
-                                    onBlur={formik.handleBlur}
-                                    disabled={!selectedApp || submitState === State.loading}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            name="groupIds"
-                                            placeholder={!selectedApp ? "Select an app to edit user groups" : "Select user groups"}
-                                            error={
-                                                formik.touched.groupIds && Boolean(formik.errors.groupIds)
-                                            }
-                                            helperText={formik.touched.groupIds && (formik.errors.groupIds as string)}
-                                            sx={disabledTextFieldSx}
-                                        />
-                                    )}
-                                />
-                            </Box>
-
-                            {/* App Icon Upload */}
-                            <Box sx={{ width: "100%" }}>
-                                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                                    App Icon
-                                </Typography>
-
-                                {/* File Upload Area */}
-                                {!filePreview && (
-                                    <Box
-                                        onDragEnter={handleDrag}
-                                        onDragLeave={handleDrag}
-                                        onDragOver={handleDrag}
-                                        onDrop={handleDrop}
-                                        sx={{
-                                            border: "2px dashed",
-                                            borderColor: dragActive
-                                                ? "primary.main"
-                                                : formik.touched.icon && formik.errors.icon
-                                                    ? "error.main"
-                                                    : "divider",
-                                            borderRadius: 2,
-                                            p: 6,
-                                            textAlign: "center",
-                                            bgcolor: dragActive ? "action.hover" : "background.paper",
-                                            cursor: "pointer",
-                                            transition: "all 0.3s",
-                                            disabledTextFieldSx
-                                        }}
-                                        onClick={() =>
-                                            document.getElementById("file-upload")?.click()
-                                        }
-                                    >
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                alignItems: "center",
-                                                gap: 2,
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    width: 48,
-                                                    height: 48,
-                                                    borderRadius: "50%",
-                                                    bgcolor: "primary.main",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    color: "white",
-                                                }}
-                                            >
-                                                <UploadFileIcon />
-                                            </Box>
-                                            <Typography>
-                                                {!selectedApp ? "Select an app to edit icon" : "Drag and drop file or select file"}
-                                            </Typography>
-                                        </Box>
-                                        <input
-                                            id="file-upload"
-                                            type="file"
-                                            accept=".svg,image/svg+xml"
-                                            onChange={handleFileChange}
-                                            style={{ display: "none" }}
-                                            disabled={!selectedApp || submitState === State.loading}
-                                        />
-                                    </Box>
-                                )}
-
-                                {/* File Preview */}
-                                {filePreview && (
-                                    <Box
-                                        sx={{
-                                            border: "1px solid",
-                                            borderColor: "divider",
-                                            borderRadius: 2,
-                                            p: 2,
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "space-between",
-                                            }}
-                                        >
-                                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                                <Box
-                                                    sx={{
-                                                        width: 48,
-                                                        height: 48,
-                                                        bgcolor: "action.selected",
-                                                        borderRadius: 1,
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        overflow: "hidden",
-                                                    }}
-                                                >
-                                                    {filePreview.preview && (
-                                                        <img
-                                                            src={filePreview.preview}
-                                                            alt="Preview"
-                                                            style={{ width: "100%", height: "100%" }}
-                                                        />
-                                                    )}
-                                                </Box>
-                                                <Box>
-                                                    <Typography variant="body1" fontWeight={500}>
-                                                        App Icon
-                                                    </Typography>
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        {(filePreview.file.size / (1024 * 1024)).toFixed(2)}MB
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
-                                            <IconButton
-                                                onClick={handleRemoveFile}
-                                                disabled={!selectedApp || submitState === State.loading}
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        </Box>
-                                        {filePreview.uploading && (
-                                            <Box sx={{ mt: 2 }}>
-                                                <LinearProgress
-                                                    variant="determinate"
-                                                    value={filePreview.progress}
-                                                />
-                                                <Typography variant="caption" color="text.secondary">
-                                                    {filePreview.progress}%
-                                                </Typography>
-                                            </Box>
-                                        )}
-                                    </Box>
-                                )}
-
-                                {/* File validation info */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        mt: 1,
-                                    }}
-                                >
-                                    <Typography variant="caption" color="text.secondary">
-                                        Supported formats : svg
-                                    </Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                        Maximum size : 10MB
-                                    </Typography>
-                                </Box>
-
-                                {/* Error message */}
-                                {formik.touched.icon && formik.errors.icon && (
-                                    <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
-                                        {formik.errors.icon as string}
-                                    </Typography>
-                                )}
-                            </Box>
-
-                            <FormControlLabel
-                                label={
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                        {formik.values.isActive ? "Active" : "Not Active"}
-                                    </Typography>
-                                }
-                                labelPlacement="end"
-                                control={
-                                    <Switch
-                                        checked={formik.values.isActive}
-                                        onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
-                                        disabled={!selectedApp || submitState === State.loading}
-                                        sx={{
-                                            width: 58,
-                                            height: 38,
-                                            padding: 1,
-                                            '& .MuiSwitch-switchBase': {
-                                                padding: 0,
-                                                margin: '7px',
-                                                transitionDuration: '300ms',
-                                                '&.Mui-checked': {
-                                                    transform: 'translateX(20px)',
-                                                    color: '#fff',
-                                                    '& + .MuiSwitch-track': {
-                                                        backgroundColor: 'primary.main',
-                                                        opacity: 1,
-                                                        border: 0,
-                                                    },
-                                                },
-                                            },
-                                            '& .MuiSwitch-thumb': {
-                                                width: 24,
-                                                height: 24,
-                                            },
-                                            '& .MuiSwitch-track': {
-                                                borderRadius: 38 / 2,
-                                                backgroundColor: 'grey.400',
-                                                opacity: 1,
-                                            },
-                                        }}
-                                    />
-                                }
-                            />
-
-                            {/* Show general error */}
-                            {submitState === State.failed && stateMessage && (
-                                <Alert severity="error" >
-                                    {stateMessage}
-                                </Alert>
-                            )}
-                        </Box>
-
-                        {/* Footer Buttons */}
+                {/* File Preview */}
+                {filePreview && (
+                  <Box
+                    sx={{
+                      border: "1px solid",
+                      borderColor: "divider",
+                      borderRadius: 2,
+                      p: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                      >
                         <Box
                           sx={{
                             width: 48,
