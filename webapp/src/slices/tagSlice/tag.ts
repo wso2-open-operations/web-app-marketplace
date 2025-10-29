@@ -22,6 +22,7 @@ import { State } from "@root/src/types/types";
 import { APIService } from "@root/src/utils/apiService";
 
 import { enqueueSnackbarMessage } from "../commonSlice/common";
+import { UserState } from "../authSlice/auth";
 
 export type Tag = {
   id: number;
@@ -32,13 +33,14 @@ export type Tag = {
 export type CreateTag = {
   name: string;
   color: string;
+  addedBy: string;
 };
 
 interface TagState {
   state: State;
   stateMessage: string | null;
   errorMessage: string | null;
-  submitState: State
+  submitState: State;
   tags: Tag[] | null;
 }
 
@@ -90,6 +92,9 @@ export const fetchTags = createAsyncThunk(
 export const createTags = createAsyncThunk(
   "tag/createTags",
   async (payload: CreateTag, { dispatch, rejectWithValue }) => {
+
+    console.log("Payload : ", payload);
+
     try {
       const res = await APIService.getInstance().post(
         AppConfig.serviceUrls.tags,
@@ -104,7 +109,6 @@ export const createTags = createAsyncThunk(
       );
 
       dispatch(fetchTags());
-
     } catch (error: any) {
       if (axios.isCancel(error)) {
         return rejectWithValue("Request Canceled");
