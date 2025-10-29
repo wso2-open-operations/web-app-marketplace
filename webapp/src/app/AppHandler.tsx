@@ -32,7 +32,6 @@ const AppHandler = () => {
   const auth = useAppSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    dispatch(fetchApps());
     dispatch(fetchUserApps());
   }, [dispatch])
 
