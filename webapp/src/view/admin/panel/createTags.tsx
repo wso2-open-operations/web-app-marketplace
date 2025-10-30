@@ -24,7 +24,7 @@ import {
   useAppSelector,
 } from "@root/src/slices/store";
 import { State } from "@root/src/types/types";
-import { createTags, fetchTags } from "@root/src/slices/tagSlice/tag";
+import { createTags, fetchTags } from "@slices/tagSlice/tag";
 
 interface Tag {
   name: string;
@@ -60,9 +60,14 @@ export default function CreateTags() {
         addedBy: userEmail,
       };
 
-      dispatch(createTags(requestPayload));
-      formik.resetForm();
-      dispatch(fetchTags());
+      console.log("Create tags");
+
+      const result = await dispatch(createTags(requestPayload));
+
+      if (createTags.fulfilled.match(result)) {
+        formik.resetForm();
+        dispatch(fetchTags());
+      }
     },
   });
 
