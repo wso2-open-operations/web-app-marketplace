@@ -165,7 +165,7 @@ export default function AppCard({
     borderRadius: 4,
     boxShadow: "0 4px 12px rgba(0,0,0,0.0)",
     position: "relative",
-    border: "0.5px solid #e6e6e6",
+    border: ".75px solid #e6e6e6",
     background: "#fff",
     cursor: "pointer",
     transition: "box-shadow 0.3s ease, transform 0.2s ease",
