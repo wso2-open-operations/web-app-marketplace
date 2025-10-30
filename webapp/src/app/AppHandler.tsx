@@ -25,7 +25,7 @@ import MaintenancePage from "@layout/pages/Maintenance";
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getActiveRoutesV2, routes } from "@src/route";
 
-import { fetchApps, fetchUserApps } from "../slices/appSlice/app";
+import { fetchUserApps } from "../slices/appSlice/app";
 
 const AppHandler = () => {
   const dispatch = useAppDispatch()
