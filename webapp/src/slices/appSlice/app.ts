@@ -114,7 +114,7 @@ export const fetchApps = createAsyncThunk(
 
     } catch (error: any) {
       if (axios.isCancel(error)) {
-        return rejectWithValue("Request Canceled");
+        return rejectWithValue("Request Cancelled");
       }
 
       const message =
@@ -150,7 +150,7 @@ export const fetchUserApps = createAsyncThunk(
 
     } catch (error: any) {
       if (axios.isCancel(error)) {
-        return rejectWithValue("Request Canceled");
+        return rejectWithValue("Request Cancelled");
       }
 
       const message =
@@ -200,12 +200,10 @@ export const createApp = createAsyncThunk<void, { payload: CreateAppPayload, use
         })
       );
 
-      dispatch(fetchUserApps());
-
       return;
     } catch (error: any) {
       if (axios.isCancel(error)) {
-        return rejectWithValue("Request Canceled");
+        return rejectWithValue("Request Cancelled");
       }
 
       const message =
@@ -241,12 +239,9 @@ export const updateApp = createAsyncThunk<void, { payload: UpdateAppPayload, id:
         })
       );
 
-      dispatch(fetchApps());
-      dispatch(fetchUserApps());
-
     } catch (error: any) {
       if (axios.isCancel(error)) {
-        return rejectWithValue("Request Canceled");
+        return rejectWithValue("Request Cancelled");
       }
 
       const message =
@@ -287,7 +282,7 @@ export const upsertAppFavourite = createAsyncThunk<
 
     } catch (error: any) {
       if (axios.isCancel(error)) {
-        return rejectWithValue("Request Canceled");
+        return rejectWithValue("Request Cancelled");
       }
 
       const message =

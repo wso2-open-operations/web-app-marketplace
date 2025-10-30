@@ -14,39 +14,50 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-import DrawOutlinedIcon from '@mui/icons-material/DrawOutlined';
-import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined';
+import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
+import DrawOutlinedIcon from "@mui/icons-material/DrawOutlined";
+import StyleOutlinedIcon from "@mui/icons-material/StyleOutlined";
 
-import TabsPage from "@root/src/layout/pages/TabsPage";
+import { useEffect } from "react";
+
+import TabsPage from "@layout/pages/TabsPage";
+import { fetchApps } from "@root/src/slices/appSlice/app";
+import { useAppDispatch } from "@root/src/slices/store";
 
 import CreateApp from "./panel/createApp";
 import UpdateApp from "./panel/updateApp";
 import CreateTags from "./panel/createTags";
 
 export default function Admin() {
-    return (
-        <TabsPage
-            title={"Admin"}
-            tabsPage={[
-                {
-                    tabTitle: "Create App",
-                    tabPath: "create-app",
-                    icon: <AddBoxOutlinedIcon />,
-                    page: <CreateApp />,
-                },
-                {
-                    tabTitle: "Update App",
-                    tabPath: "update-app",
-                    icon: <DrawOutlinedIcon />,
-                    page: <UpdateApp/>,
-                },
-                {
-                    tabTitle: "Create Tags",
-                    tabPath: "create-tags",
-                    icon: <StyleOutlinedIcon />,
-                    page: <CreateTags/>,
-                }
-            ]} />
-    )
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchApps());
+  }, [dispatch]);
+
+  return (
+    <TabsPage
+      title={"Admin"}
+      tabsPage={[
+        {
+          tabTitle: "Create App",
+          tabPath: "create-app",
+          icon: <AddBoxOutlinedIcon />,
+          page: <CreateApp />,
+        },
+        {
+          tabTitle: "Update App",
+          tabPath: "update-app",
+          icon: <DrawOutlinedIcon />,
+          page: <UpdateApp />,
+        },
+        {
+          tabTitle: "Create Tags",
+          tabPath: "create-tags",
+          icon: <StyleOutlinedIcon />,
+          page: <CreateTags />,
+        },
+      ]}
+    />
+  );
 }

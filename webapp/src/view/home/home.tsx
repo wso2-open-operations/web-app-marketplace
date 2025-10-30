@@ -32,27 +32,17 @@ import {
 } from "@utils/searchUtils";
 import AppCard from "@root/src/view/home/components/AppCard";
 import SearchBar from "@component/ui/SearchBar";
-import AddAppModal from "@root/src/view/home/components/AddAppModal";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
-import { Role } from "@root/src/slices/authSlice/auth";
-import { fetchUserApps } from "@root/src/slices/appSlice/app";
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const { state, userApps, stateMessage } = useAppSelector((state: RootState) => state.app);
-  const roles = useAppSelector((state: RootState) => state.auth.roles);
-  const isAdmin = roles.includes(Role.ADMIN);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    dispatch(fetchUserApps());
     dispatch(fetchTags());
     dispatch(fetchGroups());
   }, [dispatch]);
@@ -108,10 +98,7 @@ export default function Home() {
           availableTags={availableTags}
           selectedTags={selectedTags}
         />
-        {isAdmin && <Button variant="contained" sx={{ whiteSpace: "nowrap" }} onClick={handleOpenModal}>Add New Card</Button>}
       </Box>
-
-      <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
 
       <Grid container spacing={2}>
         {filteredApps.length > 0 ? (

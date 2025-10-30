@@ -15,6 +15,7 @@
 // under the License.
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useEffect } from "react";
 
 import ErrorHandler from "@component/common/ErrorHandler";
 import PreLoader from "@component/common/PreLoader";
@@ -23,15 +24,15 @@ import Error from "@layout/pages/404";
 import MaintenancePage from "@layout/pages/Maintenance";
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getActiveRoutesV2, routes } from "@src/route";
-import { useEffect } from "react";
-import { fetchApps } from "../slices/appSlice/app";
+
+import { fetchUserApps } from "../slices/appSlice/app";
 
 const AppHandler = () => {
   const dispatch = useAppDispatch()
   const auth = useAppSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    dispatch(fetchApps());
+    dispatch(fetchUserApps());
   }, [dispatch])
 
   const router = createBrowserRouter([

@@ -74,8 +74,14 @@ export default function Profile() {
           }}
         >
           <Typography
-            variant="h5"
-            sx={{ fontWeight: 600, color: "text.tertiary" }}
+            variant="h6"
+            sx={{
+              color: "text.secondary",
+              textDecoration: "underline",
+              textDecorationColor: "text.secondary",
+              textDecorationThickness: "1px",
+              textUnderlineOffset: "2px",
+            }}
           >
             Roles
           </Typography>
@@ -97,6 +103,7 @@ export default function Profile() {
                       fontSize: "12px",
                     },
                     color: "text.tertiary",
+                    borderRadius: 2,
                   }}
                   variant="outlined"
                   size="small"
