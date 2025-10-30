@@ -59,9 +59,7 @@ export default function CreateTags() {
         color: values.color,
         addedBy: userEmail,
       };
-
-      console.log("Create tags");
-
+      
       const result = await dispatch(createTags(requestPayload));
 
       if (createTags.fulfilled.match(result)) {
