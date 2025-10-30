@@ -24,7 +24,7 @@ import {
   useAppSelector,
 } from "@root/src/slices/store";
 import { State } from "@root/src/types/types";
-import { createTags } from "@root/src/slices/tagSlice/tag";
+import { createTags, fetchTags } from "@root/src/slices/tagSlice/tag";
 
 interface Tag {
   name: string;
@@ -62,6 +62,7 @@ export default function CreateTags() {
 
       dispatch(createTags(requestPayload));
       formik.resetForm();
+      dispatch(fetchTags());
     },
   });
 
@@ -73,7 +74,7 @@ export default function CreateTags() {
           sx={{
             color: "text.secondary",
             textDecoration: "underline",
-            textDecorationColor: "primary.secondary",
+            textDecorationColor: "text.secondary",
             textDecorationThickness: "1px",
             textUnderlineOffset: "2px",
           }}

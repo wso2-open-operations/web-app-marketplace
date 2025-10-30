@@ -21,12 +21,12 @@ import StyleOutlinedIcon from "@mui/icons-material/StyleOutlined";
 import { useEffect } from "react";
 
 import TabsPage from "@layout/pages/TabsPage";
+import { fetchApps } from "@root/src/slices/appSlice/app";
+import { useAppDispatch } from "@root/src/slices/store";
 
 import CreateApp from "./panel/createApp";
 import UpdateApp from "./panel/updateApp";
 import CreateTags from "./panel/createTags";
-import { fetchApps, fetchUserApps } from "@root/src/slices/appSlice/app";
-import { useAppDispatch } from "@root/src/slices/store";
 
 export default function Admin() {
   const dispatch = useAppDispatch();
