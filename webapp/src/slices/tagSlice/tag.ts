@@ -105,7 +105,6 @@ export const createTags = createAsyncThunk(
         })
       );
 
-      dispatch(fetchTags());
     } catch (error: any) {
       if (axios.isCancel(error)) {
         return rejectWithValue("Request Cancelled");
