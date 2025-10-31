@@ -1,4 +1,3 @@
-
 // Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
@@ -19,25 +18,21 @@ import { Box, CircularProgress, Grid, Button } from "@mui/material";
 
 import { useEffect, useState, useMemo } from "react";
 
-import {
-  RootState,
-  useAppDispatch,
-  useAppSelector,
-} from "@slices/store";
+import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import ErrorHandler from "@component/common/ErrorHandler";
 import { State } from "@root/src/types/types";
-import {
-  filterAndSortApps,
-  extractUniqueTags,
-} from "@utils/searchUtils";
+import { filterAndSortApps, extractUniqueTags } from "@utils/searchUtils";
 import AppCard from "@root/src/view/home/components/AppCard";
 import SearchBar from "@component/ui/SearchBar";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
+import PreLoader from "@root/src/component/common/PreLoader";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { state, userApps, stateMessage } = useAppSelector((state: RootState) => state.app);
+  const { state, userApps, stateMessage } = useAppSelector(
+    (state: RootState) => state.app
+  );
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
@@ -59,18 +54,7 @@ export default function Home() {
   }, [userApps, searchTerm, selectedTags]);
 
   if (state === State.loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <PreLoader isLoading message={"Fetching your apps ..."} />;
   }
 
   if (state === State.failed) {
@@ -78,7 +62,7 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{ paddingBottom: 4, position: "relative"}}>
+    <Box sx={{ paddingBottom: 4, position: "relative" }}>
       <Box
         sx={{
           mb: 3,

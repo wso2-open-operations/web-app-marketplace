@@ -56,6 +56,8 @@ const PreLoader = (props: PreLoaderProps) => {
               <Typography
                 variant="inherit"
                 sx={{
+                  fontSize: "14px",
+                  fontWeight: 500,
                   color: (theme) =>
                     theme.palette.mode === "light"
                       ? theme.palette.common.black
