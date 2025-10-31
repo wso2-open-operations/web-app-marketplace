@@ -30,6 +30,7 @@ import pJson from "@root/package.json";
 import { selectRoles } from "@slices/authSlice/auth";
 import { RootState, useAppSelector } from "@slices/store";
 import { redirectUrl as redirectUrlKey } from "@config/constant";
+import PreLoader from "@component/common/PreLoader";
 
 export default function Layout() {
   const { enqueueSnackbar } = useSnackbar();
@@ -88,7 +89,7 @@ export default function Layout() {
             pb: 4.5,
           }}
         >
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<PreLoader isLoading message="We are getting things ready" />}>
             <Outlet />
           </Suspense>
           <Box
