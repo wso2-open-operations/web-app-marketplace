@@ -89,7 +89,7 @@ export default function Layout() {
             pb: 4.5,
           }}
         >
-          <Suspense fallback={<PreLoader isLoading message="We are getting things ready" />}>
+          <Suspense fallback={<PreLoader isLoading message="We are getting things ready ... " />}>
             <Outlet />
           </Suspense>
           <Box
