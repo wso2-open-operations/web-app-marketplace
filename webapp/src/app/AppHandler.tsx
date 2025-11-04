@@ -47,7 +47,7 @@ const AppHandler = () => {
   return (
     <>
       {auth.status === "loading" && (
-        <PreLoader isLoading={true} message={auth.statusMessage} />
+        <PreLoader isLoading={true} message={"Authenticating ..."} />
       )}
       {auth.status === "success" && auth.mode === "active" && (
         <RouterProvider router={router} />
