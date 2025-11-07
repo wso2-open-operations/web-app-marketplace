@@ -215,7 +215,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
         appSignOut={appSignOut}
       />
 
-      <SecureApp fallback={<PreLoader isLoading message="loading..." />}>
+      <SecureApp fallback={<PreLoader isLoading message="We are getting things ready ..." />}>
         {renderContent()}
       </SecureApp>
     </>
