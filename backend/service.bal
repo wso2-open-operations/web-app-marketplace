@@ -87,7 +87,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
             privileges.push(authorization:ADMIN_PRIVILEGE);
         }
-        
+
         UserInfo userInfoResponse = {...employee, privileges};
 
         error? cacheError = cache.put(userInfo.email, userInfoResponse);
@@ -190,11 +190,12 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            log:printWarn(string `${ACCESS_DENIED_ERROR}. email: ${userInfo.email} groups: ${
+            string customError = "Access denied: Only administrators can add new apps.";
+            log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: ACCESS_DENIED_ERROR
+                    message: customError
                 }
             };
         }
@@ -285,11 +286,12 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            log:printWarn(string `${ACCESS_DENIED_ERROR}. email: ${userInfo.email} groups: ${
+            string customError = "Access denied: Only administrators can update apps.";
+            log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: ACCESS_DENIED_ERROR
+                    message: customError
                 }
             };
         }
@@ -346,16 +348,6 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            log:printWarn(string `${ACCESS_DENIED_ERROR}. email: ${userInfo.email} groups: ${
-                    userInfo.groups.toString()}`);
-            return <http:Forbidden>{
-                body: {
-                    message: ACCESS_DENIED_ERROR
-                }
-            };
-        }
-
         string[]|error validUserGroups = database:fetchUserGroups();
         if validUserGroups is error {
             string customError = "Error occurred while retrieving user groups";
@@ -389,16 +381,6 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
             return <http:InternalServerError>{
                 body: {message: USER_NOT_FOUND_ERROR}
-            };
-        }
-
-        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            log:printWarn(string `${ACCESS_DENIED_ERROR}. email: ${userInfo.email} groups: ${
-                    userInfo.groups.toString()}`);
-            return <http:Forbidden>{
-                body: {
-                    message: ACCESS_DENIED_ERROR
-                }
             };
         }
 
@@ -442,11 +424,12 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            log:printWarn(string `${ACCESS_DENIED_ERROR}. email: ${userInfo.email} groups: ${
+            string customError = "Access denied: Only administrators can add new tags.";
+            log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
                 body: {
-                    message: ACCESS_DENIED_ERROR
+                    message: customError
                 }
             };
         }
