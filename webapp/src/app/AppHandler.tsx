@@ -15,18 +15,26 @@
 // under the License.
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useEffect } from "react";
 
 import ErrorHandler from "@component/common/ErrorHandler";
 import PreLoader from "@component/common/PreLoader";
 import Layout from "@layout/Layout";
 import Error from "@layout/pages/404";
 import MaintenancePage from "@layout/pages/Maintenance";
-import { RootState, useAppSelector } from "@slices/store";
+import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getActiveRoutesV2, routes } from "@src/route";
 
+import { fetchUserApps } from "../slices/appSlice/app";
+
 const AppHandler = () => {
+  const dispatch = useAppDispatch()
   const auth = useAppSelector((state: RootState) => state.auth);
-  const app = useAppSelector((state: RootState) => state.app);
+
+  useEffect(() => {
+    dispatch(fetchUserApps());
+  }, [dispatch])
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -39,7 +47,7 @@ const AppHandler = () => {
   return (
     <>
       {auth.status === "loading" && (
-        <PreLoader isLoading={true} message={auth.statusMessage} />
+        <PreLoader isLoading={true} message={"Authenticating ..."} />
       )}
       {auth.status === "success" && auth.mode === "active" && (
         <RouterProvider router={router} />

@@ -17,6 +17,8 @@
 import AppsIcon from '@mui/icons-material/Apps';
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 
 import React from "react";
 import { NonIndexRouteObject, RouteObject } from "react-router-dom";
@@ -28,8 +30,8 @@ import { View } from "@view/index";
 export interface RouteObjectWithRole extends NonIndexRouteObject {
   allowRoles: string[];
   icon:
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | undefined;
+  | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+  | undefined;
   text: string;
   children?: RouteObjectWithRole[];
   bottomNav?: boolean;
@@ -39,8 +41,8 @@ interface RouteDetail {
   path: string;
   allowRoles: string[];
   icon:
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | undefined;
+  | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+  | undefined;
   text: string;
   bottomNav?: boolean;
 }
@@ -60,6 +62,21 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.favourites),
     allowRoles: [Role.ADMIN, Role.EMPLOYEE],
   },
+  {
+    path: "profile",
+    text: "Profile",
+    icon: React.createElement(AccountBoxOutlinedIcon),
+    element: React.createElement(View.profile),
+    allowRoles: [Role.EMPLOYEE, Role.ADMIN]
+  },
+  {
+    path: "/admin",
+    text: "Admin",
+    icon: React.createElement(AdminPanelSettingsOutlinedIcon),
+    element: React.createElement(View.admin),
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
+  },
+  
   /*
    TODO: Implement User Guide page when the user guide content is ready.
    The /help route is commented out for now and will be re-enabled once the

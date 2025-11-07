@@ -183,10 +183,10 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   const renderContent = () => {
     switch (appState) {
       case AppState.Loading:
-        return <PreLoader isLoading message="Loading..." />;
+        return <PreLoader isLoading message="Loading ..." />;
 
       case AppState.Authenticating:
-        return <PreLoader isLoading message="Authenticating..." />;
+        return <PreLoader isLoading message="Loading User Info ..." />;
 
       case AppState.Authenticated:
         return (
@@ -215,7 +215,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
         appSignOut={appSignOut}
       />
 
-      <SecureApp fallback={<PreLoader isLoading message="loading..." />}>
+      <SecureApp fallback={<PreLoader isLoading message="We are getting things ready ..." />}>
         {renderContent()}
       </SecureApp>
     </>

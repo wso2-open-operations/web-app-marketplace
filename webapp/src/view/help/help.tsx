@@ -15,16 +15,15 @@
 // under the License.
 
 import HelpIcon from "@mui/icons-material/Help";
-import CommonPage from "@layout/pages/CommonPage";
+import TabsPage from "@root/src/layout/pages/TabsPage";
 import UserGuide from "@view/help/panel/userGuide";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 export default function Help() {
   return (
-    <CommonPage
+    <TabsPage
       title="Help"
-      icon={<HelpIcon />}
-      commonPageTabs={[
+      tabsPage={[
         {
           tabTitle: "User Guide",
           tabPath: "user-guide",

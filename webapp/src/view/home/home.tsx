@@ -1,4 +1,3 @@
-
 // Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
@@ -19,68 +18,43 @@ import { Box, CircularProgress, Grid, Button } from "@mui/material";
 
 import { useEffect, useState, useMemo } from "react";
 
-import {
-  RootState,
-  useAppDispatch,
-  useAppSelector,
-} from "@slices/store";
+import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import ErrorHandler from "@component/common/ErrorHandler";
 import { State } from "@root/src/types/types";
-import {
-  filterAndSortApps,
-  extractUniqueTags,
-} from "@utils/searchUtils";
+import { filterAndSortApps, extractUniqueTags } from "@utils/searchUtils";
 import AppCard from "@root/src/view/home/components/AppCard";
 import SearchBar from "@component/ui/SearchBar";
-import AddAppModal from "@root/src/view/home/components/AddAppModal";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
-import { Role } from "@root/src/slices/authSlice/auth";
-import { fetchApps } from "@root/src/slices/appSlice/app";
+import PreLoader from "@root/src/component/common/PreLoader";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { state, apps, stateMessage } = useAppSelector((state: RootState) => state.app);
-  const roles = useAppSelector((state: RootState) => state.auth.roles);
-  const isAdmin = roles.includes(Role.ADMIN);
+  const { state, userApps, stateMessage } = useAppSelector(
+    (state: RootState) => state.app
+  );
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    dispatch(fetchApps());
     dispatch(fetchTags());
     dispatch(fetchGroups());
   }, [dispatch]);
 
   // Extract unique tags from apps
   const availableTags = useMemo(() => {
-    return apps ? extractUniqueTags(apps) : [];
-  }, [apps]);
+    return userApps ? extractUniqueTags(userApps) : [];
+  }, [userApps]);
 
   // Filter and sort apps based on search and tags
   const filteredApps = useMemo(() => {
-    if (!apps) return [];
-    return filterAndSortApps(apps, searchTerm, selectedTags);
-  }, [apps, searchTerm, selectedTags]);
+    if (!userApps) return [];
+    return filterAndSortApps(userApps, searchTerm, selectedTags);
+  }, [userApps, searchTerm, selectedTags]);
 
   if (state === State.loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <PreLoader isLoading message={"Fetching your apps ..."} />;
   }
 
   if (state === State.failed) {
@@ -88,7 +62,7 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{ paddingBottom: 4, position: "relative"}}>
+    <Box sx={{ paddingBottom: 4, position: "relative" }}>
       <Box
         sx={{
           mb: 3,
@@ -108,10 +82,7 @@ export default function Home() {
           availableTags={availableTags}
           selectedTags={selectedTags}
         />
-        {isAdmin && <Button variant="contained" sx={{ whiteSpace: "nowrap" }} onClick={handleOpenModal}>Add New Card</Button>}
       </Box>
-
-      <AddAppModal open={isModalOpen} onClose={handleCloseModal} />
 
       <Grid container spacing={2}>
         {filteredApps.length > 0 ? (
@@ -120,7 +91,7 @@ export default function Home() {
               <AppCard
                 title={app.name}
                 description={app.description}
-                logoUrl={app.icon || `/icons/${app.iconName}`}
+                logoUrl={app.icon}
                 logoAlt={`${app.name} Icon`}
                 tags={app.tags}
                 appUrl={app.url}

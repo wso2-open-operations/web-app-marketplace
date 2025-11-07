@@ -19,9 +19,13 @@ import { lazy } from "react";
 const home = lazy(() => import("@view/home/home"));
 const help = lazy(() => import("@view/help/help"));
 const favourites = lazy(() => import("@view/favourites/favourite"))
+const profile = lazy(() => import("@view/profile/profile") )
+const admin = lazy(() => import("@view/admin/admin"))
 
 export const View = {
   home,
   help,
-  favourites
+  favourites,
+  profile,
+  admin
 };

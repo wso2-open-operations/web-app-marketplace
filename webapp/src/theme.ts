@@ -105,6 +105,11 @@ export const themeSettings = (mode: PaletteMode) => {
             success: { main: colors.success[100] },
             warning: { main: colors.warning[100] },
             error: { main: colors.error[100] },
+            text: {
+              primary: "#000000",
+              secondary: "#313131", 
+              tertiary: "#656565",
+            },
             background: {
               default: colors.grey[700],
               form: colors.grey[600],
@@ -127,6 +132,11 @@ export const themeSettings = (mode: PaletteMode) => {
             success: { main: colors.success[100] },
             warning: { main: colors.warning[100] },
             error: { main: colors.error[100] },
+            text: {
+              primary: "#000000",
+              secondary: "#313131", 
+              tertiary: "#656565",
+            },
             background: {
               default: colors.grey[100],
               form: colors.grey[100],
