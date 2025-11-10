@@ -60,14 +60,6 @@ export default function AppCard({
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
   const dispatch = useAppDispatch();
 
-  const [imageError, setImageError] = useState(false);
-  const [isSvg, setIsSvg] = useState(false);
-
-  useEffect(() => {
-    setIsSvg(logoUrl.toLowerCase().endsWith(".svg"));
-    setImageError(false);
-  }, [logoUrl]);
-
   const handleFavoriteClick = () => {
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
@@ -101,7 +93,6 @@ export default function AppCard({
           component="img"
           src={logoUrl}
           alt={logoAlt}
-          onError={() => setImageError(true)}
           sx={{
             height: 40,
             width: "auto",
