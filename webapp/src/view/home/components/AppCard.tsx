@@ -101,7 +101,7 @@ export default function AppCard({
             width: "auto",
             maxWidth: 40,
             objectFit: "contain",
-            opacity: 0.85,
+            opacity: 0.8,
           }}
         />
       );
