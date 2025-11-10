@@ -41,8 +41,8 @@ interface AppCardProps {
   logoAlt?: string;
   isFavourite?: number;
   appId: number;
-  cardSx?:SxProps<Theme>;
-  isClickable?:boolean
+  cardSx?: SxProps<Theme>;
+  isClickable?: boolean;
 }
 
 export default function AppCard({
@@ -55,7 +55,7 @@ export default function AppCard({
   isFavourite = 0,
   appId,
   cardSx,
-  isClickable = true
+  isClickable = true,
 }: AppCardProps) {
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
   const dispatch = useAppDispatch();
@@ -95,13 +95,8 @@ export default function AppCard({
     // Check if logoUrl is a base64 string
     const isBase64 = logoUrl.startsWith("data:image/");
 
-    // Check if logoUrl contains SVG markup instead of a file path
-    const isRawSvg =
-      logoUrl.includes("<svg") ||
-      logoUrl.includes("<rect") ||
-      logoUrl.includes("<path");
-
     if (isBase64) {
+      console.log("ss");
       return (
         <Box
           component="img"
@@ -113,49 +108,11 @@ export default function AppCard({
             width: "auto",
             maxWidth: 40,
             objectFit: "contain",
+            opacity: 0.85
           }}
         />
       );
     }
-
-    if (isRawSvg) {
-      // Handle raw SVG content
-      return (
-        <Box
-          sx={{
-            height: 40,
-            width: 40,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          dangerouslySetInnerHTML={{
-            __html: logoUrl.startsWith("<svg")
-              ? logoUrl
-              : `<svg width="40" height="40" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">${logoUrl}</svg>`,
-          }}
-        />
-      );
-    }
-
-    // Handle regular image files (PNG, SVG files, etc.)
-    return (
-      <Box
-        component="img"
-        src={logoUrl}
-        alt={logoAlt}
-        onError={() => setImageError(true)}
-        sx={{
-          height: 40,
-          width: "auto",
-          maxWidth: 40,
-          objectFit: "contain",
-          ...(isSvg && {
-            filter: "none",
-          }),
-        }}
-      />
-    );
   };
 
   const defaultCardSx: SxProps<Theme> = {
@@ -177,8 +134,8 @@ export default function AppCard({
   };
 
   const mergedCardSx = Array.isArray(cardSx)
-  ? [defaultCardSx, ...cardSx]
-  : [defaultCardSx, cardSx || {}];
+    ? [defaultCardSx, ...cardSx]
+    : [defaultCardSx, cardSx || {}];
 
   return (
     <Card
@@ -227,6 +184,7 @@ export default function AppCard({
           sx={{
             fontWeight: 600,
             fontSize: "16px",
+            color: "#333"
           }}
         >
           {title}
