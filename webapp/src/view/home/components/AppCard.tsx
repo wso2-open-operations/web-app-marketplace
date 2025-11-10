@@ -263,6 +263,7 @@ export default function AppCard({
               if (index === 1 && tags.length > 1) {
                 return (
                   <Tooltip
+                    key={tag.id}
                     title={tooltipTitle}
                     slotProps={{
                       popper: {
@@ -282,7 +283,7 @@ export default function AppCard({
                           border: "1px solid #e6e6e6",
                           borderRadius: 1,
                           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                          flex: "wrap",
+                          flexWrap: "wrap",
                           maxWidth: "250px"
                         },
                       },
