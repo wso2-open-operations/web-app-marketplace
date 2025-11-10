@@ -96,7 +96,6 @@ export default function AppCard({
     const isBase64 = logoUrl.startsWith("data:image/");
 
     if (isBase64) {
-      console.log("ss");
       return (
         <Box
           component="img"
