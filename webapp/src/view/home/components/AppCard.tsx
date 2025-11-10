@@ -27,13 +27,12 @@ import {
 } from "@mui/material";
 import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useAppDispatch } from "@root/src/slices/store";
 import { upsertAppFavourite, Tag } from "@root/src/slices/appSlice/app";
 import { UpdateAction } from "@root/src/types/types";
-import { Tags } from "lucide-react";
-import { wrap } from "lodash";
+
 
 interface AppCardProps {
   title: string;
