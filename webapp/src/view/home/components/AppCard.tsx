@@ -281,10 +281,11 @@ export default function AppCard({
                           backgroundColor: "#fff",
                           color: "#333",
                           border: "1px solid #e6e6e6",
-                          borderRadius: 1,
+                          borderRadius: 2,
                           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                           flexWrap: "wrap",
-                          maxWidth: "250px"
+                          maxWidth: "250px",
+                          padding: 1
                         },
                       },
                     }}
