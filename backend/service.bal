@@ -154,7 +154,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        UserApp[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups});
+        UserApp[]|error result = database:fetchUserApps(email, {userGroups: userInfo.groups, isActive: (true)});
         if result is error {
             string customError = string `Error while retrieving apps for user: ${email}`;
             log:printError(customError, result);
