@@ -93,10 +93,6 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
         filterQueries.push(` a.added_by = ${filters.addedBy}`);
     }
 
-    if filters.isActive is string {
-        filterQueries.push(` a.is_active = ${filters.isActive}`);
-    }
-
     string[]? userGroups = filters.userGroups;
     if userGroups is string[] && userGroups.length() > 0 {
         // Build conditions to check if any of the provided groups exist in the app's user_groups
