@@ -75,8 +75,7 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
         LEFT JOIN tags t ON FIND_IN_SET(t.id, a.tags) > 0
     `;
 
-    sql:ParameterizedQuery[] filterQueries = [`a.is_active = 1`];
-
+    sql:ParameterizedQuery[] filterQueries = [];
     if filters.name is string {
         filterQueries.push(` a.name = ${filters.name}`);
     }
@@ -91,6 +90,10 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
 
     if filters.addedBy is string {
         filterQueries.push(` a.added_by = ${filters.addedBy}`);
+    }
+
+    if filters.isActive is boolean {
+        filterQueries.push(` a.is_active = ${filters.isActive}`);
     }
 
     string[]? userGroups = filters.userGroups;
