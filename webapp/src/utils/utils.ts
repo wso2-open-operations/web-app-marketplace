@@ -23,3 +23,18 @@ function getCrossItems<Role>(a: Role[], b: Role[]): Role[] {
     return b.includes(element);
   });
 }
+
+export function getChipStyles(color: string, isPrimary = false) {
+  return {
+    backgroundColor: "#FFF",
+    border: `1.5px solid ${color}80`,
+    color: color,
+    fontWeight: isPrimary ? 500 : 400,
+    fontSize: "14px",
+    padding: "4px",
+    height: "auto",
+    borderRadius: 1,
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+  };
+}
