@@ -67,14 +67,14 @@ export const routes: RouteObjectWithRole[] = [
     text: "Profile",
     icon: React.createElement(AccountBoxOutlinedIcon),
     element: React.createElement(View.profile),
-    allowRoles: [Role.EMPLOYEE, Role.ADMIN]
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE]
   },
   {
     path: "/admin",
     text: "Admin",
     icon: React.createElement(AdminPanelSettingsOutlinedIcon),
     element: React.createElement(View.admin),
-    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
+    allowRoles: [Role.ADMIN],
   },
   
   /*

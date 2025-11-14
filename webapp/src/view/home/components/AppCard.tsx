@@ -23,14 +23,16 @@ import {
   IconButton,
   SxProps,
   Theme,
+  Tooltip,
 } from "@mui/material";
 import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useAppDispatch } from "@root/src/slices/store";
 import { upsertAppFavourite, Tag } from "@root/src/slices/appSlice/app";
 import { UpdateAction } from "@root/src/types/types";
+
 
 interface AppCardProps {
   title: string;
@@ -41,8 +43,8 @@ interface AppCardProps {
   logoAlt?: string;
   isFavourite?: number;
   appId: number;
-  cardSx?:SxProps<Theme>;
-  isClickable?:boolean
+  cardSx?: SxProps<Theme>;
+  isClickable?: boolean;
 }
 
 export default function AppCard({
@@ -55,18 +57,10 @@ export default function AppCard({
   isFavourite = 0,
   appId,
   cardSx,
-  isClickable = true
+  isClickable = true,
 }: AppCardProps) {
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
   const dispatch = useAppDispatch();
-
-  const [imageError, setImageError] = useState(false);
-  const [isSvg, setIsSvg] = useState(false);
-
-  useEffect(() => {
-    setIsSvg(logoUrl.toLowerCase().endsWith(".svg"));
-    setImageError(false);
-  }, [logoUrl]);
 
   const handleFavoriteClick = () => {
     const newFavoriteState = !isFavorite;
@@ -95,67 +89,22 @@ export default function AppCard({
     // Check if logoUrl is a base64 string
     const isBase64 = logoUrl.startsWith("data:image/");
 
-    // Check if logoUrl contains SVG markup instead of a file path
-    const isRawSvg =
-      logoUrl.includes("<svg") ||
-      logoUrl.includes("<rect") ||
-      logoUrl.includes("<path");
-
     if (isBase64) {
       return (
         <Box
           component="img"
           src={logoUrl}
           alt={logoAlt}
-          onError={() => setImageError(true)}
           sx={{
             height: 40,
             width: "auto",
             maxWidth: 40,
             objectFit: "contain",
+            opacity: 0.8,
           }}
         />
       );
     }
-
-    if (isRawSvg) {
-      // Handle raw SVG content
-      return (
-        <Box
-          sx={{
-            height: 40,
-            width: 40,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          dangerouslySetInnerHTML={{
-            __html: logoUrl.startsWith("<svg")
-              ? logoUrl
-              : `<svg width="40" height="40" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">${logoUrl}</svg>`,
-          }}
-        />
-      );
-    }
-
-    // Handle regular image files (PNG, SVG files, etc.)
-    return (
-      <Box
-        component="img"
-        src={logoUrl}
-        alt={logoAlt}
-        onError={() => setImageError(true)}
-        sx={{
-          height: 40,
-          width: "auto",
-          maxWidth: 40,
-          objectFit: "contain",
-          ...(isSvg && {
-            filter: "none",
-          }),
-        }}
-      />
-    );
   };
 
   const defaultCardSx: SxProps<Theme> = {
@@ -177,8 +126,37 @@ export default function AppCard({
   };
 
   const mergedCardSx = Array.isArray(cardSx)
-  ? [defaultCardSx, ...cardSx]
-  : [defaultCardSx, cardSx || {}];
+    ? [defaultCardSx, ...cardSx]
+    : [defaultCardSx, cardSx || {}];
+
+  const remainingTags = tags.slice(1);
+  const tooltipTitle = (
+    <Box
+      sx={{
+        display: "flex",
+        gap: 1,
+      }}
+    >
+      {remainingTags.map((tag) => (
+        <Chip
+          key={tag.id}
+          label={tag.name}
+          sx={{
+            backgroundColor: "#FFF",
+            border: `1px solid ${tag.color}80`,
+            color: `${tag.color}`,
+            fontWeight: 400,
+            fontSize: "14px",
+            padding: "4px",
+            height: "auto",
+            borderRadius: 1,
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+          }}
+        />
+      ))}
+    </Box>
+  );
 
   return (
     <Card
@@ -227,6 +205,7 @@ export default function AppCard({
           sx={{
             fontWeight: 600,
             fontSize: "16px",
+            color: "#333",
           }}
         >
           {title}
@@ -250,58 +229,89 @@ export default function AppCard({
             alignItems: "center",
             marginTop: "auto",
             gap: 2,
+            width: "100%",
           }}
         >
           <Box
             sx={{
               display: "flex",
               gap: 1,
-              flex: 1,
-              overflowX: "auto",
-              overflowY: "hidden",
-              scrollbarWidth: "thin",
-              scrollbarColor: "transparent transparent",
-              "&:hover": {
-                scrollbarColor: "#cbd5e0 #f7fafc",
-              },
-              "&::-webkit-scrollbar": {
-                height: "3px",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "transparent",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "transparent",
-                borderRadius: "3px",
-              },
-              "&:hover::-webkit-scrollbar-thumb": {
-                background: "#cbd5e0",
-              },
-              "&::-webkit-scrollbar-thumb:hover": {
-                background: "#a0aec0",
-              },
-              flexWrap: "nowrap",
-              scrollBehavior: "smooth",
             }}
           >
-            {tags.map((tag) => (
-              <Chip
-                key={tag.id}
-                label={tag.name}
-                sx={{
-                  backgroundColor: "#FFF",
-                  border: `1.5px solid ${tag.color}80`,
-                  color: `${tag.color}`,
-                  fontWeight: 500,
-                  fontSize: "14px",
-                  padding: "4px",
-                  height: "auto",
-                  borderRadius: 1,
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                }}
-              />
-            ))}
+            {tags.map((tag, index) => {
+              if (index === 0) {
+                return (
+                  <Chip
+                    key={tag.id}
+                    label={tag.name}
+                    sx={{
+                      backgroundColor: "#FFF",
+                      border: `1.5px solid ${tag.color}80`,
+                      color: `${tag.color}`,
+                      fontWeight: 500,
+                      fontSize: "14px",
+                      padding: "4px",
+                      height: "auto",
+                      borderRadius: 1,
+                      flexShrink: 0,
+                      whiteSpace: "nowrap",
+                    }}
+                  />
+                );
+              }
+
+              if (index === 1 && tags.length > 1) {
+                return (
+                  <Tooltip
+                    key={tag.id}
+                    title={tooltipTitle}
+                    slotProps={{
+                      popper: {
+                        modifiers: [
+                          {
+                            name: "offset",
+                            options: {
+                              offset: [0, -10],
+                            },
+                          },
+                        ],
+                      },
+                      tooltip: {
+                        sx: {
+                          backgroundColor: "#fff",
+                          color: "#333",
+                          border: "1px solid #e6e6e6",
+                          borderRadius: 2,
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                          flexWrap: "wrap",
+                          maxWidth: "250px",
+                          padding: 1
+                        },
+                      },
+                    }}
+                  >
+                    <Chip
+                      key="more"
+                      label={`+${tags.length - 1}`}
+                      sx={{
+                        backgroundColor: "#FFF",
+                        border: "1.5px solid #cbd5e080",
+                        color: "#718096",
+                        fontWeight: 500,
+                        fontSize: "14px",
+                        padding: "4px",
+                        height: "auto",
+                        borderRadius: 1,
+                        flexShrink: 0,
+                        whiteSpace: "nowrap",
+                      }}
+                    />
+                  </Tooltip>
+                );
+              }
+
+              return null;
+            })}
           </Box>
           <Box sx={{ display: "flex", gap: 2, flexShrink: 0 }}>
             <Launch sx={{ fontSize: 20, color: "#718096" }} />
