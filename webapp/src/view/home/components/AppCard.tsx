@@ -33,7 +33,6 @@ import { useAppDispatch } from "@root/src/slices/store";
 import { upsertAppFavourite, Tag } from "@root/src/slices/appSlice/app";
 import { UpdateAction } from "@root/src/types/types";
 
-
 interface AppCardProps {
   title: string;
   description: string;
@@ -129,7 +128,8 @@ export default function AppCard({
     ? [defaultCardSx, ...cardSx]
     : [defaultCardSx, cardSx || {}];
 
-  const remainingTags = tags.slice(1);
+  const sortedTags = [...tags].sort((a, b) => a.name.length - b.name.length);
+  const remainingTags = sortedTags.slice(1);
   const tooltipTitle = (
     <Box
       sx={{
@@ -157,6 +157,80 @@ export default function AppCard({
       ))}
     </Box>
   );
+  const renderTags = sortedTags.map((tag, index) => {
+    if (index === 0) {
+      return (
+        <Chip
+          key={tag.id}
+          label={tag.name}
+          sx={{
+            backgroundColor: "#FFF",
+            border: `1.5px solid ${tag.color}80`,
+            color: `${tag.color}`,
+            fontWeight: 500,
+            fontSize: "14px",
+            padding: "4px",
+            height: "auto",
+            borderRadius: 1,
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+          }}
+        />
+      );
+    }
+
+    if (index === 1 && tags.length > 1) {
+      return (
+        <Tooltip
+          key={tag.id}
+          title={tooltipTitle}
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, -10],
+                  },
+                },
+              ],
+            },
+            tooltip: {
+              sx: {
+                backgroundColor: "#fff",
+                color: "#333",
+                border: "1px solid #e6e6e6",
+                borderRadius: 2,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                flexWrap: "wrap",
+                maxWidth: "250px",
+                padding: 1,
+              },
+            },
+          }}
+        >
+          <Chip
+            key="more"
+            label={`+${tags.length - 1}`}
+            sx={{
+              backgroundColor: "#FFF",
+              border: "1.5px solid #cbd5e080",
+              color: "#718096",
+              fontWeight: 500,
+              fontSize: "14px",
+              padding: "4px",
+              height: "auto",
+              borderRadius: 1,
+              flexShrink: 0,
+              whiteSpace: "nowrap",
+            }}
+          />
+        </Tooltip>
+      );
+    }
+
+    return null;
+  });
 
   return (
     <Card
@@ -236,82 +310,10 @@ export default function AppCard({
             sx={{
               display: "flex",
               gap: 1,
+              width: "100%",
             }}
           >
-            {tags.map((tag, index) => {
-              if (index === 0) {
-                return (
-                  <Chip
-                    key={tag.id}
-                    label={tag.name}
-                    sx={{
-                      backgroundColor: "#FFF",
-                      border: `1.5px solid ${tag.color}80`,
-                      color: `${tag.color}`,
-                      fontWeight: 500,
-                      fontSize: "14px",
-                      padding: "4px",
-                      height: "auto",
-                      borderRadius: 1,
-                      flexShrink: 0,
-                      whiteSpace: "nowrap",
-                    }}
-                  />
-                );
-              }
-
-              if (index === 1 && tags.length > 1) {
-                return (
-                  <Tooltip
-                    key={tag.id}
-                    title={tooltipTitle}
-                    slotProps={{
-                      popper: {
-                        modifiers: [
-                          {
-                            name: "offset",
-                            options: {
-                              offset: [0, -10],
-                            },
-                          },
-                        ],
-                      },
-                      tooltip: {
-                        sx: {
-                          backgroundColor: "#fff",
-                          color: "#333",
-                          border: "1px solid #e6e6e6",
-                          borderRadius: 2,
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                          flexWrap: "wrap",
-                          maxWidth: "250px",
-                          padding: 1
-                        },
-                      },
-                    }}
-                  >
-                    <Chip
-                      key="more"
-                      label={`+${tags.length - 1}`}
-                      sx={{
-                        backgroundColor: "#FFF",
-                        border: "1.5px solid #cbd5e080",
-                        color: "#718096",
-                        fontWeight: 500,
-                        fontSize: "14px",
-                        padding: "4px",
-                        height: "auto",
-                        borderRadius: 1,
-                        flexShrink: 0,
-                        whiteSpace: "nowrap",
-                      }}
-                    />
-                  </Tooltip>
-                );
-              }
-
-              return null;
-            })}
+            {renderTags}
           </Box>
           <Box sx={{ display: "flex", gap: 2, flexShrink: 0 }}>
             <Launch sx={{ fontSize: 20, color: "#718096" }} />
