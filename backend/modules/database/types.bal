@@ -224,7 +224,7 @@ public type AppsFilter record {|
     # Email of the user who added the app
     string? addedBy = ();
     # Active status filter 
-    string? isActive = ();
+    boolean? isActive = ();
     # user groups associated with the app 
     string[]? userGroups = ();
 |};
