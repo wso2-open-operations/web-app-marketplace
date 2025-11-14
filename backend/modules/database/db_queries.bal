@@ -75,7 +75,8 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
         LEFT JOIN tags t ON FIND_IN_SET(t.id, a.tags) > 0
     `;
 
-    sql:ParameterizedQuery[] filterQueries = [];
+    sql:ParameterizedQuery[] filterQueries = [`a.is_active = 1`];
+
     if filters.name is string {
         filterQueries.push(` a.name = ${filters.name}`);
     }
