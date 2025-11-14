@@ -24,7 +24,7 @@ function getCrossItems<Role>(a: Role[], b: Role[]): Role[] {
   });
 }
 
-export function getChipStyles(color: string, isPrimary = false) {
+export function getChipStyles(color: string, isPrimary = false): React.CSSProperties {
   return {
     backgroundColor: "#FFF",
     border: `1.5px solid ${color}80`,
