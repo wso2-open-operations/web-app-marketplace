@@ -92,7 +92,7 @@ isolated function fetchUserAppsQuery(string email, AppsFilter filters) returns s
         filterQueries.push(` a.added_by = ${filters.addedBy}`);
     }
 
-    if filters.isActive is string {
+    if filters.isActive is boolean {
         filterQueries.push(` a.is_active = ${filters.isActive}`);
     }
 
