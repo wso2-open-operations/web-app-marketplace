@@ -288,11 +288,6 @@ export default function UpdateApp() {
         reader.onerror = () => {
           formik.setFieldError("icon", "Failed to read icon file");
         };
-      } else {
-        // Submit without icon change
-        await submitUpdate(payload);
-        formik.resetForm();
-        setFilePreview(null);
       }
     },
   });
@@ -882,7 +877,6 @@ export default function UpdateApp() {
                 disabled={!selectedApp || submitState === State.loading}
                 onClick={() => {
                   formik.resetForm();
-                  handleRemoveFile();
                 }}
                 variant="outlined"
               >
