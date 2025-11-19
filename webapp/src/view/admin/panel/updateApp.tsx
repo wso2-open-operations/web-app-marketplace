@@ -877,6 +877,19 @@ export default function UpdateApp() {
                 disabled={!selectedApp || submitState === State.loading}
                 onClick={() => {
                   formik.resetForm();
+                  if (selectedApp?.icon) {
+                    setFilePreview({
+                      file: new File([], "existing-icon.svg", {
+                        type: "image/svg+xml",
+                      }),
+                      preview: selectedApp.icon,
+                      uploading: false,
+                      progress: 100,
+                      error: null,
+                    });
+                  } else {
+                    setFilePreview(null);
+                  }
                 }}
                 variant="outlined"
               >
