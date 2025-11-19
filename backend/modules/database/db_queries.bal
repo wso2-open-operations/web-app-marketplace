@@ -28,6 +28,7 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
             a.icon,
             a.added_by,
             a.user_groups,
+            a.is_active,
             COALESCE(
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
@@ -40,7 +41,7 @@ isolated function fetchAppsQuery() returns sql:ParameterizedQuery => `
             ) AS tags
         FROM apps a
         LEFT JOIN tags t ON FIND_IN_SET(t.id, a.tags) > 0
-        GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by, a.user_groups`;
+        GROUP BY a.id, a.name, a.url, a.description, a.version_name, a.icon, a.added_by, a.user_groups, a.is_active`;
 
 # Build query to fetch app details with filters for validation and admin operations.
 #
