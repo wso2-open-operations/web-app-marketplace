@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import type { CSSProperties } from 'react';
 
 export const isIncludedRole = (a: string[], b: string[]): boolean => {
   return [...getCrossItems(a, b), ...getCrossItems(b, a)].length > 0;
@@ -22,4 +23,19 @@ function getCrossItems<Role>(a: Role[], b: Role[]): Role[] {
   return a.filter((element) => {
     return b.includes(element);
   });
+}
+
+export function getChipStyles(color: string, isPrimary = false): CSSProperties {
+  return {
+    backgroundColor: "#FFF",
+    border: `1.5px solid ${color}80`,
+    color: color,
+    fontWeight: isPrimary ? 500 : 400,
+    fontSize: "14px",
+    padding: "4px",
+    height: "auto",
+    borderRadius: 1,
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+  };
 }
