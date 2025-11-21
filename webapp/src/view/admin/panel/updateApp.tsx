@@ -51,7 +51,6 @@ import { State } from "@root/src/types/types";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 
 import AppCard from "@view/home/components/AppCard";
-import { error } from "console";
 
 const fileSize = 10 * 1024 * 1024;
 
@@ -289,7 +288,7 @@ export default function UpdateApp() {
       try {
         await submitUpdate(payload);
         formik.resetForm();
-      } catch (err) {
+      } catch (error) {
         console.error("Failed to submit update : ", error);
         formik.setStatus({
           type: "error",
