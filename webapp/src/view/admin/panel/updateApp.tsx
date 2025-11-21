@@ -51,7 +51,7 @@ import { State } from "@root/src/types/types";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 
 import AppCard from "@view/home/components/AppCard";
-import { update } from "lodash";
+import { error } from "console";
 
 const fileSize = 10 * 1024 * 1024;
 
@@ -277,10 +277,29 @@ export default function UpdateApp() {
       if (!selectedApp) return;
 
       // Build payload with only changed fields
-      const payload = await buildUpdatePayload(values);
+      let payload;
+      try {
+        payload = await buildUpdatePayload(values);
+        formik.setFieldError("icon", "Failed to process the icon file");
+      } catch (error) {
+        console.error("Failed to build payload:", error);
+        formik.setFieldError("icon", "unknown error");
+        return;
+      }
 
-      await submitUpdate(payload);
-      formik.resetForm();
+      try {
+        await submitUpdate(payload);
+        formik.resetForm();
+      } catch (err) {
+        console.error("Failed to submit update : ", error);
+        formik.setStatus({
+          type: "error",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Failed to update app. Please try again.",
+        });
+      }
     },
   });
 
