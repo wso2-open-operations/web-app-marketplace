@@ -117,16 +117,15 @@ export default function UpdateApp() {
     dispatch(fetchTags());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (selectedApp?.icon) {
+  const setupIconPlaceholder = (app: App | null) => {
+    if (app?.icon) {
       setFilePreview({
         file: new File([], "existing-icon.svg", { type: "image/svg+xml" }),
-        preview: selectedApp.icon,
+        preview: app.icon,
         uploading: false,
         progress: 100,
         error: null,
       });
-      // Set a placeholder file for existing icon to pass validation
       formik.setFieldValue(
         "icon",
         new File([], "existing-icon.svg", { type: "image/svg+xml" })
@@ -135,6 +134,10 @@ export default function UpdateApp() {
       setFilePreview(null);
       formik.setFieldValue("icon", null);
     }
+  };
+
+  useEffect(() => {
+    setupIconPlaceholder(selectedApp);
   }, [selectedApp]);
 
   useEffect(() => {
@@ -280,7 +283,7 @@ export default function UpdateApp() {
       try {
         payload = await buildUpdatePayload(values);
       } catch (error) {
-        console.error("Failed to build payload:", error);        
+        console.error("Failed to build payload:", error);
         formik.setFieldError("icon", "Failed to process the icon file");
         return;
       }
@@ -888,15 +891,7 @@ export default function UpdateApp() {
                 onClick={() => {
                   formik.resetForm();
                   if (selectedApp?.icon) {
-                    setFilePreview({
-                      file: new File([], "existing-icon.svg", {
-                        type: "image/svg+xml",
-                      }),
-                      preview: selectedApp.icon,
-                      uploading: false,
-                      progress: 100,
-                      error: null,
-                    });
+                    setupIconPlaceholder(selectedApp);
                   } else {
                     setFilePreview(null);
                   }
