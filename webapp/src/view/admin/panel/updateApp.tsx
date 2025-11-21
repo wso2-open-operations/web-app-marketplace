@@ -51,7 +51,6 @@ import { State } from "@root/src/types/types";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 
 import AppCard from "@view/home/components/AppCard";
-import { update } from "lodash";
 
 const fileSize = 10 * 1024 * 1024;
 
@@ -104,9 +103,8 @@ export default function UpdateApp() {
   const tags = useAppSelector((state: RootState) => state.tag.tags);
   const groups = useAppSelector((state: RootState) => state.group.groups);
   const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
-  const { stateMessage, submitState, apps } = useAppSelector(
-    (state: RootState) => state.app
-  );
+  const appState = useAppSelector((state: RootState) => state.app);
+  const { stateMessage, submitState, apps } = appState;
 
   const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -119,16 +117,15 @@ export default function UpdateApp() {
     dispatch(fetchTags());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (selectedApp?.icon) {
+  const setupIconPlaceholder = (app: App | null) => {
+    if (app?.icon) {
       setFilePreview({
         file: new File([], "existing-icon.svg", { type: "image/svg+xml" }),
-        preview: selectedApp.icon,
+        preview: app.icon,
         uploading: false,
         progress: 100,
         error: null,
       });
-      // Set a placeholder file for existing icon to pass validation
       formik.setFieldValue(
         "icon",
         new File([], "existing-icon.svg", { type: "image/svg+xml" })
@@ -137,6 +134,10 @@ export default function UpdateApp() {
       setFilePreview(null);
       formik.setFieldValue("icon", null);
     }
+  };
+
+  useEffect(() => {
+    setupIconPlaceholder(selectedApp);
   }, [selectedApp]);
 
   useEffect(() => {
@@ -179,9 +180,9 @@ export default function UpdateApp() {
   };
 
   // Build payload with only changed fields
-  const buildUpdatePayload = (
+  const buildUpdatePayload = async (
     values: typeof formik.values
-  ): Partial<UpdateAppPayload> => {
+  ): Promise<Partial<UpdateAppPayload>> => {
     if (!selectedApp) return {};
 
     const payload: Partial<UpdateAppPayload> = {};
@@ -221,9 +222,20 @@ export default function UpdateApp() {
       payload.userGroups = values.groupIds;
     }
 
-    const originalIsActive = selectedApp.isActive ?? true;
+    const originalIsActive = selectedApp.isActive ?? false;
     if (values.isActive !== originalIsActive) {
       payload.isActive = values.isActive;
+    }
+
+    // Check if icon has actually changed (not the placeholder from existing icon)
+    if (values.icon && values.icon.size > 0) {
+      const base64Icon = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Failed to read icon file"));
+        reader.readAsDataURL(values.icon as File);
+      });
+      payload.icon = base64Icon;
     }
 
     // Only add updatedBy if there are actual changes
@@ -260,39 +272,34 @@ export default function UpdateApp() {
       tags: selectedApp?.tags?.map((tag: any) => tag.id) || [],
       groupIds: selectedApp?.userGroups || [],
       icon: null as File | null,
-      isActive: selectedApp?.isActive ?? true,
+      isActive: selectedApp?.isActive ?? false,
     },
     validationSchema,
     onSubmit: async (values) => {
       if (!selectedApp) return;
 
       // Build payload with only changed fields
-      const payload = buildUpdatePayload(values);
+      let payload;
+      try {
+        payload = await buildUpdatePayload(values);
+      } catch (error) {
+        console.error("Failed to build payload:", error);
+        formik.setFieldError("icon", "Failed to process the icon file");
+        return;
+      }
 
-      // Handle icon file if changed
-      if (values.icon) {
-        const reader = new FileReader();
-        reader.readAsDataURL(values.icon);
-        reader.onload = async () => {
-          const base64Icon = reader.result as string;
-          payload.icon = base64Icon;
-          // Ensure updatedBy is added when icon changes
-          if (!payload.updatedBy) {
-            payload.updatedBy = userEmail;
-          }
-          await submitUpdate(payload);
-          formik.resetForm();
-          setFilePreview(null);
-        };
-
-        reader.onerror = () => {
-          formik.setFieldError("icon", "Failed to read icon file");
-        };
-      } else {
-        // Submit without icon change
+      try {
         await submitUpdate(payload);
         formik.resetForm();
-        setFilePreview(null);
+      } catch (error) {
+        console.error("Failed to submit update : ", error);
+        formik.setStatus({
+          type: "error",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Failed to update app. Please try again.",
+        });
       }
     },
   });
@@ -816,6 +823,7 @@ export default function UpdateApp() {
                 )}
               </Box>
 
+              {/* Active app or not */}
               <FormControlLabel
                 label={
                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -882,7 +890,11 @@ export default function UpdateApp() {
                 disabled={!selectedApp || submitState === State.loading}
                 onClick={() => {
                   formik.resetForm();
-                  handleRemoveFile();
+                  if (selectedApp?.icon) {
+                    setupIconPlaceholder(selectedApp);
+                  } else {
+                    setFilePreview(null);
+                  }
                 }}
                 variant="outlined"
               >
