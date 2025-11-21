@@ -280,10 +280,9 @@ export default function UpdateApp() {
       let payload;
       try {
         payload = await buildUpdatePayload(values);
-        formik.setFieldError("icon", "Failed to process the icon file");
       } catch (error) {
-        console.error("Failed to build payload:", error);
-        formik.setFieldError("icon", "unknown error");
+        console.error("Failed to build payload:", error);        
+        formik.setFieldError("icon", "Failed to process the icon file");
         return;
       }
 
