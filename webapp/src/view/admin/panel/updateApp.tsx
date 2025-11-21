@@ -219,7 +219,7 @@ export default function UpdateApp() {
       payload.userGroups = values.groupIds;
     }
 
-    const originalIsActive = selectedApp.isActive;
+    const originalIsActive = selectedApp.isActive ?? false;
     if (values.isActive !== originalIsActive) {
       payload.isActive = values.isActive;
     }
@@ -269,7 +269,7 @@ export default function UpdateApp() {
       tags: selectedApp?.tags?.map((tag: any) => tag.id) || [],
       groupIds: selectedApp?.userGroups || [],
       icon: null as File | null,
-      isActive: selectedApp?.isActive || false,
+      isActive: selectedApp?.isActive ?? false,
     },
     validationSchema,
     onSubmit: async (values) => {
