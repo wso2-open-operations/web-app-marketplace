@@ -13,39 +13,19 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-import AppsIcon from '@mui/icons-material/Apps';
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
-import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
+import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
+import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import AppsIcon from "@mui/icons-material/Apps";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import type { RouteObject } from "react-router-dom";
 
 import React from "react";
-import { NonIndexRouteObject, RouteObject } from "react-router-dom";
 
-import { Role } from "@slices/authSlice/auth";
+import { Role } from "@/types/types";
 import { isIncludedRole } from "@utils/utils";
 import { View } from "@view/index";
 
-export interface RouteObjectWithRole extends NonIndexRouteObject {
-  allowRoles: string[];
-  icon:
-  | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-  | undefined;
-  text: string;
-  children?: RouteObjectWithRole[];
-  bottomNav?: boolean;
-}
-
-interface RouteDetail {
-  path: string;
-  allowRoles: string[];
-  icon:
-  | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-  | undefined;
-  text: string;
-  bottomNav?: boolean;
-}
+import type { RouteDetail, RouteObjectWithRole } from "./types/types";
 
 export const routes: RouteObjectWithRole[] = [
   {
@@ -67,7 +47,7 @@ export const routes: RouteObjectWithRole[] = [
     text: "Profile",
     icon: React.createElement(AccountBoxOutlinedIcon),
     element: React.createElement(View.profile),
-    allowRoles: [Role.ADMIN, Role.EMPLOYEE]
+    allowRoles: [Role.ADMIN, Role.EMPLOYEE],
   },
   {
     path: "/admin",
@@ -76,7 +56,7 @@ export const routes: RouteObjectWithRole[] = [
     element: React.createElement(View.admin),
     allowRoles: [Role.ADMIN],
   },
-  
+
   /*
    TODO: Implement User Guide page when the user guide content is ready.
    The /help route is commented out for now and will be re-enabled once the
@@ -92,12 +72,13 @@ export const routes: RouteObjectWithRole[] = [
   }
   */
 ];
+
 export const getActiveRoutesV2 = (
   routes: RouteObjectWithRole[] | undefined,
-  roles: string[]
+  roles: string[],
 ): RouteObjectWithRole[] => {
   if (!routes) return [];
-  var routesObj: RouteObjectWithRole[] = [];
+  const routesObj: RouteObjectWithRole[] = [];
   routes.forEach((routeObj) => {
     if (isIncludedRole(roles, routeObj.allowRoles)) {
       routesObj.push({
@@ -111,7 +92,7 @@ export const getActiveRoutesV2 = (
 };
 
 export const getActiveRoutes = (roles: string[]): RouteObject[] => {
-  var routesObj: RouteObject[] = [];
+  const routesObj: RouteObject[] = [];
   routes.forEach((routeObj) => {
     if (isIncludedRole(roles, routeObj.allowRoles)) {
       routesObj.push({
@@ -123,14 +104,37 @@ export const getActiveRoutes = (roles: string[]): RouteObject[] => {
 };
 
 export const getActiveRouteDetails = (roles: string[]): RouteDetail[] => {
-  var routesObj: RouteDetail[] = [];
+  const routesObj: RouteDetail[] = [];
   routes.forEach((routeObj) => {
     if (isIncludedRole(roles, routeObj.allowRoles)) {
       routesObj.push({
-        path: routeObj.path ? routeObj.path : "",
         ...routeObj,
+        path: routeObj.path ?? "",
       });
     }
   });
   return routesObj;
+};
+
+interface getActiveParentRoutesProps {
+  routes: RouteObjectWithRole[] | undefined;
+  roles: string[];
+}
+
+export const getActiveParentRoutes = ({ routes, roles }: getActiveParentRoutesProps): string[] => {
+  if (!routes) return [];
+
+  let activeParentPaths: string[] = [];
+
+  routes.forEach((routeObj) => {
+    if (!routeObj.element) return;
+
+    if (isIncludedRole(roles, routeObj.allowRoles)) {
+      if (routeObj.path) {
+        activeParentPaths.push(routeObj.path);
+      }
+    }
+  });
+
+  return activeParentPaths;
 };
