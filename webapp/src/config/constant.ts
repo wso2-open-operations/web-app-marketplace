@@ -32,3 +32,7 @@ export const SnackMessage = {
 export const APP_DESC = "Web App Store";
 
 export const redirectUrl = "web-app-marketplace-redirect-url";
+
+export const PRIVILEGE_ADMIN = 789;
+
+export const PRIVILEGE_EMPLOYEE = 987;
