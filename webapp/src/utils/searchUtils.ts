@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { UserApp } from "@root/src/slices/appSlice/app";
 
 /**
@@ -23,16 +22,14 @@ import { UserApp } from "@root/src/slices/appSlice/app";
 export const filterAndSortApps = (
   apps: UserApp[],
   searchTerm: string,
-  selectedTagIds: number[]
+  selectedTagIds: number[],
 ): UserApp[] => {
   const normalizedSearch = searchTerm.toLowerCase().trim();
 
   // Filter by selected tags if any
   let filtered = apps;
   if (selectedTagIds.length > 0) {
-    filtered = apps.filter((app) => 
-      app.tags.some((tag) => selectedTagIds.includes(tag.id))
-    );
+    filtered = apps.filter((app) => app.tags.some((tag) => selectedTagIds.includes(tag.id)));
   }
 
   // If no search term, return tag-filtered results
@@ -47,12 +44,8 @@ export const filterAndSortApps = (
 
   filtered.forEach((app) => {
     const titleMatch = app.name.toLowerCase().includes(normalizedSearch);
-    const tagMatch = app.tags.some((tag) => 
-      tag.name.toLowerCase().includes(normalizedSearch)
-    );
-    const descriptionMatch = app.description
-      .toLowerCase()
-      .includes(normalizedSearch);
+    const tagMatch = app.tags.some((tag) => tag.name.toLowerCase().includes(normalizedSearch));
+    const descriptionMatch = app.description.toLowerCase().includes(normalizedSearch);
 
     if (titleMatch) {
       titleMatches.push(app);
@@ -71,7 +64,7 @@ export const filterAndSortApps = (
  * Extract unique tags from apps array
  */
 export const extractUniqueTags = (
-  apps: UserApp[]
+  apps: UserApp[],
 ): Array<{ id: number; name: string; color: string }> => {
   const tagMap = new Map<number, { id: number; name: string; color: string }>();
 
@@ -87,7 +80,5 @@ export const extractUniqueTags = (
     });
   });
 
-  return Array.from(tagMap.values()).sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
+  return Array.from(tagMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 };
