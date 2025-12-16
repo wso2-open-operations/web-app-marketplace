@@ -13,9 +13,8 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-import * as rax from "retry-axios";
 import axios, { AxiosInstance, CancelTokenSource } from "axios";
+import * as rax from "retry-axios";
 
 export class APIService {
   private static _instance: AxiosInstance;
@@ -37,19 +36,11 @@ export class APIService {
     (APIService._instance.defaults as unknown as rax.RaxConfig).raxConfig = {
       retry: 3,
       instance: APIService._instance,
-      httpMethodsToRetry: [
-        "GET",
-        "HEAD",
-        "OPTIONS",
-        "DELETE",
-        "POST",
-        "PATCH",
-        "PUT",
-      ],
+      httpMethodsToRetry: ["GET", "HEAD", "OPTIONS", "DELETE", "POST", "PATCH", "PUT"],
       statusCodesToRetry: [[401, 401]],
       retryDelay: 100,
 
-      onRetryAttempt: async (err) => {
+      onRetryAttempt: async () => {
         if (!APIService._isRefreshing) {
           APIService._isRefreshing = true;
           APIService._refreshPromise = APIService.callback()
@@ -105,7 +96,7 @@ export class APIService {
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
   }
 }
