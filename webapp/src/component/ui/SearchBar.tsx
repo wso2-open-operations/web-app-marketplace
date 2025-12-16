@@ -13,23 +13,22 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import {
   Box,
-  InputBase,
-  Paper,
   IconButton,
-  Popover,
-  Typography,
+  InputBase,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
+  Paper,
+  Popover,
+  Typography,
 } from "@mui/material";
-import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { Search } from 'lucide-react';
+import { Search } from "lucide-react";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Tag {
   id: number;
@@ -62,7 +61,9 @@ export default function SearchBar({
       if ((event.metaKey || event.ctrlKey) && event.key === "f") {
         event.preventDefault();
         // Focus on search input
-        const searchInput = document.querySelector('input[placeholder="Search"]') as HTMLInputElement;
+        const searchInput = document.querySelector(
+          'input[placeholder="Search"]',
+        ) as HTMLInputElement;
         if (searchInput) {
           searchInput.focus();
         }
@@ -128,12 +129,8 @@ export default function SearchBar({
           },
         }}
       >
-        <IconButton
-          sx={{ p: 0.5, mr: "4px" }}
-          aria-label="search"
-          disabled
-        >
-          <Search style={{color: "#00000099"}} />
+        <IconButton sx={{ p: 0.5, mr: "4px" }} aria-label="search" disabled>
+          <Search style={{ color: "#00000099" }} />
         </IconButton>
 
         <InputBase
