@@ -13,15 +13,12 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-import React from "react";
 import { Cached } from "@mui/icons-material";
 import { Box, ButtonGroup, IconButton, Tooltip } from "@mui/material";
 
-function PanelHeader(props: {
-  refresh?: () => void;
-  header?: React.ReactNode;
-}) {
+import React from "react";
+
+function PanelHeader(props: { refresh?: () => void; header?: React.ReactNode }) {
   return (
     <Box
       className="panel-con"
@@ -36,6 +33,7 @@ function PanelHeader(props: {
       }}
     >
       {props.header && <div>{props.header}</div>}
+
       <ButtonGroup>
         {props.refresh && (
           <Tooltip title={"Refresh Page"}>
