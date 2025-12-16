@@ -22,6 +22,7 @@ import { Provider } from "react-redux";
 import { createContext, useEffect, useMemo, useState } from "react";
 
 import { APP_NAME, AsgardeoConfig } from "@config/config";
+import { localStorageTheme } from "@config/constant";
 import AppAuthProvider from "@context/AuthContext";
 import { themeSettings } from "@root/src/theme";
 import { store } from "@slices/store";
@@ -38,7 +39,7 @@ function App() {
   document.title = APP_NAME;
   const processLocalThemeMode = (): ThemeMode => {
     try {
-      const savedTheme = localStorage.getItem("menu-app-theme");
+      const savedTheme = localStorage.getItem(localStorageTheme);
       if (savedTheme === ThemeMode.Light || savedTheme === ThemeMode.Dark) {
         return savedTheme;
       }
@@ -46,7 +47,7 @@ function App() {
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const systemTheme = prefersDark ? ThemeMode.Dark : ThemeMode.Light;
 
-      localStorage.setItem("menu-app-theme", systemTheme);
+      localStorage.setItem(localStorageTheme, systemTheme);
       return systemTheme;
     } catch (err) {
       console.error("Theme detection failed, defaulting to light mode.", err);
@@ -65,7 +66,7 @@ function App() {
       toggleColorMode: () => {
         const newMode = mode === ThemeMode.Light ? ThemeMode.Dark : ThemeMode.Light;
         // Update localStorage
-        localStorage.setItem("menu-app-theme", newMode);
+        localStorage.setItem(localStorageTheme, newMode);
         // Update state
         setMode(newMode);
         // Apply the data-theme attribute to the document element
