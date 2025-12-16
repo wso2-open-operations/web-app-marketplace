@@ -13,26 +13,23 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { Box, Grid } from "@mui/material";
 
-import { Box, CircularProgress, Grid, Button } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
 
-import { useEffect, useState, useMemo } from "react";
-
-import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import ErrorHandler from "@component/common/ErrorHandler";
-import { State } from "@root/src/types/types";
-import { filterAndSortApps, extractUniqueTags } from "@utils/searchUtils";
-import AppCard from "@root/src/view/home/components/AppCard";
 import SearchBar from "@component/ui/SearchBar";
-import { fetchTags } from "@root/src/slices/tagSlice/tag";
-import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import PreLoader from "@root/src/component/common/PreLoader";
+import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
+import { fetchTags } from "@root/src/slices/tagSlice/tag";
+import { State } from "@root/src/types/types";
+import AppCard from "@root/src/view/home/components/AppCard";
+import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
+import { extractUniqueTags, filterAndSortApps } from "@utils/searchUtils";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { state, userApps, stateMessage } = useAppSelector(
-    (state: RootState) => state.app
-  );
+  const { state, userApps, stateMessage } = useAppSelector((state: RootState) => state.app);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
