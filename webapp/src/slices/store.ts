@@ -13,18 +13,18 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+import { configureStore } from "@reduxjs/toolkit";
 import { enableMapSet } from "immer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
 
+import { configApi } from "@services/config.api";
+import appsReducer from "@slices/appSlice/app";
 import authReducer from "@slices/authSlice/auth";
 import commonReducer from "@slices/commonSlice/common";
 import appConfigReducer from "@slices/configSlice/config";
+import groupReducer from "@slices/groupsSlice/groups";
+import tagReducer from "@slices/tagSlice/tag";
 import userReducer from "@slices/userSlice/user";
-import appsReducer from "@slices/appSlice/app";
-import tagReducer from "@slices/tagSlice/tag"
-import groupReducer from "@slices/groupsSlice/groups"
 
 enableMapSet();
 
@@ -36,9 +36,12 @@ export const store = configureStore({
     appConfig: appConfigReducer,
     app: appsReducer,
     tag: tagReducer,
-    group: groupReducer
+    group: groupReducer,
+
+    // RTK Query API reducers
+    [configApi.reducerPath]: configApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(configApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
