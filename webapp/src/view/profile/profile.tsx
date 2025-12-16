@@ -1,20 +1,9 @@
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Card, CardContent, Chip, Typography } from "@mui/material";
 
 import { useEffect } from "react";
 
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
-import {
-  RootState,
-  useAppDispatch,
-  useAppSelector,
-} from "@root/src/slices/store";
+import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
 
 export default function Profile() {
   const dispatch = useAppDispatch();
@@ -54,10 +43,7 @@ export default function Profile() {
                 gap: 1,
               }}
             >
-              <Typography
-                sx={{ fontWeight: 600, color: "text.secondary" }}
-                variant="h4"
-              >
+              <Typography sx={{ fontWeight: 600, color: "text.secondary" }} variant="h4">
                 {`${user?.firstName} ${user?.lastName}`}
               </Typography>
               <Typography sx={{ color: "text.tertiary" }} variant="body1">
