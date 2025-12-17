@@ -19,9 +19,11 @@ import { Mutex } from "async-mutex";
 
 import { SERVICE_BASE_URL } from "../config/config";
 
-let ACCESS_TOKEN: string;
-let REFRESH_TOKEN_CALLBACK: () => Promise<{ accessToken: string }>;
-let LOGOUT_CALLBACK: () => void;
+let ACCESS_TOKEN: string = "";
+let REFRESH_TOKEN_CALLBACK: () => Promise<{ accessToken: string }> = async () => ({
+  accessToken: "",
+});
+let LOGOUT_CALLBACK: () => void = () => {};
 
 export const setTokens = (
   accessToken: string,
@@ -37,8 +39,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: SERVICE_BASE_URL,
   prepareHeaders: (headers) => {
     if (ACCESS_TOKEN) {
-      headers.set("Authorization", `Bearer${ACCESS_TOKEN}`);
-      headers.set("x-jwt-assertion", ACCESS_TOKEN);
+      headers.set("Authorization", `Bearer ${ACCESS_TOKEN}`);
     }
   },
 });
@@ -66,6 +67,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
         }
       } catch (error) {
         console.error("Error refreshing token:", error);
+        LOGOUT_CALLBACK();
       } finally {
         release();
       }
