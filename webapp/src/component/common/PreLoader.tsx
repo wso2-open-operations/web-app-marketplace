@@ -37,7 +37,7 @@ const PreLoader = (props: PreLoaderProps) => {
             alignItems="center"
             spacing={2}
           >
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               {props.isLoading && (
                 <LinearProgress
                   sx={{
@@ -46,7 +46,7 @@ const PreLoader = (props: PreLoaderProps) => {
                 />
               )}
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Typography
                 variant="inherit"
                 sx={{
