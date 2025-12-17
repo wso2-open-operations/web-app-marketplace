@@ -13,7 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { Box, Grid } from "@mui/material";
+import { Box } from "@mui/material";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -59,18 +59,18 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{ paddingBottom: 4, position: "relative" }}>
+    <Box sx={{ padding: 0, position: "relative", paddingBottom: 6 }}>
       <Box
         sx={{
-          mb: 3,
           display: "flex",
           flexDirection: "row",
           position: "sticky",
-          top: 60,
+          top: 0,
           zIndex: 1000,
           justifyContent: "space-between",
           alignItems: "start",
           gap: 2,
+          mb: 3,
         }}
       >
         <SearchBar
@@ -81,10 +81,22 @@ export default function Home() {
         />
       </Box>
 
-      <Grid container spacing={2}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "repeat(1, 1fr)",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(3, 1fr)",
+            lg: "repeat(4, 1fr)",
+            xl: "repeat(5, 1fr)",
+          },
+          gap: 2,
+        }}
+      >
         {filteredApps.length > 0 ? (
           filteredApps.map((app) => (
-            <Grid item xs={12} sm={6} md={4} lg={2.4} key={app.id}>
+            <Box key={app.id}>
               <AppCard
                 title={app.name}
                 description={app.description}
@@ -95,23 +107,22 @@ export default function Home() {
                 isFavourite={app.isFavourite}
                 appId={app.id}
               />
-            </Grid>
+            </Box>
           ))
         ) : (
-          <Grid item xs={12}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "40vh",
-              }}
-            >
-              <ErrorHandler message="No applications found matching your search criteria" />
-            </Box>
-          </Grid>
+          <Box
+            sx={{
+              gridColumn: "1 / -1",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "40vh",
+            }}
+          >
+            <ErrorHandler message="No applications found matching your search criteria" />
+          </Box>
         )}
-      </Grid>
+      </Box>
     </Box>
   );
 }
