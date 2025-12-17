@@ -27,7 +27,7 @@ function Favourites() {
     <Grid container spacing={2} sx={{ width: "100%" }}>
       {favApps.length > 0 ? (
         favApps.map((app) => (
-          <Grid item xs={12} sm={6} md={4} lg={2.4} key={app.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.6 }}>
             <AppCard
               title={app.name}
               description={app.description}
@@ -41,7 +41,7 @@ function Favourites() {
           </Grid>
         ))
       ) : (
-        <Grid item xs={12} sx={{ width: "100%" }}>
+        <Grid size={{ xs: 12 }} sx={{ width: "100%" }}>
           <ErrorHandler message="No favourite applications were found" />
         </Grid>
       )}
