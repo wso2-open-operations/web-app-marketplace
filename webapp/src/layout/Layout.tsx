@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Snowfall from "react-snowfall";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
 import SnowflakeIcon from "@assets/icons/SnowFlakeIcon";
 import PreLoader from "@component/common/PreLoader";
@@ -52,7 +52,7 @@ export default function Layout() {
     }
   }, [common.message, common.type, common.timestamp, enqueueSnackbar]);
 
-  const snowflake = [SnowflakeIcon()];
+  const snowflake = useMemo(() => [SnowflakeIcon()], []);
 
   useEffect(() => {
     showSnackbar();
