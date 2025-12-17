@@ -13,36 +13,36 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-import {
-  Box,
-  Typography,
-  IconButton,
-  Alert,
-  TextField,
-  Autocomplete,
-  Chip,
-  LinearProgress,
-  Button,
-  FormControlLabel,
-  Switch,
-} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import {
+  Alert,
+  Autocomplete,
+  Box,
+  Button,
+  Chip,
+  FormControlLabel,
+  IconButton,
+  LinearProgress,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { CreateAppPayload, createApp, fetchApps, fetchUserApps } from "@root/src/slices/appSlice/app";
-import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
 import {
-  useAppDispatch,
-  useAppSelector,
-  RootState,
-} from "@root/src/slices/store";
-import { State } from "@root/src/types/types";
+  CreateAppPayload,
+  createApp,
+  fetchApps,
+  fetchUserApps,
+} from "@root/src/slices/appSlice/app";
+import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
+import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
+import { State } from "@root/src/types/types";
 
 const fileSize = 10 * 1024 * 1024;
 
@@ -64,10 +64,7 @@ const validationSchema = Yup.object({
     .min(10, "Description must be at least 10 characters")
     .max(100, "Description must be at most 100 characters")
     .required("App description is required"),
-  link: Yup.string()
-    .trim()
-    .url("Must be a valid URL")
-    .required("App URL is required"),
+  link: Yup.string().trim().url("Must be a valid URL").required("App URL is required"),
   versionName: Yup.string()
     .trim()
     .min(1, "Version name must be at least 1 character")
@@ -85,10 +82,7 @@ const validationSchema = Yup.object({
     .test("fileType", "Only SVG files are allowed", (value) => {
       if (!value) return false;
       const file = value as File;
-      return (
-        file.type === "image/svg+xml" &&
-        file.name.toLowerCase().endsWith(".svg")
-      );
+      return file.type === "image/svg+xml" && file.name.toLowerCase().endsWith(".svg");
     })
     .test("fileSize", "File size must not exceed 10MB", (value) => {
       if (!value) return false;
@@ -102,9 +96,7 @@ export default function CreateApp() {
   const tags = useAppSelector((state: RootState) => state.tag.tags);
   const groups = useAppSelector((state: RootState) => state.group.groups);
   const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
-  const { stateMessage, submitState } = useAppSelector(
-    (state: RootState) => state.app
-  );
+  const { stateMessage, submitState } = useAppSelector((state: RootState) => state.app);
 
   const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -166,10 +158,7 @@ export default function CreateApp() {
   });
 
   const handleFileSelect = (file: File) => {
-    if (
-      file.type !== "image/svg+xml" ||
-      !file.name.toLowerCase().endsWith(".svg")
-    ) {
+    if (file.type !== "image/svg+xml" || !file.name.toLowerCase().endsWith(".svg")) {
       formik.setFieldError("icon", "Only SVG files are allowed");
       return;
     }
@@ -297,13 +286,8 @@ export default function CreateApp() {
                     value={formik.values.versionName}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.versionName &&
-                      Boolean(formik.errors.versionName)
-                    }
-                    helperText={
-                      formik.touched.versionName && formik.errors.versionName
-                    }
+                    error={formik.touched.versionName && Boolean(formik.errors.versionName)}
+                    helperText={formik.touched.versionName && formik.errors.versionName}
                     disabled={submitState === State.loading}
                   />
                 </Box>
@@ -323,13 +307,8 @@ export default function CreateApp() {
                   value={formik.values.description}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.description &&
-                    Boolean(formik.errors.description)
-                  }
-                  helperText={
-                    formik.touched.description && formik.errors.description
-                  }
+                  error={formik.touched.description && Boolean(formik.errors.description)}
+                  helperText={formik.touched.description && formik.errors.description}
                   disabled={submitState === State.loading}
                 />
               </Box>
@@ -343,13 +322,11 @@ export default function CreateApp() {
                   multiple
                   options={tags || []}
                   getOptionLabel={(option) => option.name}
-                  value={
-                    tags?.filter((t) => formik.values.tags.includes(t.id)) || []
-                  }
+                  value={tags?.filter((t) => formik.values.tags.includes(t.id)) || []}
                   onChange={(_, newValue) => {
                     formik.setFieldValue(
                       "tags",
-                      newValue.map((tag) => tag.id)
+                      newValue.map((tag) => tag.id),
                     );
                   }}
                   onBlur={formik.handleBlur}
@@ -361,9 +338,7 @@ export default function CreateApp() {
                         key={option.id}
                         label={option.name}
                         sx={{
-                          backgroundColor: option.color
-                            ? `${option.color}1A`
-                            : "#e0e0e0",
+                          backgroundColor: option.color ? `${option.color}1A` : "#e0e0e0",
                           border: option.color
                             ? `2px solid ${option.color}80`
                             : "2px solid #bdbdbd",
@@ -372,9 +347,7 @@ export default function CreateApp() {
                           "& .MuiChip-deleteIcon": {
                             color: option.color || "#424242",
                             "&:hover": {
-                              color: option.color
-                                ? `${option.color}CC`
-                                : "#616161",
+                              color: option.color ? `${option.color}CC` : "#616161",
                             },
                           },
                         }}
@@ -387,9 +360,7 @@ export default function CreateApp() {
                       name="tags"
                       placeholder="Select one or more tags"
                       error={formik.touched.tags && Boolean(formik.errors.tags)}
-                      helperText={
-                        formik.touched.tags && (formik.errors.tags as string)
-                      }
+                      helperText={formik.touched.tags && (formik.errors.tags as string)}
                     />
                   )}
                 />
@@ -415,14 +386,8 @@ export default function CreateApp() {
                       {...params}
                       name="groupIds"
                       placeholder="Select user groups"
-                      error={
-                        formik.touched.groupIds &&
-                        Boolean(formik.errors.groupIds)
-                      }
-                      helperText={
-                        formik.touched.groupIds &&
-                        (formik.errors.groupIds as string)
-                      }
+                      error={formik.touched.groupIds && Boolean(formik.errors.groupIds)}
+                      helperText={formik.touched.groupIds && (formik.errors.groupIds as string)}
                     />
                   )}
                 />
@@ -455,8 +420,8 @@ export default function CreateApp() {
                       borderColor: dragActive
                         ? "primary.main"
                         : formik.touched.icon && formik.errors.icon
-                        ? "error.main"
-                        : "divider",
+                          ? "error.main"
+                          : "divider",
                       borderRadius: 2,
                       p: 6,
                       textAlign: "center",
@@ -464,9 +429,7 @@ export default function CreateApp() {
                       cursor: "pointer",
                       transition: "all 0.3s",
                     }}
-                    onClick={() =>
-                      document.getElementById("file-upload")?.click()
-                    }
+                    onClick={() => document.getElementById("file-upload")?.click()}
                   >
                     <Box
                       sx={{
@@ -492,10 +455,7 @@ export default function CreateApp() {
                       </Box>
                       <Typography>
                         Drag and drop file or{" "}
-                        <Box
-                          component="span"
-                          sx={{ color: "primary.main", cursor: "pointer" }}
-                        >
+                        <Box component="span" sx={{ color: "primary.main", cursor: "pointer" }}>
                           select file
                         </Box>
                       </Typography>
@@ -527,9 +487,7 @@ export default function CreateApp() {
                         justifyContent: "space-between",
                       }}
                     >
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                      >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                         <Box
                           sx={{
                             width: 48,
@@ -569,10 +527,7 @@ export default function CreateApp() {
                     </Box>
                     {filePreview.uploading && (
                       <Box sx={{ mt: 2 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={filePreview.progress}
-                        />
+                        <LinearProgress variant="determinate" value={filePreview.progress} />
                         <Typography variant="caption" color="text.secondary">
                           {filePreview.progress}%
                         </Typography>
@@ -599,11 +554,7 @@ export default function CreateApp() {
 
                 {/* Error message */}
                 {formik.touched.icon && formik.errors.icon && (
-                  <Typography
-                    variant="caption"
-                    color="error"
-                    sx={{ mt: 1, display: "block" }}
-                  >
+                  <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
                     {formik.errors.icon as string}
                   </Typography>
                 )}
@@ -624,9 +575,7 @@ export default function CreateApp() {
                 control={
                   <Switch
                     checked={formik.values.isActive}
-                    onChange={(e) =>
-                      formik.setFieldValue("isActive", e.target.checked)
-                    }
+                    onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
                     disabled={submitState === State.loading}
                     sx={{
                       width: 58,
