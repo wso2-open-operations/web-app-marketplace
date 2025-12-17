@@ -112,7 +112,7 @@
         "textCase": "none"
       }
     },
-    "p_m-500": {
+    "p-m-500": {
       "type": "custom-fontStyle",
       "value": {
         "fontSize": 14,
@@ -144,7 +144,7 @@
         "textCase": "none"
       }
     },
-    "p_r_500": {
+    "p-r-500": {
       "type": "custom-fontStyle",
       "value": {
         "fontSize": 16,
