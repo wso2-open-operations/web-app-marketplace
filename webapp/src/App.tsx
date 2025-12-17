@@ -37,37 +37,35 @@ export const ColorModeContext = createContext({
 
 function App() {
   document.title = APP_NAME;
-  const processLocalThemeMode = (): ThemeMode => {
-    try {
-      const savedTheme = localStorage.getItem(localStorageTheme);
-      if (savedTheme === ThemeMode.Light || savedTheme === ThemeMode.Dark) {
-        return savedTheme;
-      }
 
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const systemTheme = prefersDark ? ThemeMode.Dark : ThemeMode.Light;
+  /* TODO: Disabling dark mode since theme isn't explicitly designed for apps-store */
 
-      localStorage.setItem(localStorageTheme, systemTheme);
-      return systemTheme;
-    } catch (err) {
-      console.error("Theme detection failed, defaulting to light mode.", err);
-      return ThemeMode.Light;
-    }
-  };
+  // const processLocalThemeMode = (): ThemeMode => {
+  //   try {
+  //     const savedTheme = localStorage.getItem(localStorageTheme);
+  //     if (savedTheme === ThemeMode.Light || savedTheme === ThemeMode.Dark) {
+  //       return savedTheme;
+  //     }
+  //     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  //     const systemTheme = prefersDark ? ThemeMode.Dark : ThemeMode.Light;
+  //     localStorage.setItem(localStorageTheme, systemTheme);
+  //     return systemTheme;
+  //   } catch (err) {
+  //     console.error("Theme detection failed, defaulting to light mode.", err);
+  //     return ThemeMode.Light;
+  //   }
+  // };
 
-  const [mode, setMode] = useState<ThemeMode>(processLocalThemeMode());
+  // useEffect(() => {
+  //   document.documentElement.setAttribute("data-theme", mode);
+  // }, [mode]);
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", mode);
-  }, [mode]);
+  const [mode, setMode] = useState<ThemeMode>(ThemeMode.Light);
 
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
-        const newMode = mode === ThemeMode.Light ? ThemeMode.Dark : ThemeMode.Light;
-        localStorage.setItem(localStorageTheme, newMode);
-        setMode(newMode);
-        document.documentElement.setAttribute("data-theme", newMode);
+        ThemeMode.Light;
       },
     }),
     [mode],

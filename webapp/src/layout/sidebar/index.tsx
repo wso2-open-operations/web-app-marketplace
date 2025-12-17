@@ -193,6 +193,7 @@ const Sidebar = (props: SidebarProps) => {
               })}
 
               {/* Theme Toggle */}
+              {/* TODO: Disabling dark mode since theme isn't explicitly designed for apps-store */}
               {/* {renderControlButton(
                 colorMode.mode === "dark" ? <Sun size={16} /> : <Moon size={16} />,
                 colorMode.toggleColorMode,
