@@ -25,6 +25,7 @@ import {
   Paper,
   Popover,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { Search } from "lucide-react";
 
@@ -52,6 +53,7 @@ export default function SearchBar({
   const [searchTerm, setSearchTerm] = useState("");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const tagsButtonRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
 
   const isTagsOpen = Boolean(anchorEl);
 
@@ -119,18 +121,17 @@ export default function SearchBar({
           paddingLeft: "8px",
           paddingRight: "16px",
           borderRadius: "12px",
-          border: "1px solid #e6e6e6",
-          backgroundColor: "#ffffff",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-          transition: "all 0.2s ease",
+          border: `1px solid ${theme.palette.customBorder.territory.active}`,
+          background: theme.palette.surface.territory.active,
+          boxShadow: "none",
           "&:focus-within": {
-            borderColor: "#cbd5e0",
+            // border: `1px solid ${theme.palette.customBorder.primary.active}`,
             boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
           },
         }}
       >
         <IconButton sx={{ p: 0.5, mr: "4px" }} aria-label="search" disabled>
-          <Search style={{ color: "#00000099" }} />
+          <Search style={{ color: theme.palette.customText.primary.p3.active }} />
         </IconButton>
 
         <InputBase
@@ -140,7 +141,7 @@ export default function SearchBar({
           sx={{
             flex: 1,
             fontSize: "14px",
-            color: "text.secondary",
+            color: theme.palette.customText.primary.p2.active,
           }}
         />
 
@@ -155,17 +156,12 @@ export default function SearchBar({
             cursor: "pointer",
             padding: "4px 8px",
             borderRadius: "6px",
-            transition: "background-color 0.2s ease",
-            "&:hover": {
-              backgroundColor: "#f7fafc",
-            },
           }}
         >
           <Typography
+            variant="body2"
             sx={{
-              fontSize: "14px",
-              color: "text.secondary",
-              fontWeight: 500,
+              color: theme.palette.customText.primary.p2.active,
             }}
           >
             Tags
@@ -217,8 +213,7 @@ export default function SearchBar({
               maxWidth: 400,
               maxHeight: 400,
               borderRadius: "8px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              border: "1px solid #e6e6e6",
+              border: `1px solid ${theme.palette.customBorder.territory.active}`,
             },
           },
         }}
@@ -232,17 +227,17 @@ export default function SearchBar({
                 py: 1.5,
                 px: 2,
                 backgroundColor: "transparent",
-                "&:hover": {
-                  backgroundColor: "#f7fafc",
-                },
               }}
             >
               <ListItemText
                 primary="ALL"
-                primaryTypographyProps={{
+                sx={{
                   fontSize: "14px",
-                  fontWeight: selectedTags.length === 0 ? 600 : 400,
-                  color: selectedTags.length === 0 ? "text.secondary" : "#9CA3AF",
+                  fontWeight: selectedTags.length === 0 ? 600 : 500,
+                  color:
+                    selectedTags.length === 0
+                      ? theme.palette.customText.primary.p2.active
+                      : theme.palette.customText.primary.p3.active,
                 }}
               />
             </ListItemButton>
@@ -262,7 +257,6 @@ export default function SearchBar({
                       size="small"
                       onClick={(e) => handleTagRemove(tag.id, e)}
                       sx={{
-                        color: "#9CA3AF",
                         "&:hover": {
                           color: "text.secondary",
                         },
@@ -280,9 +274,6 @@ export default function SearchBar({
                     px: 2,
                     borderBottom: isSelected ? "none" : "1px solid #f0f0f0",
                     backgroundColor: "transparent",
-                    "&:hover": {
-                      backgroundColor: "#f7fafc",
-                    },
                     "&:last-child": {
                       borderBottom: "none",
                     },
