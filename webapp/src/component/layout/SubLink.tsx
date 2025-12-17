@@ -104,7 +104,7 @@ const SubLink = (props: SubLinkProps) => {
               slotProps={{
                 tooltip: {
                   sx: {
-                    backgroundColor: theme.palette.neutral[10],
+                    backgroundColor: theme.palette.neutral[1900],
                     color: theme.palette.neutral.white,
                     padding: theme.spacing(0.75, 1.5),
                     borderRadius: "4px",
@@ -114,7 +114,7 @@ const SubLink = (props: SubLinkProps) => {
                 },
                 arrow: {
                   sx: {
-                    color: theme.palette.neutral[10],
+                    color: theme.palette.neutral[1900],
                   },
                 },
               }}
