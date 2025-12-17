@@ -27,10 +27,14 @@ function getCrossItems<Role>(a: Role[], b: Role[]): Role[] {
   });
 }
 
-export function getChipStyles(color: string, isPrimary = false): CSSProperties {
-  const theme = useTheme();
+interface GetChipStylesProps {
+  color: string;
+  isPrimary?: false;
+  isDarkMode?: boolean;
+}
 
-  const isDarkMode = theme.palette.mode === "dark";
+export function getChipStyles(props: GetChipStylesProps): CSSProperties {
+  const { color, isPrimary = false, isDarkMode } = props;
 
   return {
     backgroundColor: "transparent",

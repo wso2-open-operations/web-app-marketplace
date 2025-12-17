@@ -19,7 +19,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 import { Provider } from "react-redux";
 
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 
 import { APP_NAME, AsgardeoConfig } from "@config/config";
 import { localStorageTheme } from "@config/constant";

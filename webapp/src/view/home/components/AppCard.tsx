@@ -117,13 +117,24 @@ export default function AppCard({
 
     return (
       <>
-        <Chip key={firstTag.id} label={firstTag.name} sx={getChipStyles(firstTag.color, true)} />
+        <Chip
+          key={firstTag.id}
+          label={firstTag.name}
+          sx={getChipStyles({ color: firstTag.color, isDarkMode: theme.palette.mode === "dark" })}
+        />
         {remainingTags.length > 0 && (
           <Tooltip
             title={
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                 {remainingTags.map((tag) => (
-                  <Chip key={tag.id} label={tag.name} sx={getChipStyles(tag.color)} />
+                  <Chip
+                    key={tag.id}
+                    label={tag.name}
+                    sx={getChipStyles({
+                      color: tag.color,
+                      isDarkMode: theme.palette.mode === "dark",
+                    })}
+                  />
                 ))}
               </Box>
             }
@@ -146,7 +157,10 @@ export default function AppCard({
           >
             <Chip
               label={`+${remainingTags.length}`}
-              sx={getChipStyles(theme.palette.customText.primary.p3.active)}
+              sx={getChipStyles({
+                color: theme.palette.customText.primary.p3.active,
+                isDarkMode: theme.palette.mode === "dark",
+              })}
             />
           </Tooltip>
         )}
