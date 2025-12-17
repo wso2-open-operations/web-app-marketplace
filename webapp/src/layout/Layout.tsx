@@ -52,7 +52,10 @@ export default function Layout() {
     }
   }, [common.message, common.type, common.timestamp, enqueueSnackbar]);
 
-  const snowflake = useMemo(() => [SnowflakeIcon()], []);
+  const snowflake = useMemo(
+    () => [SnowflakeIcon({ color: theme.palette.fill.xmas.active })],
+    [theme.palette.fill.xmas.active],
+  );
 
   useEffect(() => {
     showSnackbar();
