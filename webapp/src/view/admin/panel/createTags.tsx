@@ -13,16 +13,11 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { Box, Button, Chip, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-import {
-  RootState,
-  useAppDispatch,
-  useAppSelector,
-} from "@root/src/slices/store";
+import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
 import { State } from "@root/src/types/types";
 import { createTags, fetchTags } from "@slices/tagSlice/tag";
 
@@ -37,7 +32,7 @@ const validationSchema = Yup.object({
     .required("Tag color is required")
     .matches(
       /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
-      "Must be a valid hex color (e.g., #F5F5F5 or #FFF)"
+      "Must be a valid hex color (e.g., #F5F5F5 or #FFF)",
     ),
 });
 
@@ -59,7 +54,7 @@ export default function CreateTags() {
         color: values.color,
         addedBy: userEmail,
       };
-      
+
       const result = await dispatch(createTags(requestPayload));
 
       if (createTags.fulfilled.match(result)) {
