@@ -604,7 +604,7 @@ export const themeSettings = (mode: PaletteMode) => {
         },
         variants: [
           {
-            props: { variant: "submit" },
+            props: { variant: "submit" as const },
             style: {
               padding: "8px 16px",
               backgroundColor: colors.fill.primary.active,
