@@ -13,6 +13,8 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { useTheme } from "@mui/material";
+
 import { CSSProperties } from "react";
 
 export const isIncludedRole = (a: string[], b: string[]): boolean => {
@@ -26,8 +28,12 @@ function getCrossItems<Role>(a: Role[], b: Role[]): Role[] {
 }
 
 export function getChipStyles(color: string, isPrimary = false): CSSProperties {
+  const theme = useTheme();
+
+  const isDarkMode = theme.palette.mode === "dark";
+
   return {
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
     border: `1.5px solid ${color}80`,
     color: color,
     fontWeight: isPrimary ? 500 : 400,
@@ -37,5 +43,6 @@ export function getChipStyles(color: string, isPrimary = false): CSSProperties {
     borderRadius: 1,
     flexShrink: 0,
     whiteSpace: "nowrap",
+    opacity: isDarkMode ? 0.8 : 1,
   };
 }
