@@ -37,7 +37,7 @@ interface ThemeOption {
 
 export const themeOptions: ThemeOption[] = [
   {
-    label: "Default Theme",
+    label: "DEFAULT_THEME",
     value: Themes.DEFAULT_THEME,
     audio: [],
   },
