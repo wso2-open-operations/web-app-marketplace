@@ -162,3 +162,27 @@ public enum Action {
     # Remove an app from favourites
     UNFAVOURITE = "unfavourite"
 }
+
+# Available themes for the application.
+public enum Themes {
+    # Default theme
+    DEFAULT = "Default theme",
+    # Christmas theme
+    CHRISTMAS = "Christmas theme"
+}
+
+# Structure of Theme record.
+public type Theme record {|
+    # Name of the theme
+    string name;
+    # Label of the theme
+    string label;
+|};
+
+# Configuration for themes.
+public type ThemeConfig record {|
+    # Name of the active theme
+    string activeThemeName;
+    # Map of available themes
+    map<Theme> themes;
+|};
