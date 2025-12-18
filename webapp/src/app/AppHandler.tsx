@@ -13,53 +13,72 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ErrorHandler from "@component/common/ErrorHandler";
 import PreLoader from "@component/common/PreLoader";
 import Layout from "@layout/Layout";
-import Error from "@layout/pages/404";
+import NotFoundPage from "@layout/pages/404";
 import MaintenancePage from "@layout/pages/Maintenance";
+import { fetchUserApps } from "@slices/appSlice/app";
 import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { getActiveRoutesV2, routes } from "@src/route";
 
-import { fetchUserApps } from "../slices/appSlice/app";
-
 const AppHandler = () => {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const auth = useAppSelector((state: RootState) => state.auth);
+  const [appState, setAppState] = useState<"loading" | "success" | "failed" | "maintenance">(
+    "loading",
+  );
 
   useEffect(() => {
     dispatch(fetchUserApps());
-  }, [dispatch])
+  }, [dispatch]);
 
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Layout />,
-      errorElement: <Error />,
-      children: getActiveRoutesV2(routes, auth.roles),
-    },
-  ]);
-
-  return (
-    <>
-      {auth.status === "loading" && (
-        <PreLoader isLoading={true} message={"Authenticating ..."} />
-      )}
-      {auth.status === "success" && auth.mode === "active" && (
-        <RouterProvider router={router} />
-      )}
-      {auth.status === "success" && auth.mode === "maintenance" && (
-        <MaintenancePage />
-      )}
-      {auth.status === "failed" && (
-        <ErrorHandler message={auth.statusMessage} />
-      )}
-    </>
+  const router = useMemo(
+    () =>
+      createBrowserRouter([
+        {
+          path: "/",
+          element: <Layout />,
+          errorElement: <NotFoundPage />,
+          children: getActiveRoutesV2(routes, auth.roles),
+        },
+      ]),
+    [auth.roles],
   );
+
+  useEffect(() => {
+    if (auth.status === "loading") {
+      setAppState("loading");
+    } else if (auth.status === "success") {
+      setAppState("success");
+    } else if (auth.status === "failed") {
+      setAppState("failed");
+    } else if (auth.mode === "maintenance") {
+      setAppState("maintenance");
+    }
+  }, [auth.status, auth.mode]);
+
+  const renderApp = () => {
+    switch (appState) {
+      case "loading":
+        return <PreLoader isLoading={true} message={"We are getting things ready ..."} />;
+
+      case "failed":
+        return <ErrorHandler message={auth.statusMessage} />;
+
+      case "success":
+        return <RouterProvider router={router} />;
+
+      case "maintenance":
+        return <MaintenancePage />;
+    }
+  };
+
+  return <>{renderApp()}</>;
 };
 
 export default AppHandler;

@@ -13,26 +13,25 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-import {
-  Box,
-  Typography,
-  IconButton,
-  Alert,
-  TextField,
-  Autocomplete,
-  Chip,
-  LinearProgress,
-  Button,
-  FormControlLabel,
-  Switch,
-} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import {
+  Alert,
+  Autocomplete,
+  Box,
+  Button,
+  Chip,
+  FormControlLabel,
+  IconButton,
+  LinearProgress,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import {
   App,
@@ -42,14 +41,9 @@ import {
   updateApp,
 } from "@root/src/slices/appSlice/app";
 import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
-import {
-  useAppDispatch,
-  useAppSelector,
-  RootState,
-} from "@root/src/slices/store";
-import { State } from "@root/src/types/types";
+import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
-
+import { State } from "@root/src/types/types";
 import AppCard from "@view/home/components/AppCard";
 
 const fileSize = 10 * 1024 * 1024;
@@ -63,20 +57,14 @@ interface FileWithPreview {
 }
 
 const validationSchema = Yup.object({
-  title: Yup.string()
-    .trim()
-    .min(2, "Title must be at least 2 characters")
-    .nullable(),
+  title: Yup.string().trim().min(2, "Title must be at least 2 characters").nullable(),
   description: Yup.string()
     .trim()
     .min(10, "Description must be at least 10 characters")
     .max(100, "Description must be at most 100 characters")
     .nullable(),
   url: Yup.string().trim().url("Must be a valid URL").nullable(),
-  versionName: Yup.string()
-    .trim()
-    .min(1, "Version name must be at least 1 character")
-    .nullable(),
+  versionName: Yup.string().trim().min(1, "Version name must be at least 1 character").nullable(),
   tags: Yup.array().of(Yup.number().required()).nullable(),
   groupIds: Yup.array().of(Yup.string().required()).nullable(),
   // In validation:
@@ -85,10 +73,7 @@ const validationSchema = Yup.object({
     .test("fileType", "Only SVG files are allowed", function (value) {
       // Allow null if not changed and existing icon is present
       if (!value || (this.parent.selectedApp?.icon && !value)) return true;
-      return (
-        value.type === "image/svg+xml" &&
-        value.name.toLowerCase().endsWith(".svg")
-      );
+      return value.type === "image/svg+xml" && value.name.toLowerCase().endsWith(".svg");
     })
     .test("fileSize", "File size must not exceed 10MB", function (value) {
       // Allow null if not changed and existing icon is present
@@ -126,10 +111,7 @@ export default function UpdateApp() {
         progress: 100,
         error: null,
       });
-      formik.setFieldValue(
-        "icon",
-        new File([], "existing-icon.svg", { type: "image/svg+xml" })
-      );
+      formik.setFieldValue("icon", new File([], "existing-icon.svg", { type: "image/svg+xml" }));
     } else {
       setFilePreview(null);
       formik.setFieldValue("icon", null);
@@ -181,7 +163,7 @@ export default function UpdateApp() {
 
   // Build payload with only changed fields
   const buildUpdatePayload = async (
-    values: typeof formik.values
+    values: typeof formik.values,
   ): Promise<Partial<UpdateAppPayload>> => {
     if (!selectedApp) return {};
 
@@ -207,8 +189,7 @@ export default function UpdateApp() {
     // Compare tags arrays
     const originalTagIds = selectedApp.tags?.map((tag: any) => tag.id) || [];
     const tagsChanged =
-      JSON.stringify([...values.tags].sort()) !==
-      JSON.stringify([...originalTagIds].sort());
+      JSON.stringify([...values.tags].sort()) !== JSON.stringify([...originalTagIds].sort());
     if (tagsChanged) {
       payload.tags = values.tags;
     }
@@ -216,8 +197,7 @@ export default function UpdateApp() {
     // Compare user groups arrays
     const originalGroupIds = selectedApp.userGroups || [];
     const groupsChanged =
-      JSON.stringify([...values.groupIds].sort()) !==
-      JSON.stringify([...originalGroupIds].sort());
+      JSON.stringify([...values.groupIds].sort()) !== JSON.stringify([...originalGroupIds].sort());
     if (groupsChanged) {
       payload.userGroups = values.groupIds;
     }
@@ -254,9 +234,7 @@ export default function UpdateApp() {
       formik.setFieldError("title", "No changes detected");
       return;
     }
-    await dispatch(
-      updateApp({ id: selectedApp.id, payload: payload as UpdateAppPayload })
-    );
+    await dispatch(updateApp({ id: selectedApp.id, payload: payload as UpdateAppPayload }));
 
     dispatch(fetchApps());
     dispatch(fetchUserApps());
@@ -296,19 +274,14 @@ export default function UpdateApp() {
         formik.setStatus({
           type: "error",
           message:
-            error instanceof Error
-              ? error.message
-              : "Failed to update app. Please try again.",
+            error instanceof Error ? error.message : "Failed to update app. Please try again.",
         });
       }
     },
   });
 
   const handleFileSelect = (file: File) => {
-    if (
-      file.type !== "image/svg+xml" ||
-      !file.name.toLowerCase().endsWith(".svg")
-    ) {
+    if (file.type !== "image/svg+xml" || !file.name.toLowerCase().endsWith(".svg")) {
       formik.setFieldError("icon", "Only SVG files are allowed");
       return;
     }
@@ -447,18 +420,12 @@ export default function UpdateApp() {
                 <TextField
                   fullWidth
                   name="title"
-                  placeholder={
-                    !selectedApp
-                      ? "Select an app to edit name"
-                      : "Web App Marketplace"
-                  }
+                  placeholder={!selectedApp ? "Select an app to edit name" : "Web App Marketplace"}
                   value={formik.values.title}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={formik.touched.title && Boolean(formik.errors.title)}
-                  helperText={
-                    formik.touched.title && (formik.errors.title as string)
-                  }
+                  helperText={formik.touched.title && (formik.errors.title as string)}
                   disabled={!selectedApp || submitState === State.loading}
                   sx={disabledTextFieldSx}
                 />
@@ -473,18 +440,12 @@ export default function UpdateApp() {
                   <TextField
                     fullWidth
                     name="url"
-                    placeholder={
-                      !selectedApp
-                        ? "Select an app to edit url"
-                        : "www.wso2.com"
-                    }
+                    placeholder={!selectedApp ? "Select an app to edit url" : "www.wso2.com"}
                     value={formik.values.url}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     error={formik.touched.url && Boolean(formik.errors.url)}
-                    helperText={
-                      formik.touched.url && (formik.errors.url as string)
-                    }
+                    helperText={formik.touched.url && (formik.errors.url as string)}
                     disabled={!selectedApp || submitState === State.loading}
                     sx={disabledTextFieldSx}
                   />
@@ -496,22 +457,12 @@ export default function UpdateApp() {
                   <TextField
                     fullWidth
                     name="versionName"
-                    placeholder={
-                      !selectedApp
-                        ? "Select an app to edit version name"
-                        : "Beta"
-                    }
+                    placeholder={!selectedApp ? "Select an app to edit version name" : "Beta"}
                     value={formik.values.versionName}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.versionName &&
-                      Boolean(formik.errors.versionName)
-                    }
-                    helperText={
-                      formik.touched.versionName &&
-                      (formik.errors.versionName as string)
-                    }
+                    error={formik.touched.versionName && Boolean(formik.errors.versionName)}
+                    helperText={formik.touched.versionName && (formik.errors.versionName as string)}
                     disabled={!selectedApp || submitState === State.loading}
                     sx={disabledTextFieldSx}
                   />
@@ -527,23 +478,15 @@ export default function UpdateApp() {
                   fullWidth
                   name="description"
                   placeholder={
-                    !selectedApp
-                      ? "Select an app to edit description"
-                      : "Web App Marketplace"
+                    !selectedApp ? "Select an app to edit description" : "Web App Marketplace"
                   }
                   multiline
                   rows={3}
                   value={formik.values.description}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.description &&
-                    Boolean(formik.errors.description)
-                  }
-                  helperText={
-                    formik.touched.description &&
-                    (formik.errors.description as string)
-                  }
+                  error={formik.touched.description && Boolean(formik.errors.description)}
+                  helperText={formik.touched.description && (formik.errors.description as string)}
                   disabled={!selectedApp || submitState === State.loading}
                   sx={disabledTextFieldSx}
                 />
@@ -558,13 +501,11 @@ export default function UpdateApp() {
                   multiple
                   options={tags || []}
                   getOptionLabel={(option) => option.name}
-                  value={
-                    tags?.filter((t) => formik.values.tags.includes(t.id)) || []
-                  }
+                  value={tags?.filter((t) => formik.values.tags.includes(t.id)) || []}
                   onChange={(_, newValue) => {
                     formik.setFieldValue(
                       "tags",
-                      newValue.map((tag) => tag.id)
+                      newValue.map((tag) => tag.id),
                     );
                   }}
                   onBlur={formik.handleBlur}
@@ -576,9 +517,7 @@ export default function UpdateApp() {
                         key={option.id}
                         label={option.name}
                         sx={{
-                          backgroundColor: option.color
-                            ? `${option.color}1A`
-                            : "#e0e0e0",
+                          backgroundColor: option.color ? `${option.color}1A` : "#e0e0e0",
                           border: option.color
                             ? `2px solid ${option.color}80`
                             : "2px solid #bdbdbd",
@@ -587,9 +526,7 @@ export default function UpdateApp() {
                           "& .MuiChip-deleteIcon": {
                             color: option.color || "#424242",
                             "&:hover": {
-                              color: option.color
-                                ? `${option.color}CC`
-                                : "#616161",
+                              color: option.color ? `${option.color}CC` : "#616161",
                             },
                           },
                         }}
@@ -601,14 +538,10 @@ export default function UpdateApp() {
                       {...params}
                       name="tags"
                       placeholder={
-                        !selectedApp
-                          ? "Select an app to edit tags"
-                          : "Select one or more tags"
+                        !selectedApp ? "Select an app to edit tags" : "Select one or more tags"
                       }
                       error={formik.touched.tags && Boolean(formik.errors.tags)}
-                      helperText={
-                        formik.touched.tags && (formik.errors.tags as string)
-                      }
+                      helperText={formik.touched.tags && (formik.errors.tags as string)}
                       sx={disabledTextFieldSx}
                     />
                   )}
@@ -635,18 +568,10 @@ export default function UpdateApp() {
                       {...params}
                       name="groupIds"
                       placeholder={
-                        !selectedApp
-                          ? "Select an app to edit user groups"
-                          : "Select user groups"
+                        !selectedApp ? "Select an app to edit user groups" : "Select user groups"
                       }
-                      error={
-                        formik.touched.groupIds &&
-                        Boolean(formik.errors.groupIds)
-                      }
-                      helperText={
-                        formik.touched.groupIds &&
-                        (formik.errors.groupIds as string)
-                      }
+                      error={formik.touched.groupIds && Boolean(formik.errors.groupIds)}
+                      helperText={formik.touched.groupIds && (formik.errors.groupIds as string)}
                       sx={disabledTextFieldSx}
                     />
                   )}
@@ -671,8 +596,8 @@ export default function UpdateApp() {
                       borderColor: dragActive
                         ? "primary.main"
                         : formik.touched.icon && formik.errors.icon
-                        ? "error.main"
-                        : "divider",
+                          ? "error.main"
+                          : "divider",
                       borderRadius: 2,
                       p: 6,
                       textAlign: "center",
@@ -681,9 +606,7 @@ export default function UpdateApp() {
                       transition: "all 0.3s",
                       ...disabledTextFieldSx,
                     }}
-                    onClick={() =>
-                      document.getElementById("file-upload")?.click()
-                    }
+                    onClick={() => document.getElementById("file-upload")?.click()}
                   >
                     <Box
                       sx={{
@@ -741,9 +664,7 @@ export default function UpdateApp() {
                         justifyContent: "space-between",
                       }}
                     >
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                      >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                         <Box
                           sx={{
                             width: 48,
@@ -783,10 +704,7 @@ export default function UpdateApp() {
                     </Box>
                     {filePreview.uploading && (
                       <Box sx={{ mt: 2 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={filePreview.progress}
-                        />
+                        <LinearProgress variant="determinate" value={filePreview.progress} />
                         <Typography variant="caption" color="text.secondary">
                           {filePreview.progress}%
                         </Typography>
@@ -813,11 +731,7 @@ export default function UpdateApp() {
 
                 {/* Error message */}
                 {formik.touched.icon && formik.errors.icon && (
-                  <Typography
-                    variant="caption"
-                    color="error"
-                    sx={{ mt: 1, display: "block" }}
-                  >
+                  <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
                     {formik.errors.icon as string}
                   </Typography>
                 )}
@@ -834,9 +748,7 @@ export default function UpdateApp() {
                 control={
                   <Switch
                     checked={formik.values.isActive}
-                    onChange={(e) =>
-                      formik.setFieldValue("isActive", e.target.checked)
-                    }
+                    onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
                     disabled={!selectedApp || submitState === State.loading}
                     sx={{
                       width: 58,

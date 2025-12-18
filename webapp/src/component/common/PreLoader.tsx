@@ -13,21 +13,15 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-import Grid from "@mui/material/Grid";
 import { Box, Container, LinearProgress, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid";
 
-interface PreLoaderProps {
-  message: string | null;
-  hideLogo?: boolean;
-  isLoading?: boolean;
-}
+import type { PreLoaderProps } from "@utils/types";
 
 const PreLoader = (props: PreLoaderProps) => {
   return (
     <Box
       sx={{
-        background: (theme) => theme.palette.background.default,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -43,7 +37,7 @@ const PreLoader = (props: PreLoaderProps) => {
             alignItems="center"
             spacing={2}
           >
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               {props.isLoading && (
                 <LinearProgress
                   sx={{
@@ -52,7 +46,7 @@ const PreLoader = (props: PreLoaderProps) => {
                 />
               )}
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Typography
                 variant="inherit"
                 sx={{

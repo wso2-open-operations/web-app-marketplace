@@ -13,25 +13,25 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 import {
+  Box,
   Card,
   CardContent,
-  Box,
-  Typography,
   Chip,
   IconButton,
   SxProps,
   Theme,
   Tooltip,
+  Typography,
+  useTheme,
 } from "@mui/material";
-import { Favorite, FavoriteBorder, Launch } from "@mui/icons-material";
 
 import { useState } from "react";
 
-import { useAppDispatch } from "@slices/store";
-import { upsertAppFavourite, Tag } from "@slices/appSlice/app";
 import { UpdateAction } from "@/types/types";
+import { Tag, upsertAppFavourite } from "@slices/appSlice/app";
+import { useAppDispatch } from "@slices/store";
 import { getChipStyles } from "@utils/utils";
 
 interface AppCardProps {
@@ -61,6 +61,7 @@ export default function AppCard({
 }: AppCardProps) {
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
   const dispatch = useAppDispatch();
+  const theme = useTheme();
 
   const handleFavoriteClick = () => {
     const newFavoriteState = !isFavorite;
@@ -68,19 +69,15 @@ export default function AppCard({
     dispatch(
       upsertAppFavourite({
         id: appId,
-        active: newFavoriteState
-          ? UpdateAction.Favorite
-          : UpdateAction.Unfavourite,
-      })
+        active: newFavoriteState ? UpdateAction.Favorite : UpdateAction.Unfavourite,
+      }),
     );
   };
 
   const handleLaunchClick = () => {
     if (!appUrl) return;
     const url =
-      appUrl.startsWith("http://") || appUrl.startsWith("https://")
-        ? appUrl
-        : `https://${appUrl}`;
+      appUrl.startsWith("http://") || appUrl.startsWith("https://") ? appUrl : `https://${appUrl}`;
 
     window.open(url, "_blank", "noopener,noreferrer");
   };
@@ -101,6 +98,11 @@ export default function AppCard({
             maxWidth: 40,
             objectFit: "contain",
             opacity: 0.8,
+            "& svg": {
+              fill: theme.palette.customText.primary.p3.active,
+              stroke: theme.palette.customText.primary.p3.active,
+              opacity: 0.8,
+            },
           }}
         />
       );
@@ -118,7 +120,7 @@ export default function AppCard({
         <Chip
           key={firstTag.id}
           label={firstTag.name}
-          sx={getChipStyles(firstTag.color, true)}
+          sx={getChipStyles({ color: firstTag.color, isDarkMode: theme.palette.mode === "dark" })}
         />
         {remainingTags.length > 0 && (
           <Tooltip
@@ -128,7 +130,10 @@ export default function AppCard({
                   <Chip
                     key={tag.id}
                     label={tag.name}
-                    sx={getChipStyles(tag.color)}
+                    sx={getChipStyles({
+                      color: tag.color,
+                      isDarkMode: theme.palette.mode === "dark",
+                    })}
                   />
                 ))}
               </Box>
@@ -152,7 +157,10 @@ export default function AppCard({
           >
             <Chip
               label={`+${remainingTags.length}`}
-              sx={getChipStyles("#718096")}
+              sx={getChipStyles({
+                color: theme.palette.customText.primary.p3.active,
+                isDarkMode: theme.palette.mode === "dark",
+              })}
             />
           </Tooltip>
         )}
@@ -161,20 +169,19 @@ export default function AppCard({
   };
 
   const defaultCardSx: SxProps<Theme> = {
-    maxWidth: 500,
     width: "100%",
     height: "100%",
-    borderRadius: 4,
-    boxShadow: "0 4px 12px rgba(0,0,0,0.0)",
+    borderRadius: 2,
+    boxShadow: "none",
     position: "relative",
-    border: ".75px solid #e6e6e6",
-    background: "#fff",
+    border: `.75px solid ${theme.palette.customBorder.territory.active}`,
+    background: theme.palette.surface.territory.active,
     cursor: "pointer",
-    transition: "box-shadow 0.3s ease, transform 0.2s ease",
+    display: "flex",
+    flexDirection: "column",
+    transition: "transform 0.2s ease",
     "&:hover": {
-      boxShadow: "0 6px 16px rgba(0,0,0,0.05)",
       transform: "translateY(-2px)",
-      background: "#fff",
     },
   };
 
@@ -183,10 +190,7 @@ export default function AppCard({
     : [defaultCardSx, cardSx || {}];
 
   return (
-    <Card
-      onClick={isClickable ? handleLaunchClick : undefined}
-      sx={mergedCardSx}
-    >
+    <Card onClick={isClickable ? handleLaunchClick : undefined} sx={mergedCardSx}>
       <CardContent
         sx={{
           padding: 2.5,
@@ -218,7 +222,9 @@ export default function AppCard({
             {isFavorite ? (
               <Favorite sx={{ fontSize: 20, color: "#e53e3e" }} />
             ) : (
-              <FavoriteBorder sx={{ fontSize: 20, color: "#a0aec0" }} />
+              <FavoriteBorder
+                sx={{ fontSize: 20, color: theme.palette.customText.primary.p3.active }}
+              />
             )}
           </IconButton>
         </Box>
@@ -227,9 +233,8 @@ export default function AppCard({
           variant="h4"
           component="h1"
           sx={{
-            fontWeight: 600,
             fontSize: "16px",
-            color: "#333",
+            color: theme.palette.customText.primary.p2.active,
           }}
         >
           {title}
@@ -238,9 +243,8 @@ export default function AppCard({
         <Typography
           variant="body1"
           sx={{
-            color: "#718096",
+            color: theme.palette.customText.primary.p3.active,
             lineHeight: 1.6,
-            flexGrow: 1,
           }}
         >
           {description}
@@ -266,7 +270,7 @@ export default function AppCard({
             {renderTags()}
           </Box>
           <Box sx={{ display: "flex", gap: 2, flexShrink: 0 }}>
-            <Launch sx={{ fontSize: 20, color: "#718096" }} />
+            <Launch sx={{ fontSize: 20, color: theme.palette.customText.primary.p3.active }} />
           </Box>
         </Box>
       </CardContent>

@@ -13,14 +13,14 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-import "@src/index.css";
-
+import { StyledEngineProvider } from "@mui/material/styles";
 import ReactDOM from "react-dom/client";
 
-import App from "@src/App";
+import App from "./App";
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+root.render(
+  <StyledEngineProvider injectFirst>
+    <App />
+  </StyledEngineProvider>,
 );
-root.render(<App />);
