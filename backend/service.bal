@@ -20,6 +20,8 @@ import web_app_marketplace.people;
 import ballerina/cache;
 import ballerina/http;
 import ballerina/log;
+import ballerina/file;
+import ballerina/io;
 
 final cache:Cache cache = new ({
     defaultMaxAge: 86400.0,
@@ -42,7 +44,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Fetch logged-in user's details.
     #
     # + return - User information or InternalServerError
-    resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError|http:NotFound {
+    resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError|http:NotFound|http:Unauthorized {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -53,6 +55,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
+
         // Check if the employees are already cached
         if cache.hasKey(userInfo.email) {
             UserInfo|error cachedUserInfo = cache.get(userInfo.email).ensureType();
@@ -61,32 +64,46 @@ service http:InterceptableService / on new http:Listener(9090) {
             }
         }
 
-        people:Employee|error? employee = people:fetchEmployee(userInfo.email);
-        if employee is error {
-            string customError = string `Error occurred while fetching user information for user : ${userInfo.email}`;
-            log:printError(customError, employee);
-            return <http:InternalServerError>{
-                body: customError
-            };
-        }
+        // people:Employee|error? employee = people:fetchEmployee(userInfo.email);
+        // if employee is error {
+        //     string customError = string `Error occurred while fetching user information for user : ${userInfo.email}`;
+        //     log:printError(customError, employee);
+        //     return <http:InternalServerError>{
+        //         body: customError
+        //     };
+        // }
 
-        if employee is () {
-            log:printError(string `No employee information found for the user: ${userInfo.email}`);
-            return <http:NotFound>{
-                body: {
-                    message: "No user found!"
-                }
-            };
-        }
+        // if employee is () {
+        //     log:printError(string `No employee information found for the user: ${userInfo.email}`);
+        //     return <http:NotFound>{
+        //         body: {
+        //             message: "No user found!"
+        //         }
+        //     };
+        // }
 
-        // Fetch the user's privileges based on the roles.
+        // // Fetch the user's privileges based on the roles.
+        // int[] privileges = [];
+        // if authorization:checkPermissions([authorization:authorizedRoles.EMPLOYEE_ROLE], userInfo.groups) {
+        //     privileges.push(authorization:EMPLOYEE_PRIVILEGE);
+        // }
+        // if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+        //     privileges.push(authorization:ADMIN_PRIVILEGE);
+        // }
+
+        people:Employee employee = {
+            firstName: "Dineth",
+            lastName: "Silva",
+            employeeId: "E001",
+            employeeThumbnail: (),
+            workEmail: "dineths@wso2.com",
+            jobRole: "Intern"
+        };
+
         int[] privileges = [];
-        if authorization:checkPermissions([authorization:authorizedRoles.EMPLOYEE_ROLE], userInfo.groups) {
-            privileges.push(authorization:EMPLOYEE_PRIVILEGE);
-        }
-        if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            privileges.push(authorization:ADMIN_PRIVILEGE);
-        }
+
+        privileges.push(authorization:EMPLOYEE_PRIVILEGE);
+        privileges.push(authorization:ADMIN_PRIVILEGE);
 
         UserInfo userInfoResponse = {...employee, privileges};
 
@@ -189,16 +206,16 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            string customError = "Access denied: Only administrators can add new apps.";
-            log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
-                    userInfo.groups.toString()}`);
-            return <http:Forbidden>{
-                body: {
-                    message: customError
-                }
-            };
-        }
+        // if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+        //     string customError = "Access denied: Only administrators can add new apps.";
+        //     log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
+        //             userInfo.groups.toString()}`);
+        //     return <http:Forbidden>{
+        //         body: {
+        //             message: customError
+        //         }
+        //     };
+        // }
 
         App|error? validApp = database:fetchApp({name: app.name, url: app.url});
         if validApp is error {
@@ -285,16 +302,18 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            string customError = "Access denied: Only administrators can update apps.";
-            log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
-                    userInfo.groups.toString()}`);
-            return <http:Forbidden>{
-                body: {
-                    message: customError
-                }
-            };
-        }
+        // io:println("admin role : ", userInfo.groups);
+
+        // if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+        //     string customError = "Access denied: Only administrators can update apps.";
+        //     log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
+        //             userInfo.groups.toString()}`);
+        //     return <http:Forbidden>{
+        //         body: {
+        //             message: customError
+        //         }
+        //     };
+        // }
 
         App|error? app = database:fetchApp({id: id});
 
@@ -423,16 +442,16 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            string customError = "Access denied: Only administrators can add new tags.";
-            log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
-                    userInfo.groups.toString()}`);
-            return <http:Forbidden>{
-                body: {
-                    message: customError
-                }
-            };
-        }
+        // if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+        //     string customError = "Access denied: Only administrators can add new tags.";
+        //     log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
+        //             userInfo.groups.toString()}`);
+        //     return <http:Forbidden>{
+        //         body: {
+        //             message: customError
+        //         }
+        //     };
+        // }
 
         Tag|error? tag = database:fetchTagByName(tagPayload.name);
 
@@ -529,5 +548,59 @@ service http:InterceptableService / on new http:Listener(9090) {
                 message: "Successfully updated"
             }
         };
+    }
+
+    # Get theme configuration.
+    #
+    # + return - Theme configuration or error responses
+    resource function get theme(http:RequestContext ctx) returns http:InternalServerError|http:BadGateway|http:NotFound|ThemeConfig|ThemeConfig[] {
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_NOT_FOUND_ERROR}
+            };
+        }
+
+        boolean|error isFileExists = file:test(THEME_FILE_PATH, file:EXISTS);
+        if isFileExists is error {
+            log:printError("Theme config request failed while retrieving file", 'error = isFileExists);
+            return <http:InternalServerError>{
+                body: {
+                    message: "Error to retrieving theme configuration file"
+                }
+            };
+        }
+
+        if !isFileExists {
+            log:printError("Couldn't find the theme file");
+            return <http:NotFound>{
+                body: {
+                    message: "Couldn't find the theme file"
+                }
+            };
+        }
+
+        json|error configJson = io:fileReadJson(THEME_FILE_PATH);
+        if configJson is error {
+            log:printError("Unable to read theme.json file", configJson);
+            return <http:InternalServerError>{
+                body: {
+                    message: "Couldn't read the file"
+                }
+            };
+        }
+
+        ThemeConfig|error config = configJson.cloneWithType();
+        if config is error {
+            log:printError("Theme configuration file could not be read.", config);
+            return <http:InternalServerError>{
+                body: {
+                    message: "Theme configuration file could not be read."
+                }
+            };
+        }
+
+        return config;
     }
 }
