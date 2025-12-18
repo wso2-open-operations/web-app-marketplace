@@ -163,13 +163,6 @@ public enum Action {
     UNFAVOURITE = "unfavourite"
 }
 
-# Available themes for the application.
-public enum Themes {
-    # Default theme
-    DEFAULT = "Default theme",
-    # Christmas theme
-    CHRISTMAS = "Christmas theme"
-}
 
 # Structure of Theme record.
 public type Theme record {|
@@ -185,4 +178,9 @@ public type ThemeConfig record {|
     string activeThemeName;
     # Map of available themes
     map<Theme> themes;
+|};
+
+// What admin sends in PUT body
+type Themes record {|
+    string activeThemeName;
 |};
