@@ -62,8 +62,7 @@ export default function AppConfig() {
   }, [currentTheme]);
 
   const handleSetTheme = (themeConfig: ThemeConfig) => {
-    themeConfig.audio = null;
-    setTheme(themeConfig);
+    setTheme({ ...themeConfig, audio: null });
   };
 
   return (
