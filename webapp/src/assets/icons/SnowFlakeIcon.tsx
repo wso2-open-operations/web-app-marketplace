@@ -14,7 +14,7 @@ export default function SnowflakeIcon(props: SnowflakeIconProps): HTMLImageEleme
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      className="lucide lucide-snowflake-icon lucide-snowflake"
+      class="lucide lucide-snowflake-icon lucide-snowflake"
     >
       <path d="m10 20-1.25-2.5L6 18" />
       <path d="M10 4 8.75 6.5 6 6" />
