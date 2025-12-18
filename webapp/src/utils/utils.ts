@@ -13,8 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { useTheme } from "@mui/material";
-
 import { CSSProperties } from "react";
 
 export const isIncludedRole = (a: string[], b: string[]): boolean => {
@@ -29,7 +27,7 @@ function getCrossItems<Role>(a: Role[], b: Role[]): Role[] {
 
 interface GetChipStylesProps {
   color: string;
-  isPrimary?: false;
+  isPrimary?: boolean;
   isDarkMode?: boolean;
 }
 
