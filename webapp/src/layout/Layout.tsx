@@ -79,6 +79,7 @@ export default function Layout() {
           radius={[5, 20]}
           style={{
             zIndex: 1000,
+            pointerEvents: "none",
           }}
         />
       )}
