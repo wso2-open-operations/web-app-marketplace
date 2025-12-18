@@ -23,9 +23,11 @@ import SessionWarningDialog from "@component/common/SessionWarningDialog";
 import LoginScreen from "@component/ui/LoginScreen";
 import { redirectUrl } from "@config/constant";
 import { loadPrivileges, setAuthError, setUserAuthData } from "@slices/authSlice/auth";
-import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
+import { useAppDispatch } from "@slices/store";
 import { getUserInfo } from "@slices/userSlice/user";
 import { APIService } from "@utils/apiService";
+
+import { useLazyGetAppConfigQuery } from "../services/config.api";
 
 type AuthContextType = {
   appSignIn: () => void;
@@ -51,7 +53,6 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
   const [appState, setAppState] = useState<AppState>(AppState.Loading);
 
   const dispatch = useAppDispatch();
-  const auth = useAppSelector((state: RootState) => state.auth);
 
   const onPrompt = () => {
     appState === AppState.Authenticated && setSessionWarningOpen(true);
