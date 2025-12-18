@@ -29,6 +29,7 @@ function Favourites() {
         favApps.map((app) => (
           <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.6 }}>
             <AppCard
+              key={app.id}
               title={app.name}
               description={app.description}
               logoUrl={app.icon}
