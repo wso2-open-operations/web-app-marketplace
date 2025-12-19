@@ -70,6 +70,7 @@ export default function AppConfig() {
         />
 
         <Button
+          variant="outlined"
           onClick={() => {
             if (!selectedTheme) return;
             setTheme(selectedTheme);
