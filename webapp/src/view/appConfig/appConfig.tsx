@@ -18,24 +18,30 @@ import { Autocomplete, Box, Button, TextField, Typography, useTheme } from "@mui
 import { useEffect, useState } from "react";
 
 import ErrorHandler from "@root/src/component/common/ErrorHandler";
+import PreLoader from "@root/src/component/common/PreLoader";
 import { useGetThemeQuery, useSetThemeMutation } from "@root/src/services/config.api";
 
 export default function AppConfig() {
   const theme = useTheme();
   const [selectedTheme, setSelectedTheme] = useState<string>();
-  const { data: currentThemeConfig } = useGetThemeQuery();
+  const { data: currentThemeConfig, isLoading, isError } = useGetThemeQuery();
   const [setThemeQuery] = useSetThemeMutation();
 
-  if (!currentThemeConfig) {
-    return <ErrorHandler message={"Error retrieving theme"} />;
+  useEffect(() => {
+    if (currentThemeConfig?.activeThemeName) {
+      setSelectedTheme(currentThemeConfig.activeThemeName);
+    }
+  }, [currentThemeConfig?.activeThemeName]);
+
+  if (isLoading) {
+    return <PreLoader message="Loading theme data" />;
   }
 
-  const activeTheme = currentThemeConfig.activeThemeName;
-  const themeOptions = Object.values(currentThemeConfig.themes).map((theme) => theme.name);
+  if (isError || !currentThemeConfig) {
+    return <ErrorHandler message={"Error when retrieving theme"} />;
+  }
 
-  useEffect(() => {
-    setSelectedTheme(activeTheme);
-  }, [activeTheme]);
+  const themeOptions = Object.values(currentThemeConfig.themes).map((theme) => theme.name);
 
   const setTheme = (selectedTheme: string) => {
     setThemeQuery(selectedTheme);
