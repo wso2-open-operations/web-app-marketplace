@@ -20,8 +20,6 @@ import { AppConfig } from "@config/config";
 
 import { baseQueryWithRetry } from "./BaseQuery";
 
-const THEME_STORAGE_KEY = "app_theme_config";
-
 interface SupportTeamEmail {
   team: string;
   email: string;
@@ -32,62 +30,45 @@ export interface AppConfigInfo {
 }
 
 export enum Themes {
-  DEFAULT_THEME = "Default Theme",
-  XMAS_THEME = "Christmas Theme",
+  DEFAULT_THEME = "default",
+  XMAS_THEME = "christmas",
+}
+
+export interface Theme {
+  name: string;
+  label: string;
 }
 
 export interface ThemeConfig {
-  theme: Themes;
-  audio: string | null;
+  activeThemeName: string;
+  themes: Record<string, Theme>;
 }
 
-const saveThemeInLocalStorage = (themeConfig: ThemeConfig) => {
-  try {
-    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(themeConfig));
-    return { data: undefined };
-  } catch (error) {
-    return {
-      error: {
-        status: 500,
-        statusText: "Local Storage Error",
-        data: (error as Error).message,
-      },
-    };
-  }
-};
-
-const getThemeFromLocalStorage = () => {
-  try {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    const data = stored ? (JSON.parse(stored) as ThemeConfig) : null;
-    return { data };
-  } catch (error) {
-    return {
-      error: {
-        status: 500,
-        statusText: "Local Storage Error",
-        data: (error as Error).message,
-      },
-    };
-  }
-};
+export interface UpdateTheme {
+  activeThemeName: string;
+}
 
 export const configApi = createApi({
   reducerPath: "configApi",
   baseQuery: baseQueryWithRetry,
-  tagTypes: ["Config"],
+  tagTypes: ["Config", "Theme"],
   endpoints: (builder) => ({
     getAppConfig: builder.query<AppConfigInfo, void>({
       query: () => AppConfig.serviceUrls.appConfig,
       providesTags: ["Config"],
     }),
-    setTheme: builder.mutation<void, ThemeConfig>({
-      queryFn: (themeConfig) => saveThemeInLocalStorage(themeConfig),
-      invalidatesTags: ["Config"],
+    setTheme: builder.mutation<void, string>({
+      query: (activeTheme) => ({
+        url: AppConfig.serviceUrls.theme,
+        method: "PUT",
+        body: { activeThemeName: activeTheme },
+        headers: { "Content-Type": "application/json" },
+      }),
+      invalidatesTags: ["Theme"],
     }),
     getTheme: builder.query<ThemeConfig | null, void>({
-      queryFn: () => getThemeFromLocalStorage(),
-      providesTags: ["Config"],
+      query: () => AppConfig.serviceUrls.theme,
+      providesTags: ["Theme"],
     }),
   }),
 });
