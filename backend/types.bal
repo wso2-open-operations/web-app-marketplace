@@ -180,6 +180,6 @@ public type ThemeConfig record {|
 |};
 
 // What admin sends in PUT body
-type Themes record {|
+type UpdateTheme record {|
     string activeThemeName;
 |};
