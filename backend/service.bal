@@ -589,7 +589,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     }
 
     resource function put themes(http:RequestContext ctx, UpdateTheme theme)
-        returns http:InternalServerError|http:BadGateway|http:NotFound|http:Ok|http:Forbidden {
+        returns http:InternalServerError|http:BadRequest|http:NotFound|http:Ok|http:Forbidden {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -613,7 +613,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         string nextTheme = theme.activeThemeName;
         if !nextTheme.matches(PRINTABLE_CHARACTERS_FORMAT){
             log:printError("Invalid theme", nextTheme = nextTheme);
-            return <http:BadGateway> {
+            return <http:BadRequest> {
                 body: {
                     message: "Invalid theme"
                 }
