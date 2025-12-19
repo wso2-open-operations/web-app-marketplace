@@ -179,7 +179,8 @@ public type ThemeConfig record {|
     map<Theme> themes;
 |};
 
-// What admin sends in PUT body
+# Payload sent by the admin to update the active theme.
 type UpdateTheme record {|
+    # Active theme
     string activeThemeName;
 |};
