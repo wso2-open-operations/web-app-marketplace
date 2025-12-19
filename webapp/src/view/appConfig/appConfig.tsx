@@ -28,18 +28,15 @@ export default function AppConfig() {
   const [setThemeQuery] = useSetThemeMutation();
 
   useEffect(() => {
-    if (currentThemeConfig?.activeThemeName) {
-      setSelectedTheme(currentThemeConfig.activeThemeName);
-    }
+    if (currentThemeConfig?.activeThemeName) setSelectedTheme(currentThemeConfig.activeThemeName);
   }, [currentThemeConfig?.activeThemeName]);
 
   if (isLoading) {
     return <PreLoader message="Loading theme data" />;
   }
 
-  if (isError || !currentThemeConfig) {
+  if (isError || !currentThemeConfig)
     return <ErrorHandler message={"Error when retrieving theme"} />;
-  }
 
   const themeOptions = Object.values(currentThemeConfig.themes).map((theme) => theme.name);
 
