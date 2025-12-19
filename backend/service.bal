@@ -18,7 +18,9 @@ import web_app_marketplace.database;
 import web_app_marketplace.people;
 
 import ballerina/cache;
+import ballerina/file;
 import ballerina/http;
+import ballerina/io;
 import ballerina/log;
 
 final cache:Cache cache = new ({
@@ -439,8 +441,8 @@ service http:InterceptableService / on new http:Listener(9090) {
         if tag is error {
             string customError = "Error while validating tags";
             log:printError(customError, tag);
-            return <http:InternalServerError> {
-                body:  {
+            return <http:InternalServerError>{
+                body: {
                     message: customError
                 }
             };
@@ -449,8 +451,8 @@ service http:InterceptableService / on new http:Listener(9090) {
         if tag is Tag {
             string customError = string `Tag already exist for name : ${tagPayload.name}`;
             log:printError(customError);
-            return <http:BadRequest> {
-                body:  {
+            return <http:BadRequest>{
+                body: {
                     message: customError
                 }
             };
@@ -529,5 +531,162 @@ service http:InterceptableService / on new http:Listener(9090) {
                 message: "Successfully updated"
             }
         };
+    }
+
+    # Get theme configuration.
+    #
+    # + return - Theme configuration or error responses
+    resource function get themes(http:RequestContext ctx) returns http:InternalServerError|http:NotFound|ThemeConfig {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_NOT_FOUND_ERROR}
+            };
+        }
+
+        boolean|error isFileExists = file:test(THEME_FILE_PATH, file:EXISTS);
+        if isFileExists is error {
+            log:printError("Theme config request failed while retrieving file", 'error = isFileExists);
+            return <http:InternalServerError>{
+                body: {
+                    message: "Error retrieving theme configuration file"
+                }
+            };
+        }
+
+        if !isFileExists {
+            log:printError("Couldn't find the theme file");
+            return <http:NotFound>{
+                body: {
+                    message: "Couldn't find the theme file"
+                }
+            };
+        }
+
+        json|error configJson = io:fileReadJson(THEME_FILE_PATH);
+        if configJson is error {
+            log:printError("Unable to read theme.json file", configJson);
+            return <http:InternalServerError>{
+                body: {
+                    message: "Couldn't read the file"
+                }
+            };
+        }
+
+        ThemeConfig|error config = configJson.cloneWithType();
+        if config is error {
+            log:printError("Theme configuration file could not be read.", config);
+            return <http:InternalServerError>{
+                body: {
+                    message: "Theme configuration file could not be read."
+                }
+            };
+        }
+
+        return config;
+    }
+
+    resource function put themes(http:RequestContext ctx, UpdateTheme theme)
+        returns http:InternalServerError|http:BadRequest|http:NotFound|http:Ok|http:Forbidden {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            log:printError(USER_NOT_FOUND_ERROR, userInfo);
+            return <http:InternalServerError>{
+                body: {message: USER_NOT_FOUND_ERROR}
+            };
+        }
+
+        if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            string customError = "Access denied: Only administrators can update the theme";
+            log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
+                    userInfo.groups.toString()}`);
+            return <http:Forbidden>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        string nextTheme = theme.activeThemeName;
+        if !nextTheme.matches(PRINTABLE_CHARACTERS_FORMAT){
+            log:printError("Invalid theme", nextTheme = nextTheme);
+            return <http:BadRequest> {
+                body: {
+                    message: "Invalid theme"
+                }
+            };
+        }
+
+        boolean|error isFileExists = file:test(THEME_FILE_PATH, file:EXISTS);
+        if isFileExists is error {
+            log:printError("Theme config request failed while retrieving file", 'error = isFileExists);
+            return <http:InternalServerError>{
+                body: {
+                    message: "Error retrieving theme configuration file"
+                }
+            };
+        }
+
+        if !isFileExists {
+            log:printError("Couldn't find the theme file");
+            return <http:NotFound>{
+                body: {
+                    message: "Couldn't find the theme file"
+                }
+            };
+        }
+
+        lock {
+            json|error configJson = io:fileReadJson(THEME_FILE_PATH);
+            if configJson is error {
+                log:printError("Unable to read theme.json file", configJson);
+                return <http:InternalServerError>{
+                    body: {
+                        message: "Couldn't read the file"
+                    }
+                };
+            }
+
+            ThemeConfig|error config = configJson.cloneWithType();
+            if config is error {
+                log:printError("Theme configuration file could not be read.", config);
+                return <http:InternalServerError>{
+                    body: {
+                        message: "Theme configuration file could not be read."
+                    }
+                };
+            }
+
+            if config.themes[nextTheme] is () {
+                return <http:NotFound>{
+                    body: {
+                        message: "Couldn't find the specific theme"
+                    }
+                };
+            }
+
+            config.activeThemeName = nextTheme;
+
+            error? writeTheme = io:fileWriteJson(THEME_FILE_PATH, config);
+
+            if writeTheme is error {
+                log:printError("Theme update failed: could not write theme.json", writeTheme);
+                return <http:InternalServerError>{
+                    body: {
+                        message: "Unable to update theme configuration"
+                    }
+                };
+            }
+
+            return <http:Ok>{
+                body: {
+                    message: "Theme updated successfully",
+                    activeThemeName: config.activeThemeName
+                }
+            };
+        }
     }
 }

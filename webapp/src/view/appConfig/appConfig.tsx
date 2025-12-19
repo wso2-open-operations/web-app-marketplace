@@ -17,53 +17,34 @@ import { Autocomplete, Box, Button, TextField, Typography, useTheme } from "@mui
 
 import { useEffect, useState } from "react";
 
-import {
-  type ThemeConfig,
-  Themes,
-  useGetThemeQuery,
-  useSetThemeMutation,
-} from "@root/src/services/config.api";
-
-interface Audio {
-  label: string;
-  value: string;
-}
-
-interface ThemeOption {
-  label: string;
-  value: string;
-  audio: Audio[];
-}
-
-export const themeOptions: ThemeOption[] = [
-  {
-    label: "DEFAULT_THEME",
-    value: Themes.DEFAULT_THEME,
-    audio: [],
-  },
-  {
-    label: "CHRISTMAS_THEME",
-    value: Themes.XMAS_THEME,
-    audio: [],
-  },
-];
+import ErrorHandler from "@root/src/component/common/ErrorHandler";
+import PreLoader from "@root/src/component/common/PreLoader";
+import { useGetThemeQuery, useSetThemeMutation } from "@root/src/services/config.api";
 
 export default function AppConfig() {
   const theme = useTheme();
-  const [setTheme] = useSetThemeMutation();
-  const { data: currentThemeConfig } = useGetThemeQuery();
-  const currentTheme = currentThemeConfig?.theme || Themes.DEFAULT_THEME;
-
-  const [selectedTheme, setSelectedTheme] = useState<ThemeOption | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState<string>();
+  const { data: currentThemeConfig, isLoading, isError } = useGetThemeQuery();
+  const [setThemeQuery] = useSetThemeMutation();
 
   useEffect(() => {
-    const themeOption = themeOptions.find((option) => option.value === currentTheme);
-    setSelectedTheme(themeOption || null);
-  }, [currentTheme]);
+    if (currentThemeConfig?.activeThemeName) setSelectedTheme(currentThemeConfig.activeThemeName);
+  }, [currentThemeConfig?.activeThemeName]);
 
-  const handleSetTheme = (themeConfig: ThemeConfig) => {
-    setTheme({ ...themeConfig, audio: null });
+  if (isLoading) {
+    return <PreLoader message="Loading theme data" />;
+  }
+
+  if (isError || !currentThemeConfig)
+    return <ErrorHandler message={"Error when retrieving theme"} />;
+
+  const themeOptions = Object.values(currentThemeConfig.themes).map((theme) => theme.name);
+
+  const setTheme = (selectedTheme: string) => {
+    setThemeQuery(selectedTheme);
   };
+
+  const themeNames: string[] = themeOptions;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -78,24 +59,19 @@ export default function AppConfig() {
       <Box sx={{ display: "flex", gap: 2 }}>
         <Autocomplete
           disablePortal
-          options={themeOptions}
+          options={themeNames}
           value={selectedTheme}
-          onChange={(_, option) => setSelectedTheme(option ?? null)}
+          onChange={(_, option) => setSelectedTheme(option ?? "")}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Theme" />}
         />
 
         <Button
+          variant="outlined"
           onClick={() => {
             if (!selectedTheme) return;
-            const themeConfig: ThemeConfig = {
-              theme: selectedTheme.value as Themes,
-              audio: currentThemeConfig?.audio || null,
-            };
-            handleSetTheme(themeConfig);
+            setTheme(selectedTheme);
           }}
-          variant="outlined"
-          disabled={!selectedTheme || selectedTheme.value === currentTheme}
         >
           Set Theme
         </Button>

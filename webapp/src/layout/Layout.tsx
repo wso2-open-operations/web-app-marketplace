@@ -27,10 +27,9 @@ import { redirectUrl as savedRedirectUrl } from "@config/constant";
 import ConfirmationModalContextProvider from "@context/DialogContext";
 import Header from "@layout/header";
 import Sidebar from "@layout/sidebar";
+import { Themes, useGetThemeQuery } from "@services/config.api";
 import { selectRoles } from "@slices/authSlice/auth";
 import { type RootState, useAppSelector } from "@slices/store";
-
-import { Themes, useGetThemeQuery } from "../services/config.api";
 
 export default function Layout() {
   const { enqueueSnackbar } = useSnackbar();
@@ -71,7 +70,7 @@ export default function Layout() {
 
   return (
     <ConfirmationModalContextProvider>
-      {themeData?.theme === Themes.XMAS_THEME && (
+      {themeData?.activeThemeName === Themes.XMAS_THEME && (
         <Snowfall
           snowflakeCount={80}
           color={theme.palette.fill.xmas.active}
