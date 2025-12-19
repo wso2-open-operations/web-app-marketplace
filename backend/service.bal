@@ -63,46 +63,32 @@ service http:InterceptableService / on new http:Listener(9090) {
             }
         }
 
-        // people:Employee|error? employee = people:fetchEmployee(userInfo.email);
-        // if employee is error {
-        //     string customError = string `Error occurred while fetching user information for user : ${userInfo.email}`;
-        //     log:printError(customError, employee);
-        //     return <http:InternalServerError>{
-        //         body: customError
-        //     };
-        // }
+        people:Employee|error? employee = people:fetchEmployee(userInfo.email);
+        if employee is error {
+            string customError = string `Error occurred while fetching user information for user : ${userInfo.email}`;
+            log:printError(customError, employee);
+            return <http:InternalServerError>{
+                body: customError
+            };
+        }
 
-        // if employee is () {
-        //     log:printError(string `No employee information found for the user: ${userInfo.email}`);
-        //     return <http:NotFound>{
-        //         body: {
-        //             message: "No user found!"
-        //         }
-        //     };
-        // }
+        if employee is () {
+            log:printError(string `No employee information found for the user: ${userInfo.email}`);
+            return <http:NotFound>{
+                body: {
+                    message: "No user found!"
+                }
+            };
+        }
 
-        // // Fetch the user's privileges based on the roles.
-        // int[] privileges = [];
-        // if authorization:checkPermissions([authorization:authorizedRoles.EMPLOYEE_ROLE], userInfo.groups) {
-        //     privileges.push(authorization:EMPLOYEE_PRIVILEGE);
-        // }
-        // if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-        //     privileges.push(authorization:ADMIN_PRIVILEGE);
-        // }
-
-        people:Employee employee = {
-            firstName: "Dineth",
-            lastName: "Silva",
-            employeeId: "E001",
-            employeeThumbnail: (),
-            workEmail: "dineths@wso2.com",
-            jobRole: "Intern"
-        };
-
+        // Fetch the user's privileges based on the roles.
         int[] privileges = [];
-
-        privileges.push(authorization:EMPLOYEE_PRIVILEGE);
-        privileges.push(authorization:ADMIN_PRIVILEGE);
+        if authorization:checkPermissions([authorization:authorizedRoles.EMPLOYEE_ROLE], userInfo.groups) {
+            privileges.push(authorization:EMPLOYEE_PRIVILEGE);
+        }
+        if authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
+            privileges.push(authorization:ADMIN_PRIVILEGE);
+        }
 
         UserInfo userInfoResponse = {...employee, privileges};
 
