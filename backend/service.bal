@@ -536,8 +536,9 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get theme configuration.
     #
     # + return - Theme configuration or error responses
-    resource function get theme(http:RequestContext ctx) 
+    resource function get theme(http:RequestContext ctx)
         returns http:InternalServerError|http:BadGateway|http:NotFound|ThemeConfig {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -588,8 +589,9 @@ service http:InterceptableService / on new http:Listener(9090) {
         return config;
     }
 
-    resource function put theme(http:RequestContext ctx, UpdateTheme theme) 
+    resource function put theme(http:RequestContext ctx, UpdateTheme theme)
         returns http:InternalServerError|http:BadGateway|http:NotFound|http:Ok|http:Forbidden {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -608,7 +610,6 @@ service http:InterceptableService / on new http:Listener(9090) {
                 }
             };
         }
-        
 
         boolean|error isFileExists = file:test(THEME_FILE_PATH, file:EXISTS);
         if isFileExists is error {
@@ -629,17 +630,17 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
-        json|error configJson = io:fileReadJson(THEME_FILE_PATH);
-        if configJson is error {
-            log:printError("Unable to read theme.json file", configJson);
-            return <http:InternalServerError>{
-                body: {
-                    message: "Couldn't read the file"
-                }
-            };
-        }
-
         lock {
+            json|error configJson = io:fileReadJson(THEME_FILE_PATH);
+            if configJson is error {
+                log:printError("Unable to read theme.json file", configJson);
+                return <http:InternalServerError>{
+                    body: {
+                        message: "Couldn't read the file"
+                    }
+                };
+            }
+
             ThemeConfig|error config = configJson.cloneWithType();
             if config is error {
                 log:printError("Theme configuration file could not be read.", config);
@@ -651,7 +652,6 @@ service http:InterceptableService / on new http:Listener(9090) {
             }
 
             string nextTheme = theme.activeThemeName;
-
             if config.themes[nextTheme] is () {
                 return <http:NotFound>{
                     body: {
