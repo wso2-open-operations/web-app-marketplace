@@ -76,7 +76,7 @@ public type CreateApp record {|
     # Display title
     string name;
     # Target URL
-    @constraint:String{
+    @constraint:String {
         pattern: {
             value: NON_EMPTY_URL,
             message: "The URL should be non empty and valid URL"
@@ -88,7 +88,7 @@ public type CreateApp record {|
     # Version label of the target app
     string versionName;
     # Icon asset name or key
-    @constraint:String{
+    @constraint:String {
         pattern: {
             value: NON_EMPTY_BASE64_STRING,
             message: "icon must be base64 prefixed with data:image/svg+xml;base64"
@@ -116,7 +116,7 @@ public type UpdateApp record {|
     # Version label of the target app
     string versionName?;
     # Icon asset name/key
-    @constraint:String{
+    @constraint:String {
         pattern: {
             value: NON_EMPTY_BASE64_STRING,
             message: "icon must be base64 prefixed with data:image/svg+xml;base64"
@@ -162,3 +162,24 @@ public enum Action {
     # Remove an app from favourites
     UNFAVOURITE = "unfavourite"
 }
+
+# Structure of Theme record.
+public type Theme record {|
+    # Name of the theme
+    string name;
+    # Label of the theme
+    string label;
+|};
+
+# Configuration for themes.
+public type ThemeConfig record {|
+    # Name of the active theme
+    string activeThemeName;
+    # Map of available themes
+    map<Theme> themes;
+|};
+
+// What admin sends in PUT body
+type UpdateTheme record {|
+    string activeThemeName;
+|};
