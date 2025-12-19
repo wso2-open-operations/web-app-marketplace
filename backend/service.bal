@@ -536,7 +536,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get theme configuration.
     #
     # + return - Theme configuration or error responses
-    resource function get theme(http:RequestContext ctx) returns http:InternalServerError|http:NotFound|ThemeConfig {
+    resource function get themes(http:RequestContext ctx) returns http:InternalServerError|http:NotFound|ThemeConfig {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -588,7 +588,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         return config;
     }
 
-    resource function put theme(http:RequestContext ctx, UpdateTheme theme)
+    resource function put themes(http:RequestContext ctx, UpdateTheme theme)
         returns http:InternalServerError|http:BadGateway|http:NotFound|http:Ok|http:Forbidden {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
