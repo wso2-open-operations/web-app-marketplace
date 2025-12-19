@@ -601,7 +601,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         return config;
     }
 
-    resource function put theme(http:RequestContext ctx, Themes themes) returns http:InternalServerError|http:BadGateway|http:NotFound|http:Ok|http:Forbidden {
+    resource function put theme(http:RequestContext ctx, UpdateTheme theme) returns http:InternalServerError|http:BadGateway|http:NotFound|http:Ok|http:Forbidden {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -662,7 +662,7 @@ service http:InterceptableService / on new http:Listener(9090) {
                 };
             }
 
-            string nextTheme = themes.activeThemeName;
+            string nextTheme = theme.activeThemeName;
 
             if config.themes[nextTheme] is () {
                 return <http:NotFound>{
