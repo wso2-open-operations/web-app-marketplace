@@ -600,7 +600,7 @@ service http:InterceptableService / on new http:Listener(9090) {
         }
 
         if !authorization:checkPermissions([authorization:authorizedRoles.ADMIN_ROLE], userInfo.groups) {
-            string customError = "Access denied: Only administrators update theme";
+            string customError = "Access denied: Only administrators can update the theme";
             log:printWarn(string `${customError} email: ${userInfo.email} groups: ${
                     userInfo.groups.toString()}`);
             return <http:Forbidden>{
