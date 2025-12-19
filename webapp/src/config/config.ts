@@ -50,6 +50,6 @@ export const AppConfig = {
     apps: SERVICE_BASE_URL + "/apps",
     tags: SERVICE_BASE_URL + "/tags",
     userGroups: SERVICE_BASE_URL + "/user-groups",
-    theme: SERVICE_BASE_URL + "/theme",
+    theme: SERVICE_BASE_URL + "/themes",
   },
 };
