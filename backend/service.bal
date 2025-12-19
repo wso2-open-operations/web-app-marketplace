@@ -610,6 +610,16 @@ service http:InterceptableService / on new http:Listener(9090) {
             };
         }
 
+        string nextTheme = theme.activeThemeName;
+        if !nextTheme.matches(PRINTABLE_CHARACTERS_FORMAT){
+            log:printError("Invalid theme", nextTheme = nextTheme);
+            return <http:BadGateway> {
+                body: {
+                    message: "Invalid theme"
+                }
+            };
+        }
+
         boolean|error isFileExists = file:test(THEME_FILE_PATH, file:EXISTS);
         if isFileExists is error {
             log:printError("Theme config request failed while retrieving file", 'error = isFileExists);
@@ -650,7 +660,6 @@ service http:InterceptableService / on new http:Listener(9090) {
                 };
             }
 
-            string nextTheme = theme.activeThemeName;
             if config.themes[nextTheme] is () {
                 return <http:NotFound>{
                     body: {
