@@ -44,7 +44,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Fetch logged-in user's details.
     #
     # + return - User information or InternalServerError
-    resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError|http:NotFound|http:Unauthorized {
+    resource function get user\-info(http:RequestContext ctx) returns UserInfo|http:InternalServerError|http:NotFound {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             log:printError(USER_NOT_FOUND_ERROR, userInfo);
@@ -536,8 +536,7 @@ service http:InterceptableService / on new http:Listener(9090) {
     # Get theme configuration.
     #
     # + return - Theme configuration or error responses
-    resource function get theme(http:RequestContext ctx)
-        returns http:InternalServerError|http:BadGateway|http:NotFound|ThemeConfig {
+    resource function get theme(http:RequestContext ctx) returns http:InternalServerError|http:NotFound|ThemeConfig {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -552,7 +551,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError("Theme config request failed while retrieving file", 'error = isFileExists);
             return <http:InternalServerError>{
                 body: {
-                    message: "Error to retrieving theme configuration file"
+                    message: "Error retrieving theme configuration file"
                 }
             };
         }
@@ -616,7 +615,7 @@ service http:InterceptableService / on new http:Listener(9090) {
             log:printError("Theme config request failed while retrieving file", 'error = isFileExists);
             return <http:InternalServerError>{
                 body: {
-                    message: "Error to retrieving theme configuration file"
+                    message: "Error retrieving theme configuration file"
                 }
             };
         }
