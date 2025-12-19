@@ -22,6 +22,7 @@ import PreLoader from "@component/common/PreLoader";
 import SessionWarningDialog from "@component/common/SessionWarningDialog";
 import LoginScreen from "@component/ui/LoginScreen";
 import { redirectUrl } from "@config/constant";
+import { setTokens } from "@services/BaseQuery";
 import { loadPrivileges, setAuthError, setUserAuthData } from "@slices/authSlice/auth";
 import { useAppDispatch } from "@slices/store";
 import { getUserInfo } from "@slices/userSlice/user";
@@ -102,6 +103,7 @@ const AppAuthProvider = (props: { children: React.ReactNode }) => {
     );
 
     new APIService(idToken, refreshToken);
+    setTokens(idToken, refreshToken, appSignOut);
 
     await dispatch(getUserInfo());
     await dispatch(loadPrivileges());
