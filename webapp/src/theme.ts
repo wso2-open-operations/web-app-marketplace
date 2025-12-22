@@ -195,6 +195,14 @@ export const tokens = (mode: PaletteMode) => {
               active: "#B8D3E0d7",
             },
           },
+
+          // Shadow colors - Dark mode
+          shadow: {
+            primary: {
+              active: "#000000CC",
+              hover: colors.neutral["1900"],
+            },
+          },
         }
       : {
           // Light mode colors
@@ -309,6 +317,14 @@ export const tokens = (mode: PaletteMode) => {
             hoverBg: colors.neutral["1800"],
             clickedBg: colors.primary["1200"],
             border: colors.neutral["1700"],
+          },
+
+          // Shadow colors - Light mode
+          shadow: {
+            primary: {
+              active: "#00000014",
+              hover: colors.neutral["1900"],
+            },
           },
         }),
   };
