@@ -181,6 +181,7 @@ export default function AppCard({
     transition: "transform 0.2s ease",
     "&:hover": {
       transform: "translateY(-2px)",
+      boxShadow: `0 2px 6px 1px ${theme.palette.shadow.primary.active}`,
     },
   };
 
