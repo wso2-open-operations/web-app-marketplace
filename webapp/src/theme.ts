@@ -116,16 +116,16 @@ export const tokens = (mode: PaletteMode) => {
               active: "#0099CC",
               hover: "#2ECBFF",
               clicked: "#06B1F4",
-              disabled: colors.neutral.white,
+              disabled: "#0099CC96",
             },
             territory: {
-              active: colors.neutral["1700"],
+              active: colors.neutral["1600"],
               hover: colors.neutral["1500"],
               clicked: colors.neutral.white,
               disabled: colors.neutral.white,
             },
             brand: {
-              active: "#F56200",
+              active: colors.primary["1300"],
               hover: "#FF730F",
               clicked: "#F55A00",
               disabled: "#F55A0096",
@@ -148,7 +148,7 @@ export const tokens = (mode: PaletteMode) => {
               active: colors.neutral["1800"],
               hover: colors.neutral["1900"],
             },
-            navabr: {
+            navbar: {
               active: colors.neutral["1900"],
               hover: colors.secondary["1700"],
             },
@@ -222,7 +222,7 @@ export const tokens = (mode: PaletteMode) => {
           // Border colors - Light mode
           border: {
             primary: {
-              active: colors.neutral["600"],
+              active: colors.neutral["700"],
               hover: colors.neutral.white,
               clicked: colors.neutral.white,
               disabled: colors.neutral.white,
@@ -231,16 +231,16 @@ export const tokens = (mode: PaletteMode) => {
               active: "#00BFFF",
               hover: "#2ECBFF",
               clicked: "#06B1F4",
-              disabled: colors.neutral.white,
+              disabled: "#00BFFF96",
             },
             territory: {
               active: colors.neutral["200"],
-              hover: colors.neutral["400"],
+              hover: colors.neutral["300"],
               clicked: colors.neutral.white,
               disabled: colors.neutral.white,
             },
             brand: {
-              active: "#F56200",
+              active: colors.primary.main,
               hover: "#FF730F",
               clicked: "#F55A00",
               disabled: "#F55A0096",
