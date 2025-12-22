@@ -144,11 +144,10 @@ export default function AppCard({
               },
               tooltip: {
                 sx: {
-                  backgroundColor: "#fff",
-                  color: "#333",
-                  border: "1px solid #e6e6e6",
-                  borderRadius: 2,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  backgroundColor: theme.palette.surface.secondary.active,
+                  border: `1px solid ${theme.palette.customBorder.territory.active}`,
+                  borderRadius: 1,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
                   maxWidth: "250px",
                   padding: 1,
                 },
