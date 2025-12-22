@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 import { Box, Divider, Stack, Tooltip, Typography, useTheme } from "@mui/material";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Moon, Sun } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 import { useMemo } from "react";
@@ -193,12 +193,11 @@ const Sidebar = (props: SidebarProps) => {
               })}
 
               {/* Theme Toggle */}
-              {/* TODO: Disabling dark mode since theme isn't explicitly designed for apps-store */}
-              {/* {renderControlButton(
+              {renderControlButton(
                 colorMode.mode === "dark" ? <Sun size={16} /> : <Moon size={16} />,
                 colorMode.toggleColorMode,
                 colorMode.mode === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode",
-              )} */}
+              )}
 
               {/* Sidebar Toggle */}
               {renderControlButton(
