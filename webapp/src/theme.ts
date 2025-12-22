@@ -515,9 +515,9 @@ export const themeSettings = (mode: PaletteMode) => {
         contrastText: "#ffffff",
       },
       error: {
-        main: "#fe4336",
-        light: "#ff6b5e",
-        dark: "#c41c0f",
+        main: "#F23B0D",
+        light: "#FF704D ",
+        dark: "#BD1C0F",
       },
       warning: {
         main: "#ff9800",
