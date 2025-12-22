@@ -209,6 +209,7 @@ export default function AppCard({
           }}
         >
           {renderLogo()}
+
           <IconButton
             onClick={(e) => {
               e.stopPropagation();
@@ -273,6 +274,7 @@ export default function AppCard({
           >
             {renderTags()}
           </Box>
+
           <Box sx={{ display: "flex", gap: 2, flexShrink: 0 }}>
             <Launch
               sx={{
