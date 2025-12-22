@@ -97,6 +97,7 @@ export const tokens = (mode: PaletteMode) => {
             },
             secondary: {
               p1: { active: colors.secondary["900"], hover: "#FF6A0096", disabled: "#ff730096" },
+              p2: { active: colors.secondary["900"], hover: "#FF6A0096", disabled: "#ff730096" },
             },
             brand: {
               p1: { active: colors.primary["1100"], hover: "#FF6A0096", disabled: "#ff730096" },
@@ -220,6 +221,7 @@ export const tokens = (mode: PaletteMode) => {
             },
             secondary: {
               p1: { active: colors.secondary["800"], hover: "#FF6A0096", disabled: "#ff730096" },
+              p2: { active: colors.secondary["700"], hover: "#FF6A0096", disabled: "#ff730096" },
             },
             brand: {
               p1: { active: colors.primary.main, hover: "#ffffff", disabled: "#ff730096" },
@@ -414,6 +416,7 @@ declare module "@mui/material/styles" {
       };
       secondary: {
         p1: { active: string; hover: string; disabled?: string };
+        p2: { active: string; hover: string; disabled?: string };
       };
       brand: {
         p1: { active: string; hover: string; disabled?: string };
@@ -485,6 +488,7 @@ declare module "@mui/material/styles" {
       };
       secondary: {
         p1: { active: string; hover: string; disabled?: string };
+        p2: { active: string; hover: string; disabled?: string };
       };
       brand?: {
         p1?: { active: string; hover: string; disabled?: string };
