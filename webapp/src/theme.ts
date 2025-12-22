@@ -97,7 +97,7 @@ export const tokens = (mode: PaletteMode) => {
             },
             secondary: {
               p1: { active: colors.secondary["900"], hover: "#FF6A0096", disabled: "#ff730096" },
-              p2: { active: colors.secondary["900"], hover: "#FF6A0096", disabled: "#ff730096" },
+              p2: { active: colors.secondary["1000"], hover: "#FF6A0096", disabled: "#ff730096" },
             },
             brand: {
               p1: { active: colors.primary["1100"], hover: "#FF6A0096", disabled: "#ff730096" },
@@ -221,7 +221,7 @@ export const tokens = (mode: PaletteMode) => {
             },
             secondary: {
               p1: { active: colors.secondary["800"], hover: "#FF6A0096", disabled: "#ff730096" },
-              p2: { active: colors.secondary["700"], hover: "#FF6A0096", disabled: "#ff730096" },
+              p2: { active: colors.secondary.main, hover: "#FF6A0096", disabled: "#ff730096" },
             },
             brand: {
               p1: { active: colors.primary.main, hover: "#ffffff", disabled: "#ff730096" },
