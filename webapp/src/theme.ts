@@ -165,20 +165,31 @@ export const tokens = (mode: PaletteMode) => {
               clicked: colors.primary["1700"],
               disabled: "#3D190196",
             },
+            primary_light: {
+              active: colors.primary["1800"],
+              hover: colors.primary["1500"],
+            },
+            primary_dark: {
+              active: colors.primary["1400"],
+              hover: colors.primary["1500"],
+            },
             secondary: {
-              active: colors.secondary["1400"],
-              hover: colors.secondary["1300"],
-              clicked: colors.secondary["1500"],
+              active: colors.secondary["1000"],
+              hover: colors.secondary["1100"],
+              clicked: colors.secondary["1200"],
               disabled: "#0A475C96",
             },
             secondary_light: {
-              active: colors.secondary["1900"],
+              active: colors.secondary["1400"],
               hover: "#fff",
-              clicked: "#fff",
-              disabled: "#fff",
             },
-            territory: {
-              active: colors.neutral["1800"],
+            neutral_light: {
+              active: colors.secondary["1700"],
+              hover: "#fff",
+            },
+            neutral_dark: {
+              active: colors.secondary["1700"],
+              hover: "#fff",
             },
             xmas: {
               active: "#B8D3E0d7",
@@ -259,6 +270,14 @@ export const tokens = (mode: PaletteMode) => {
               clicked: colors.primary["1100"],
               disabled: "#FF730096",
             },
+            primary_light: {
+              active: colors.primary["100"],
+              hover: colors.primary["1500"],
+            },
+            primary_dark: {
+              active: colors.primary["1200"],
+              hover: colors.primary["1500"],
+            },
             secondary: {
               active: colors.secondary.main,
               hover: colors.secondary["600"],
@@ -266,13 +285,16 @@ export const tokens = (mode: PaletteMode) => {
               disabled: "#00CEFF96",
             },
             secondary_light: {
-              active: colors.secondary["0"],
+              active: colors.secondary["200"],
               hover: "#fff",
-              clicked: "#fff",
-              disabled: "#fff",
             },
-            territory: {
-              active: colors.neutral["1800"],
+            neutral_light: {
+              active: colors.neutral["100"],
+              hover: "#fff",
+            },
+            neutral_dark: {
+              active: colors.neutral["1700"],
+              hover: "#fff",
             },
             xmas: {
               active: "#A6C8D9",
@@ -359,9 +381,12 @@ declare module "@mui/material/styles" {
     };
     fill: {
       primary: Record<string, string>;
+      primary_light: Record<string, string>;
+      primary_dark: Record<string, string>;
       secondary: Record<string, string>;
       secondary_light: Record<string, string>;
-      territory: Record<string, string>;
+      neutral_light: Record<string, string>;
+      neutral_dark: Record<string, string>;
       xmas: Record<string, string>;
     };
     customText: {
@@ -427,9 +452,12 @@ declare module "@mui/material/styles" {
     };
     fill?: {
       primary?: Record<string, string>;
+      primary_light?: Record<string, string>;
+      primary_dark?: Record<string, string>;
       secondary?: Record<string, string>;
       secondary_light: Record<string, string>;
-      territory?: Record<string, string>;
+      neutral_light?: Record<string, string>;
+      neutral_dark?: Record<string, string>;
       xmas: Record<string, string>;
     };
     customText?: {
