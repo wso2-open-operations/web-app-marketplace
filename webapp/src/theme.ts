@@ -407,6 +407,9 @@ declare module "@mui/material/styles" {
       neutral_dark: Record<string, string>;
       xmas: Record<string, string>;
     };
+    shadow: {
+      primary: Record<string, string>;
+    };
     customText: {
       primary: {
         p1: { active: string; hover: string };
@@ -479,6 +482,9 @@ declare module "@mui/material/styles" {
       neutral_dark?: Record<string, string>;
       xmas: Record<string, string>;
     };
+    shadow?: {
+      primary?: Record<string, string>;
+    };
     customText?: {
       primary?: {
         p1?: { active: string; hover: string };
@@ -546,6 +552,7 @@ export const themeSettings = (mode: PaletteMode) => {
       surface: colors.surface,
       fill: colors.fill,
       customText: colors.text,
+      shadow: colors.shadow,
     },
     typography: {
       fontSize: 14,
