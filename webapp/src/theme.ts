@@ -148,11 +148,11 @@ export const tokens = (mode: PaletteMode) => {
               active: colors.neutral["1800"],
               hover: colors.neutral["1900"],
             },
-            secondary: {
+            navabr: {
               active: colors.neutral["1900"],
               hover: colors.secondary["1700"],
             },
-            territory: {
+            secondary: {
               active: "#171717",
             },
           },
@@ -242,11 +242,11 @@ export const tokens = (mode: PaletteMode) => {
               active: colors.neutral.light_white,
               hover: colors.neutral.white,
             },
-            secondary: {
+            navbar: {
               active: colors.neutral["1900"],
               hover: "#FFF",
             },
-            territory: {
+            secondary: {
               active: colors.neutral.white,
             },
           },
@@ -354,8 +354,8 @@ declare module "@mui/material/styles" {
     };
     surface: {
       primary: Record<string, string>;
+      navbar: Record<string, string>;
       secondary: Record<string, string>;
-      territory: Record<string, string>;
     };
     fill: {
       primary: Record<string, string>;
@@ -422,8 +422,8 @@ declare module "@mui/material/styles" {
     };
     surface?: {
       primary?: Record<string, string>;
+      navbar?: Record<string, string>;
       secondary?: Record<string, string>;
-      territory?: Record<string, string>;
     };
     fill?: {
       primary?: Record<string, string>;
@@ -490,7 +490,6 @@ export const themeSettings = (mode: PaletteMode) => {
         light: "#81c784",
         dark: "#388e3c",
       },
-      // Custom palette extensions - preserve all color shades
       neutral: colors.neutral,
       primaryShades: colors.primary,
       secondaryShades: colors.secondary,
@@ -639,5 +638,4 @@ export const themeSettings = (mode: PaletteMode) => {
   };
 };
 
-// Export for convenience
 export default themeSettings;
