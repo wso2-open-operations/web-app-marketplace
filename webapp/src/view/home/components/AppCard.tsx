@@ -175,7 +175,7 @@ export default function AppCard({
     boxShadow: "none",
     position: "relative",
     border: `.75px solid ${theme.palette.customBorder.territory.active}`,
-    background: theme.palette.surface.territory.active,
+    background: theme.palette.surface.secondary.active,
     cursor: "pointer",
     display: "flex",
     flexDirection: "column",

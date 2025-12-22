@@ -122,7 +122,7 @@ const Sidebar = (props: SidebarProps) => {
               height: "100%",
               paddingY: "16px",
               paddingX: "12px",
-              backgroundColor: theme.palette.surface.secondary.active,
+              backgroundColor: theme.palette.surface.navbar.active,
               zIndex: 10,
               display: "flex",
               flexDirection: "column",
