@@ -190,8 +190,9 @@ export function TabPanel(props: TabPanelProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
         sx={{
-          border: `0.75px solid ${theme.palette.customBorder.territory.active}`,
+          border: `1px solid ${theme.palette.customBorder.territory.active}`,
           borderRadius: 1.5,
+          backgroundColor: theme.palette.surface.secondary.active,
         }}
       >
         {children}
