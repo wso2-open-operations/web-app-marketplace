@@ -121,7 +121,7 @@ export const tokens = (mode: PaletteMode) => {
             },
             territory: {
               active: colors.neutral["1600"],
-              hover: colors.neutral["1500"],
+              hover: colors.neutral["1400"],
               clicked: colors.neutral.white,
               disabled: colors.neutral.white,
             },
@@ -245,7 +245,7 @@ export const tokens = (mode: PaletteMode) => {
             },
             territory: {
               active: colors.neutral["200"],
-              hover: colors.neutral["300"],
+              hover: colors.neutral["400"],
               clicked: colors.neutral.white,
               disabled: colors.neutral.white,
             },
@@ -675,6 +675,81 @@ export const themeSettings = (mode: PaletteMode) => {
             },
           },
         ],
+      },
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 8,
+              fontSize: "14px",
+              fontWeight: 400,
+              color: colors.text.primary.p1.active,
+              "& .MuiOutlinedInput-input": {
+                color: colors.text.primary.p3.active,
+              },
+              "& fieldset": {
+                borderColor: colors.border.territory.active,
+                borderWidth: "1px",
+              },
+              "&:hover fieldset": {
+                borderColor: colors.border.territory.hover,
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: colors.border.secondary.active,
+                borderWidth: "2px",
+              },
+              "&.Mui-error fieldset": {
+                borderColor: "#F23B0D",
+              },
+              // "&.Mui-focused": {
+              //   boxShadow: `0 0 0 2px ${colors.border.territory.active}25`,
+              // },
+              // "&.Mui-error.Mui-focused fieldset": {
+              //   borderColor: "#F23B0D",
+              // },
+              "&.Mui-disabled fieldset": {
+                opacity: "0.59",
+              },
+              "&.Mui-disabled": {
+                color: colors.text.primary.p3.active,
+              },
+            },
+            "& .MuiInputLabel-root": {
+              color: colors.text.primary.p2.active,
+              fontSize: "14px",
+              fontWeight: 400,
+              "&.Mui-focused": {
+                color: colors.border.brand.active,
+              },
+              "&.Mui-error": {
+                color: "#F23B0D",
+              },
+              "&.Mui-disabled": {
+                color: colors.text.primary.p4.active,
+              },
+            },
+            "& .MuiFormHelperText-root": {
+              fontSize: "12px",
+              fontWeight: 400,
+              marginLeft: "2px",
+              marginTop: "4px",
+              "&.Mui-error": {
+                color: "#F23B0D",
+              },
+            },
+          },
+        },
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            fontSize: "14px",
+            fontWeight: 400,
+            "&.Mui-disabled": {
+              color: colors.text.primary.p3.active,
+            },
+          },
+        },
       },
     },
     breakpoints: {
