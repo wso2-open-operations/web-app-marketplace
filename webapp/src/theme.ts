@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 // MUI Import
-import { type PaletteMode } from "@mui/material";
+import { type PaletteMode, alpha } from "@mui/material";
 
 import designTokens from "./styles/design-tokens.json";
 
@@ -747,6 +747,44 @@ export const themeSettings = (mode: PaletteMode) => {
             fontWeight: 400,
             "&.Mui-disabled": {
               color: colors.text.primary.p3.active,
+            },
+          },
+        },
+      },
+      MuiSwitch: {
+        styleOverrides: {
+          root: {
+            width: 58,
+            height: 38,
+            padding: 1,
+            "& .MuiSwitch-switchBase": {
+              padding: 0,
+              margin: "7px",
+              transitionDuration: "300ms",
+              color: alpha(colors.fill.secondary.active, 0.59),
+              "&.Mui-checked": {
+                transform: "translateX(20px)",
+                color: colors.fill.secondary.active,
+                "& + .MuiSwitch-track": {
+                  backgroundColor: colors.fill.secondary_light.active,
+                  border: 0,
+                },
+              },
+              "&.Mui-disabled": {
+                color: alpha(colors.fill.secondary.active, 0.35),
+                "& + .MuiSwitch-track": {
+                  backgroundColor: colors.fill.secondary.disabled,
+                },
+              },
+            },
+            "& .MuiSwitch-thumb": {
+              width: 24,
+              height: 24,
+            },
+            "& .MuiSwitch-track": {
+              borderRadius: 38 / 2,
+              backgroundColor: alpha(colors.fill.secondary_light.active, 0.59),
+              opacity: 1,
             },
           },
         },
