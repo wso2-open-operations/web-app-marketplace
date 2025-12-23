@@ -27,7 +27,6 @@ import {
   Switch,
   TextField,
   Typography,
-  alpha,
   useTheme,
 } from "@mui/material";
 import { useFormik } from "formik";
@@ -592,35 +591,6 @@ export default function CreateApp() {
                       checked={formik.values.isActive}
                       onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
                       disabled={submitState === State.loading}
-                      sx={{
-                        width: 58,
-                        height: 38,
-                        padding: 1,
-                        "& .MuiSwitch-switchBase": {
-                          padding: 0,
-                          margin: "7px",
-                          transitionDuration: "300ms",
-                          color: alpha(theme.palette.fill.secondary.active, 0.59),
-                          "&.Mui-checked": {
-                            transform: "translateX(20px)",
-                            color: theme.palette.fill.secondary.active,
-                            "& + .MuiSwitch-track": {
-                              backgroundColor: theme.palette.fill.secondary_light.active,
-                              opacity: 1,
-                              border: 0,
-                            },
-                          },
-                        },
-                        "& .MuiSwitch-thumb": {
-                          width: 24,
-                          height: 24,
-                        },
-                        "& .MuiSwitch-track": {
-                          borderRadius: 38 / 2,
-                          backgroundColor: alpha(theme.palette.fill.secondary_light.active, 0.59),
-                          opacity: 1,
-                        },
-                      }}
                     />
                   }
                 />
