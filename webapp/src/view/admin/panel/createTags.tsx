@@ -158,7 +158,7 @@ export default function CreateTags() {
           </Box>
         </form>
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", flexFlow: 0.5, gap: 2 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Typography
           variant="body1"
           sx={{
