@@ -13,7 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { Box, Button, Chip, TextField, Typography } from "@mui/material";
+import { Box, Button, Chip, TextField, Typography, useTheme } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -41,6 +41,7 @@ export default function CreateTags() {
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
   const userEmail = userInfo?.workEmail ?? "";
+  const theme = useTheme();
 
   const formik = useFormik<Tag>({
     initialValues: {
@@ -65,55 +66,45 @@ export default function CreateTags() {
   });
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        p: 3,
+        gap: 3,
+      }}
+    >
+      <Box sx={{ width: "100%", display: "flex", gap: 2, flexDirection: "column" }}>
         <Typography
           variant="h6"
           sx={{
-            color: "text.secondary",
-            textDecoration: "underline",
-            textDecorationColor: "text.secondary",
-            textDecorationThickness: "1px",
-            textUnderlineOffset: "2px",
+            color: theme.palette.customText.primary.p2.active,
           }}
         >
-          Existing Tags
+          Add New Tags
         </Typography>
-        <Box
-          sx={{
-            flex: 2,
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "bottom",
-            gap: 1,
-          }}
-        >
-          {tags?.map((tag, index) => (
-            <Chip
-              key={index}
-              sx={{
-                "& .MuiChip-label": {
-                  fontSize: "12px",
-                },
-                color: "text.tertiary",
-                borderRadius: 2,
-              }}
-              variant="outlined"
-              size="small"
-              label={tag.name}
-            />
-          ))}
-        </Box>
-      </Box>
-      <Box sx={{ maxWidth: "600px" }}>
+
         <form onSubmit={formik.handleSubmit}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2.5,
+              color: theme.palette.customText.primary.p2.active,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
               <Typography variant="body1">Tag Name</Typography>
+
               <TextField
                 fullWidth
                 name="name"
-                placeholder="People App"
+                placeholder="Sample Tag"
                 value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -166,6 +157,44 @@ export default function CreateTags() {
             </Button>
           </Box>
         </form>
+      </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", flexFlow: 0.5, gap: 2 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            textDecoration: "underline",
+            textDecorationColor: theme.palette.customText.primary.p3.active,
+            color: theme.palette.customText.primary.p3.active,
+            textDecorationThickness: "1px",
+            textUnderlineOffset: "3px",
+          }}
+        >
+          Existing Tags
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "bottom",
+            gap: 1.5,
+          }}
+        >
+          {tags?.map((tag, index) => (
+            <Chip
+              key={index}
+              sx={{
+                "& .MuiChip-label": {
+                  fontSize: "12px",
+                },
+                color: "text.tertiary",
+                borderRadius: 2,
+              }}
+              variant="outlined"
+              size="small"
+              label={tag.name}
+            />
+          ))}
+        </Box>
       </Box>
     </Box>
   );
