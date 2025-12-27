@@ -110,15 +110,6 @@ export default function UpdateApp() {
     }
   }, [apps, selectedApp]);
 
-  // Lighter border styling for disabled TextFields
-  const disabledTextFieldSx = {
-    "& .MuiOutlinedInput-root.Mui-disabled": {
-      "& fieldset": {
-        borderColor: "rgba(0, 0, 0, 0.12)",
-      },
-    },
-  };
-
   const dummyApp: App = {
     name: "Sample",
     description: "sample app description",
@@ -322,7 +313,6 @@ export default function UpdateApp() {
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        bgcolor: "background.paper",
         borderRadius: 2,
         boxShadow: 4,
       }}
@@ -411,7 +401,6 @@ export default function UpdateApp() {
                   error={formik.touched.title && Boolean(formik.errors.title)}
                   helperText={formik.touched.title && (formik.errors.title as string)}
                   disabled={!selectedApp || submitState === State.loading}
-                  sx={disabledTextFieldSx}
                 />
               </Box>
 
@@ -435,7 +424,6 @@ export default function UpdateApp() {
                     error={formik.touched.url && Boolean(formik.errors.url)}
                     helperText={formik.touched.url && (formik.errors.url as string)}
                     disabled={!selectedApp || submitState === State.loading}
-                    sx={disabledTextFieldSx}
                   />
                 </Box>
 
@@ -457,7 +445,6 @@ export default function UpdateApp() {
                     error={formik.touched.versionName && Boolean(formik.errors.versionName)}
                     helperText={formik.touched.versionName && (formik.errors.versionName as string)}
                     disabled={!selectedApp || submitState === State.loading}
-                    sx={disabledTextFieldSx}
                   />
                 </Box>
               </Box>
@@ -485,7 +472,6 @@ export default function UpdateApp() {
                   error={formik.touched.description && Boolean(formik.errors.description)}
                   helperText={formik.touched.description && (formik.errors.description as string)}
                   disabled={!selectedApp || submitState === State.loading}
-                  sx={disabledTextFieldSx}
                 />
               </Box>
 
@@ -542,7 +528,6 @@ export default function UpdateApp() {
                       }
                       error={formik.touched.tags && Boolean(formik.errors.tags)}
                       helperText={formik.touched.tags && (formik.errors.tags as string)}
-                      sx={disabledTextFieldSx}
                     />
                   )}
                 />
@@ -575,7 +560,6 @@ export default function UpdateApp() {
                       }
                       error={formik.touched.groupIds && Boolean(formik.errors.groupIds)}
                       helperText={formik.touched.groupIds && (formik.errors.groupIds as string)}
-                      sx={disabledTextFieldSx}
                     />
                   )}
                 />
@@ -610,7 +594,6 @@ export default function UpdateApp() {
                       bgcolor: dragActive ? "action.hover" : "background.paper",
                       cursor: "pointer",
                       transition: "all 0.3s",
-                      ...disabledTextFieldSx,
                     }}
                     onClick={() => document.getElementById("file-upload")?.click()}
                   >
@@ -784,6 +767,7 @@ export default function UpdateApp() {
                       disabled={!selectedApp || submitState === State.loading}
                     />
                   }
+                  sx={{ ml: "0px" }}
                 />
               </Box>
 
