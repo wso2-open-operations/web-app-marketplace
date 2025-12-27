@@ -189,12 +189,13 @@ export default function CreateApp() {
         width: "100%",
         display: "flex",
         flexDirection: "column",
+        p: 3,
       }}
     >
       {/* Form Content */}
       <Box sx={{ overflowY: "auto", flex: 1 }}>
         <form onSubmit={formik.handleSubmit}>
-          <Box sx={{ p: 3, display: "flex", flexDirection: "row", gap: 3 }}>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
             <Box
               sx={{
                 display: "flex",
@@ -580,8 +581,18 @@ export default function CreateApp() {
               >
                 <Typography>App Status</Typography>
                 <FormControlLabel
+                  sx={{ ml: "0px" }}
                   label={
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        ml: 1.5,
+                        fontWeight: 500,
+                        color: formik.values.isActive
+                          ? theme.palette.customText.primary.p2.active
+                          : theme.palette.customText.primary.p3.active,
+                      }}
+                    >
                       {formik.values.isActive ? "Active" : "Not Active"}
                     </Typography>
                   }
