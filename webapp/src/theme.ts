@@ -123,7 +123,7 @@ export const tokens = (mode: PaletteMode) => {
               active: colors.neutral["1600"],
               hover: colors.neutral["1400"],
               clicked: colors.neutral.white,
-              disabled: colors.neutral.white,
+              disabled: alpha(colors.neutral["1600"], 0.35),
             },
             brand: {
               active: colors.primary["1300"],
@@ -247,7 +247,7 @@ export const tokens = (mode: PaletteMode) => {
               active: colors.neutral["200"],
               hover: colors.neutral["400"],
               clicked: colors.neutral.white,
-              disabled: colors.neutral.white,
+              disabled: alpha(colors.neutral["200"], 0.35),
             },
             brand: {
               active: colors.primary.main,
@@ -683,7 +683,6 @@ export const themeSettings = (mode: PaletteMode) => {
               borderRadius: 8,
               fontSize: "14px",
               fontWeight: 400,
-              color: colors.text.primary.p1.active,
               "& .MuiOutlinedInput-input": {
                 color: colors.text.primary.p3.active,
               },
@@ -701,17 +700,8 @@ export const themeSettings = (mode: PaletteMode) => {
               "&.Mui-error fieldset": {
                 borderColor: "#F23B0D",
               },
-              // "&.Mui-focused": {
-              //   boxShadow: `0 0 0 2px ${colors.border.territory.active}25`,
-              // },
-              // "&.Mui-error.Mui-focused fieldset": {
-              //   borderColor: "#F23B0D",
-              // },
               "&.Mui-disabled fieldset": {
-                opacity: "0.59",
-              },
-              "&.Mui-disabled": {
-                color: colors.text.primary.p3.active,
+                borderColor: colors.border.territory.disabled,
               },
             },
             "& .MuiInputLabel-root": {
@@ -723,9 +713,6 @@ export const themeSettings = (mode: PaletteMode) => {
               },
               "&.Mui-error": {
                 color: "#F23B0D",
-              },
-              "&.Mui-disabled": {
-                color: colors.text.primary.p4.active,
               },
             },
             "& .MuiFormHelperText-root": {
@@ -740,23 +727,12 @@ export const themeSettings = (mode: PaletteMode) => {
           },
         },
       },
-      MuiInputBase: {
-        styleOverrides: {
-          root: {
-            fontSize: "14px",
-            fontWeight: 400,
-            "&.Mui-disabled": {
-              color: colors.text.primary.p3.active,
-            },
-          },
-        },
-      },
       MuiSwitch: {
         styleOverrides: {
           root: {
             width: 58,
             height: 38,
-            padding: 1,
+            padding: 0.5,
             "& .MuiSwitch-switchBase": {
               padding: 0,
               margin: "7px",
@@ -767,7 +743,6 @@ export const themeSettings = (mode: PaletteMode) => {
                 color: colors.fill.secondary.active,
                 "& + .MuiSwitch-track": {
                   backgroundColor: colors.fill.secondary_light.active,
-                  border: 0,
                 },
               },
               "&.Mui-disabled": {
