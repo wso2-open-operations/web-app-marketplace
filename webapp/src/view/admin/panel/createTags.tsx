@@ -175,7 +175,6 @@ export default function CreateTags() {
           sx={{
             display: "flex",
             flexWrap: "wrap",
-            alignItems: "bottom",
             gap: 1.5,
           }}
         >
@@ -186,7 +185,8 @@ export default function CreateTags() {
                 "& .MuiChip-label": {
                   fontSize: "12px",
                 },
-                color: "text.tertiary",
+                color: theme.palette.customText.primary.p3.active,
+                borderColor: theme.palette.customBorder.territory.active,
                 borderRadius: 2,
               }}
               variant="outlined"
