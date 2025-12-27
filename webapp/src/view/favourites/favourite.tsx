@@ -27,7 +27,7 @@ function Favourites() {
     <Grid container spacing={2} sx={{ width: "100%" }}>
       {favApps.length > 0 ? (
         favApps.map((app) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.6 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
             <AppCard
               key={app.id}
               title={app.name}

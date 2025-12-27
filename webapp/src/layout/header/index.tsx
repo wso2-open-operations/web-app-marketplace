@@ -44,7 +44,7 @@ const Header = () => {
     <Box
       sx={{
         zIndex: 10,
-        backgroundColor: theme.palette.surface.territory.active,
+        backgroundColor: theme.palette.surface.secondary.active,
         boxShadow: theme.shadows[4],
       }}
     >
