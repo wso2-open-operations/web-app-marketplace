@@ -59,6 +59,9 @@ export default function TabsPage({ tabsPage }: TabsPageProps) {
       sx={{
         height: "100%",
         transition: "color 200ms",
+        display: "flex",
+        flexDirection: "column",
+        gap: 2.5,
       }}
     >
       {/* Tab Navigation */}
@@ -172,6 +175,7 @@ interface TabPanelProps {
 
 export function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+  const theme = useTheme();
 
   return (
     <Box
@@ -179,13 +183,17 @@ export function TabPanel(props: TabPanelProps) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
-      sx={{ p: 4 }}
     >
       <Box
         component={motion.div}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+        sx={{
+          border: `1px solid ${theme.palette.customBorder.territory.active}`,
+          borderRadius: 1.5,
+          backgroundColor: theme.palette.surface.secondary.active,
+        }}
       >
         {children}
       </Box>

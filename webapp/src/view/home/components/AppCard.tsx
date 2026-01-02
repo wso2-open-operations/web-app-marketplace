@@ -144,11 +144,10 @@ export default function AppCard({
               },
               tooltip: {
                 sx: {
-                  backgroundColor: "#fff",
-                  color: "#333",
-                  border: "1px solid #e6e6e6",
-                  borderRadius: 2,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  backgroundColor: theme.palette.surface.secondary.active,
+                  border: `1px solid ${theme.palette.customBorder.territory.active}`,
+                  borderRadius: 1,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
                   maxWidth: "250px",
                   padding: 1,
                 },
@@ -174,14 +173,15 @@ export default function AppCard({
     borderRadius: 2,
     boxShadow: "none",
     position: "relative",
-    border: `.75px solid ${theme.palette.customBorder.territory.active}`,
-    background: theme.palette.surface.territory.active,
+    border: `1px solid ${theme.palette.customBorder.territory.active}`,
+    background: theme.palette.surface.secondary.active,
     cursor: "pointer",
     display: "flex",
     flexDirection: "column",
     transition: "transform 0.2s ease",
     "&:hover": {
       transform: "translateY(-2px)",
+      boxShadow: `0 2px 6px 1px ${theme.palette.shadow.primary.active}`,
     },
   };
 
@@ -209,6 +209,7 @@ export default function AppCard({
           }}
         >
           {renderLogo()}
+
           <IconButton
             onClick={(e) => {
               e.stopPropagation();
@@ -220,10 +221,14 @@ export default function AppCard({
             }}
           >
             {isFavorite ? (
-              <Favorite sx={{ fontSize: 20, color: "#e53e3e" }} />
+              <Favorite sx={{ fontSize: 24, color: theme.palette.error.main }} />
             ) : (
               <FavoriteBorder
-                sx={{ fontSize: 20, color: theme.palette.customText.primary.p3.active }}
+                sx={{
+                  fontSize: 24,
+                  color: theme.palette.customText.primary.p3.active,
+                  "&:hover": { color: theme.palette.error.main },
+                }}
               />
             )}
           </IconButton>
@@ -269,8 +274,16 @@ export default function AppCard({
           >
             {renderTags()}
           </Box>
+
           <Box sx={{ display: "flex", gap: 2, flexShrink: 0 }}>
-            <Launch sx={{ fontSize: 20, color: theme.palette.customText.primary.p3.active }} />
+            <Launch
+              sx={{
+                fontSize: 20,
+                cursor: "pointer",
+                color: theme.palette.customText.primary.p3.active,
+                "&:hover": { color: theme.palette.customText.secondary.p2.active },
+              }}
+            />
           </Box>
         </Box>
       </CardContent>
