@@ -16,7 +16,7 @@
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 import TabsPage from "@root/src/layout/pages/TabsPage";
-import UserGuide from "@view/help/panel/userGuide";
+import UserGuide from "@root/src/view/help/panel/UserGuide";
 
 export default function Help() {
   return (

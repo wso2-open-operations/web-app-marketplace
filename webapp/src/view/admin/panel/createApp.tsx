@@ -44,7 +44,7 @@ import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/stor
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { State } from "@root/src/types/types";
 
-import { validationSchema } from "../utils/CreateAppSchema";
+import { validationSchema } from "../utils/createAppSchema";
 
 const fileSize = 10 * 1024 * 1024;
 

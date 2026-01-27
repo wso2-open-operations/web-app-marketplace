@@ -46,7 +46,7 @@ import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { State } from "@root/src/types/types";
 import AppCard from "@view/home/components/AppCard";
 
-import { validationSchema } from "../utils/UpdateAppSchema";
+import { validationSchema } from "../utils/updateAppSchema";
 
 const fileSize = 10 * 1024 * 1024;
 

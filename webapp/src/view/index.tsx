@@ -15,12 +15,12 @@
 // under the License.
 import { lazy } from "react";
 
-const home = lazy(() => import("@view/home/home"));
-const help = lazy(() => import("@view/help/help"));
-const favourites = lazy(() => import("@view/favourites/favourite"));
-const profile = lazy(() => import("@view/profile/profile"));
-const admin = lazy(() => import("@view/admin/admin"));
-const appConfig = lazy(() => import("@view/appConfig/appConfig"));
+const home = lazy(() => import("@root/src/view/home/Home"));
+const help = lazy(() => import("@root/src/view/help/Help"));
+const favourites = lazy(() => import("@root/src/view/favourites/Favourite"));
+const profile = lazy(() => import("@root/src/view/profile/Profile"));
+const admin = lazy(() => import("@root/src/view/admin/Admin"));
+const appConfig = lazy(() => import("@root/src/view/app-config/AppConfig"));
 
 export const View = {
   home,
