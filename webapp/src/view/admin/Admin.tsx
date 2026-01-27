@@ -24,7 +24,7 @@ import { fetchApps } from "@root/src/slices/appSlice/app";
 import { useAppDispatch } from "@root/src/slices/store";
 
 import CreateApp from "./panel/CreateApp";
-import CreateTags from "./panel/CreateTag";
+import CreateTags from "./panel/CreateTags";
 import UpdateApp from "./panel/UpdateApp";
 
 export default function Admin() {
