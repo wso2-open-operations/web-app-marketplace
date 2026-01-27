@@ -20,7 +20,6 @@ const help = lazy(() => import("@root/src/view/help/Help"));
 const favourites = lazy(() => import("@root/src/view/favourites/Favourite"));
 const profile = lazy(() => import("@root/src/view/profile/Profile"));
 const admin = lazy(() => import("@root/src/view/admin/Admin"));
-const appConfig = lazy(() => import("@root/src/view/app-config/AppConfig"));
 
 export const View = {
   home,
@@ -28,5 +27,4 @@ export const View = {
   favourites,
   profile,
   admin,
-  appConfig,
 };

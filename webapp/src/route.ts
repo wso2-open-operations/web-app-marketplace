@@ -17,7 +17,6 @@ import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import AppsIcon from "@mui/icons-material/Apps";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import SettingsSuggestOutlinedIcon from "@mui/icons-material/SettingsSuggestOutlined";
 import type { RouteObject } from "react-router-dom";
 
 import React from "react";
@@ -56,14 +55,6 @@ export const routes: RouteObjectWithRole[] = [
     icon: React.createElement(AdminPanelSettingsOutlinedIcon),
     element: React.createElement(View.admin),
     allowRoles: [Role.ADMIN],
-  },
-  {
-    path: "/appConfig",
-    text: "App Config",
-    icon: React.createElement(SettingsSuggestOutlinedIcon),
-    element: React.createElement(View.appConfig),
-    allowRoles: [Role.ADMIN],
-    bottomNav: true,
   },
 
   /*

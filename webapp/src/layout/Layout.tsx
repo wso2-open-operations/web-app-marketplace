@@ -17,17 +17,14 @@ import { Box, useTheme } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import Snowfall from "react-snowfall";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
-import SnowflakeIcon from "@assets/icons/SnowFlakeIcon";
 import PreLoader from "@component/common/PreLoader";
 import { redirectUrl as savedRedirectUrl } from "@config/constant";
 import ConfirmationModalContextProvider from "@context/DialogContext";
 import Header from "@layout/header";
 import Sidebar from "@layout/sidebar";
-import { Themes, useGetThemeQuery } from "@services/config.api";
 import { selectRoles } from "@slices/authSlice/auth";
 import { type RootState, useAppSelector } from "@slices/store";
 
@@ -39,7 +36,6 @@ export default function Layout() {
   const [open, setOpen] = useState(false);
   const roles = useSelector(selectRoles);
   const theme = useTheme();
-  const { data: themeData } = useGetThemeQuery();
 
   const showSnackbar = useCallback(() => {
     if (common.timestamp !== null) {
@@ -50,11 +46,6 @@ export default function Layout() {
       });
     }
   }, [common.message, common.type, common.timestamp, enqueueSnackbar]);
-
-  const snowflake = useMemo(
-    () => [SnowflakeIcon({ color: theme.palette.fill.xmas.active })],
-    [theme.palette.fill.xmas.active],
-  );
 
   useEffect(() => {
     showSnackbar();
@@ -70,19 +61,6 @@ export default function Layout() {
 
   return (
     <ConfirmationModalContextProvider>
-      {themeData?.activeThemeName === Themes.XMAS_THEME && (
-        <Snowfall
-          snowflakeCount={80}
-          color={theme.palette.fill.xmas.active}
-          images={snowflake}
-          radius={[5, 20]}
-          style={{
-            zIndex: 1000,
-            pointerEvents: "none",
-          }}
-        />
-      )}
-
       <Box
         sx={{
           display: "flex",
