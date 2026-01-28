@@ -12,7 +12,7 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
-// under the License.s
+// under the License
 import * as Yup from "yup";
 
 const fileSize = 10 * 1024 * 1024;
