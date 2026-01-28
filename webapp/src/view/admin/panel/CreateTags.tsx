@@ -178,9 +178,9 @@ export default function CreateTags() {
             gap: 1.5,
           }}
         >
-          {tags?.map((tag, index) => (
+          {tags?.map((tag) => (
             <Chip
-              key={index}
+              key={tag.id}
               sx={{
                 "& .MuiChip-label": {
                   fontSize: "12px",
