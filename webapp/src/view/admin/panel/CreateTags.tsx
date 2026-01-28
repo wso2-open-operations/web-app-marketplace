@@ -80,7 +80,7 @@ export default function CreateTags() {
             color: theme.palette.customText.primary.p2.active,
           }}
         >
-          Add New Tags
+          Add Tags
         </Typography>
 
         <form onSubmit={formik.handleSubmit}>
