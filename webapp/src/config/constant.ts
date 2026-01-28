@@ -33,7 +33,7 @@ export const APP_DESC = "Web App Store";
 
 export const redirectUrl = "web-app-marketplace-redirect-url";
 
-export const localStorageTheme = "web-app-marketplace-theme"
+export const INTERNAL_APPS_THEME = "web-app-marketplace-theme";
 
 export const PRIVILEGE_ADMIN = 789;
 
