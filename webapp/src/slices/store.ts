@@ -17,7 +17,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import { enableMapSet } from "immer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
-import { configApi } from "@services/config.api";
 import appsReducer from "@slices/appSlice/app";
 import authReducer from "@slices/authSlice/auth";
 import commonReducer from "@slices/commonSlice/common";
@@ -37,11 +36,8 @@ export const store = configureStore({
     app: appsReducer,
     tag: tagReducer,
     group: groupReducer,
-
-    // RTK Query API reducers
-    [configApi.reducerPath]: configApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(configApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

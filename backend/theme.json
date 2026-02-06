@@ -1,7 +1,0 @@
-{
-  "activeThemeName": "christmas",
-  "themes": {
-    "default": { "name": "default", "label": "Default Theme" },
-    "christmas": { "name": "christmas", "label": "Christmas Theme" }
-  }
-}

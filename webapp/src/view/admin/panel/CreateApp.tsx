@@ -27,9 +27,9 @@ import {
   Switch,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 
 import { useEffect, useState } from "react";
 
@@ -44,6 +44,8 @@ import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/stor
 import { fetchTags } from "@root/src/slices/tagSlice/tag";
 import { State } from "@root/src/types/types";
 
+import { validationSchema } from "../utils/createAppSchema";
+
 const fileSize = 10 * 1024 * 1024;
 
 interface FileWithPreview {
@@ -54,49 +56,14 @@ interface FileWithPreview {
   error: string | null;
 }
 
-const validationSchema = Yup.object({
-  title: Yup.string()
-    .trim()
-    .min(2, "Title must be at least 2 characters")
-    .required("App name is required"),
-  description: Yup.string()
-    .trim()
-    .min(10, "Description must be at least 10 characters")
-    .max(100, "Description must be at most 100 characters")
-    .required("App description is required"),
-  link: Yup.string().trim().url("Must be a valid URL").required("App URL is required"),
-  versionName: Yup.string()
-    .trim()
-    .min(1, "Version name must be at least 1 character")
-    .required("App version name is required"),
-  tags: Yup.array()
-    .of(Yup.number().required())
-    .min(1, "At least one tag is required")
-    .required("Tags are required"),
-  groupIds: Yup.array()
-    .of(Yup.string().required())
-    .min(1, "At least one user group is required")
-    .required("User groups are required"),
-  icon: Yup.mixed()
-    .required("App icon is required")
-    .test("fileType", "Only SVG files are allowed", (value) => {
-      if (!value) return false;
-      const file = value as File;
-      return file.type === "image/svg+xml" && file.name.toLowerCase().endsWith(".svg");
-    })
-    .test("fileSize", "File size must not exceed 10MB", (value) => {
-      if (!value) return false;
-      const file = value as File;
-      return file.size <= fileSize; // 10MB
-    }),
-});
-
 export default function CreateApp() {
   const dispatch = useAppDispatch();
   const tags = useAppSelector((state: RootState) => state.tag.tags);
   const groups = useAppSelector((state: RootState) => state.group.groups);
   const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
   const { stateMessage, submitState } = useAppSelector((state: RootState) => state.app);
+
+  const theme = useTheme();
 
   const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -222,15 +189,13 @@ export default function CreateApp() {
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        bgcolor: "background.paper",
-        borderRadius: 2,
-        boxShadow: 4,
+        p: 3,
       }}
     >
       {/* Form Content */}
       <Box sx={{ overflowY: "auto", flex: 1 }}>
         <form onSubmit={formik.handleSubmit}>
-          <Box sx={{ p: 3, display: "flex", flexDirection: "row", gap: 3 }}>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
             <Box
               sx={{
                 display: "flex",
@@ -240,8 +205,11 @@ export default function CreateApp() {
               }}
             >
               {/* App Name */}
-              <Box>
-                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Typography
+                  variant="body1"
+                  sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
+                >
                   App Name
                 </Typography>
                 <TextField
@@ -258,11 +226,15 @@ export default function CreateApp() {
               </Box>
 
               {/* App URL and Version Name in Row */}
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
+              <Box sx={{ display: "flex", gap: 2, width: "100%" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "100%" }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
+                  >
                     App Url
                   </Typography>
+
                   <TextField
                     fullWidth
                     name="link"
@@ -275,10 +247,15 @@ export default function CreateApp() {
                     disabled={submitState === State.loading}
                   />
                 </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
+
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "100%" }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
+                  >
                     App Version Name
                   </Typography>
+
                   <TextField
                     fullWidth
                     name="versionName"
@@ -294,8 +271,11 @@ export default function CreateApp() {
               </Box>
 
               {/* App Description */}
-              <Box>
-                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Typography
+                  variant="body1"
+                  sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
+                >
                   App Description
                 </Typography>
                 <TextField
@@ -314,10 +294,14 @@ export default function CreateApp() {
               </Box>
 
               {/* Tag */}
-              <Box>
-                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Typography
+                  variant="body1"
+                  sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
+                >
                   Tags
                 </Typography>
+
                 <Autocomplete
                   multiple
                   options={tags || []}
@@ -367,10 +351,14 @@ export default function CreateApp() {
               </Box>
 
               {/* User Groups */}
-              <Box>
-                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Typography
+                  variant="body1"
+                  sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
+                >
                   User Groups
                 </Typography>
+
                 <Autocomplete
                   multiple
                   options={groups || []}
@@ -403,8 +391,15 @@ export default function CreateApp() {
               }}
             >
               {/* App Icon Upload */}
-              <Box sx={{ width: "100%" }}>
-                <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 500,
+                    color: theme.palette.customText.primary.p2.active,
+                    ml: 0.5,
+                  }}
+                >
                   App Icon
                 </Typography>
 
@@ -418,14 +413,13 @@ export default function CreateApp() {
                     sx={{
                       border: "2px dashed",
                       borderColor: dragActive
-                        ? "primary.main"
+                        ? theme.palette.customBorder.secondary.active
                         : formik.touched.icon && formik.errors.icon
-                          ? "error.main"
+                          ? theme.palette.error.main
                           : "divider",
                       borderRadius: 2,
                       p: 6,
                       textAlign: "center",
-                      bgcolor: dragActive ? "action.hover" : "background.paper",
                       cursor: "pointer",
                       transition: "all 0.3s",
                     }}
@@ -448,18 +442,29 @@ export default function CreateApp() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          color: "white",
                         }}
                       >
                         <UploadFileIcon />
                       </Box>
-                      <Typography>
-                        Drag and drop file or{" "}
-                        <Box component="span" sx={{ color: "primary.main", cursor: "pointer" }}>
-                          select file
-                        </Box>
-                      </Typography>
+
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 0.5,
+                          color: theme.palette.customText.primary.p3.active,
+                        }}
+                      >
+                        <Typography>Drag and drop file or </Typography>
+                        <Typography
+                          sx={{
+                            color: theme.palette.customText.secondary.p1.active,
+                          }}
+                        >
+                          Select file
+                        </Typography>
+                      </Box>
                     </Box>
+
                     <input
                       id="file-upload"
                       type="file"
@@ -541,7 +546,8 @@ export default function CreateApp() {
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
-                    mt: 1,
+                    color: theme.palette.customText.primary.p3.active,
+                    mx: 0.5,
                   }}
                 >
                   <Typography variant="caption" color="text.secondary">
@@ -565,49 +571,41 @@ export default function CreateApp() {
                 <Alert severity="error">{stateMessage}</Alert>
               )}
 
-              <FormControlLabel
-                label={
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {formik.values.isActive ? "Active" : "Not Active"}
-                  </Typography>
-                }
-                labelPlacement="end"
-                control={
-                  <Switch
-                    checked={formik.values.isActive}
-                    onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
-                    disabled={submitState === State.loading}
-                    sx={{
-                      width: 58,
-                      height: 38,
-                      padding: 1,
-                      "& .MuiSwitch-switchBase": {
-                        padding: 0,
-                        margin: "7px",
-                        transitionDuration: "300ms",
-                        "&.Mui-checked": {
-                          transform: "translateX(20px)",
-                          color: "#fff",
-                          "& + .MuiSwitch-track": {
-                            backgroundColor: "primary.main",
-                            opacity: 1,
-                            border: 0,
-                          },
-                        },
-                      },
-                      "& .MuiSwitch-thumb": {
-                        width: 24,
-                        height: 24,
-                      },
-                      "& .MuiSwitch-track": {
-                        borderRadius: 38 / 2,
-                        backgroundColor: "grey.400",
-                        opacity: 1,
-                      },
-                    }}
-                  />
-                }
-              />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                  color: theme.palette.customText.primary.p2.active,
+                }}
+              >
+                <Typography>App Status</Typography>
+                <FormControlLabel
+                  sx={{ ml: "0px" }}
+                  label={
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        ml: 1.5,
+                        fontWeight: 500,
+                        color: formik.values.isActive
+                          ? theme.palette.customText.primary.p2.active
+                          : theme.palette.customText.primary.p3.active,
+                      }}
+                    >
+                      {formik.values.isActive ? "Active" : "Not Active"}
+                    </Typography>
+                  }
+                  labelPlacement="end"
+                  control={
+                    <Switch
+                      checked={formik.values.isActive}
+                      onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
+                      disabled={submitState === State.loading}
+                    />
+                  }
+                />
+              </Box>
             </Box>
           </Box>
 

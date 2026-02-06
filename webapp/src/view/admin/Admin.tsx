@@ -23,9 +23,9 @@ import TabsPage from "@layout/pages/TabsPage";
 import { fetchApps } from "@root/src/slices/appSlice/app";
 import { useAppDispatch } from "@root/src/slices/store";
 
-import CreateApp from "./panel/createApp";
-import CreateTags from "./panel/createTags";
-import UpdateApp from "./panel/updateApp";
+import CreateApp from "./panel/CreateApp";
+import CreateTags from "./panel/CreateTags";
+import UpdateApp from "./panel/UpdateApp";
 
 export default function Admin() {
   const dispatch = useAppDispatch();

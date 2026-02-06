@@ -35,12 +35,14 @@ export default function Profile() {
     <Card
       sx={{
         borderRadius: 2,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.0)",
+        boxShadow: "none",
         border: `1px solid ${theme.palette.customBorder.territory.active}`,
       }}
     >
-      <CardContent sx={{ display: "flex", alignItems: "end", gap: 4 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <CardContent
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2.5 }}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, alignItems: "center" }}>
           <Avatar
             sx={{ height: "100px", width: "100px" }}
             src={user?.employeeThumbnail ?? ""}
@@ -48,27 +50,26 @@ export default function Profile() {
           >
             {user?.firstName?.slice(0, 1)}
           </Avatar>
-          <Box sx={{ display: "flex", gap: 4 }}>
-            <Box
-              sx={{
-                paddingLeft: 1,
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-              }}
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              sx={{ color: theme.palette.customText.primary.p2.active, textAlign: "center" }}
+              variant="h4"
             >
-              <Typography sx={{ color: theme.palette.customText.primary.p2.active }} variant="h4">
-                {`${user?.firstName} ${user?.lastName}`}
-              </Typography>
-              <Typography
-                sx={{ color: theme.palette.customText.primary.p3.active }}
-                variant="body1"
-              >
-                {user?.workEmail}
-              </Typography>
-            </Box>
+              {`${user?.firstName} ${user?.lastName}`}
+            </Typography>
+
+            <Typography sx={{ color: theme.palette.customText.primary.p4.active }} variant="body2">
+              {user?.workEmail}
+            </Typography>
           </Box>
         </Box>
+
         <Box
           sx={{
             "& > *:not(:last-child)": {
@@ -76,19 +77,6 @@ export default function Profile() {
             },
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{
-              color: theme.palette.customText.primary.p2.active,
-              textDecoration: "underline",
-              textDecorationColor: theme.palette.customText.primary.p2.active,
-              textDecorationThickness: "1px",
-              textUnderlineOffset: "2px",
-            }}
-          >
-            Roles
-          </Typography>
-
           <Box
             sx={{
               display: "flex",
@@ -103,10 +91,12 @@ export default function Profile() {
                   key={grp}
                   sx={{
                     "& .MuiChip-label": {
-                      fontSize: "12px",
+                      fontSize: "14px",
                     },
                     color: theme.palette.customText.primary.p3.active,
-                    borderRadius: 2,
+                    border: `1px solid ${theme.palette.customBorder.territory.active}`,
+                    borderRadius: 0.5,
+                    backgroundColor: theme.palette.surface.primary.active,
                   }}
                   variant="outlined"
                   size="small"
