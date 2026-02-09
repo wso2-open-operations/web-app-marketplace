@@ -36,14 +36,12 @@ import { useEffect, useState } from "react";
 import {
   App,
   UpdateAppPayload,
-  fetchApps,
-  fetchUserApps,
-  updateApp,
-} from "@root/src/slices/appSlice/app";
-import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
-import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
-import { fetchTags } from "@root/src/slices/tagSlice/tag";
-import { State } from "@root/src/types/types";
+  useGetAppsQuery,
+  useUpdateAppMutation,
+} from "@root/src/services/app.api";
+import { useGetUserGroupsQuery } from "@root/src/services/groups.api";
+import { useGetTagsQuery } from "@root/src/services/tag.api";
+import { useGetUserInfoQuery } from "@root/src/services/user.api";
 import AppCard from "@view/home/components/AppCard";
 
 import { validationSchema } from "../utils/updateAppSchema";
@@ -59,12 +57,12 @@ interface FileWithPreview {
 }
 
 export default function UpdateApp() {
-  const dispatch = useAppDispatch();
-  const tags = useAppSelector((state: RootState) => state.tag.tags);
-  const groups = useAppSelector((state: RootState) => state.group.groups);
-  const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
-  const appState = useAppSelector((state: RootState) => state.app);
-  const { stateMessage, submitState, apps } = appState;
+  // RTK Query hooks
+  const { data: userInfo } = useGetUserInfoQuery();
+  const { data: tags = [] } = useGetTagsQuery();
+  const { data: groups = [] } = useGetUserGroupsQuery();
+  const { data: apps = [] } = useGetAppsQuery();
+  const [updateAppMutation, { isLoading: isUpdating, isError, error }] = useUpdateAppMutation();
 
   const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -73,11 +71,6 @@ export default function UpdateApp() {
   const userEmail = userInfo?.workEmail ?? "";
 
   const theme = useTheme();
-
-  useEffect(() => {
-    dispatch(fetchGroups());
-    dispatch(fetchTags());
-  }, [dispatch]);
 
   const setupIconPlaceholder = (app: App | null) => {
     if (app?.icon) {
@@ -202,10 +195,8 @@ export default function UpdateApp() {
       formik.setFieldError("title", "No changes detected");
       return;
     }
-    await dispatch(updateApp({ id: selectedApp.id, payload: payload as UpdateAppPayload }));
 
-    dispatch(fetchApps());
-    dispatch(fetchUserApps());
+    await updateAppMutation({ id: selectedApp.id, payload: payload as UpdateAppPayload }).unwrap();
   };
 
   const formik = useFormik({
@@ -332,7 +323,7 @@ export default function UpdateApp() {
             options={apps || []}
             getOptionLabel={(option) => option.name}
             value={selectedApp}
-            onChange={(event, value) => setSelectedApp(value)}
+            onChange={(_, value) => setSelectedApp(value)}
             renderInput={(params) => (
               <TextField {...params} name="apps" placeholder="Select an app" />
             )}
@@ -400,7 +391,7 @@ export default function UpdateApp() {
                   onBlur={formik.handleBlur}
                   error={formik.touched.title && Boolean(formik.errors.title)}
                   helperText={formik.touched.title && (formik.errors.title as string)}
-                  disabled={!selectedApp || submitState === State.loading}
+                  disabled={!selectedApp || isUpdating}
                 />
               </Box>
 
@@ -423,7 +414,7 @@ export default function UpdateApp() {
                     onBlur={formik.handleBlur}
                     error={formik.touched.url && Boolean(formik.errors.url)}
                     helperText={formik.touched.url && (formik.errors.url as string)}
-                    disabled={!selectedApp || submitState === State.loading}
+                    disabled={!selectedApp || isUpdating}
                   />
                 </Box>
 
@@ -444,7 +435,7 @@ export default function UpdateApp() {
                     onBlur={formik.handleBlur}
                     error={formik.touched.versionName && Boolean(formik.errors.versionName)}
                     helperText={formik.touched.versionName && (formik.errors.versionName as string)}
-                    disabled={!selectedApp || submitState === State.loading}
+                    disabled={!selectedApp || isUpdating}
                   />
                 </Box>
               </Box>
@@ -471,7 +462,7 @@ export default function UpdateApp() {
                   onBlur={formik.handleBlur}
                   error={formik.touched.description && Boolean(formik.errors.description)}
                   helperText={formik.touched.description && (formik.errors.description as string)}
-                  disabled={!selectedApp || submitState === State.loading}
+                  disabled={!selectedApp || isUpdating}
                 />
               </Box>
 
@@ -495,7 +486,7 @@ export default function UpdateApp() {
                     );
                   }}
                   onBlur={formik.handleBlur}
-                  disabled={!selectedApp || submitState === State.loading}
+                  disabled={!selectedApp || isUpdating}
                   renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
                       <Chip
@@ -550,7 +541,7 @@ export default function UpdateApp() {
                     formik.setFieldValue("groupIds", newValue);
                   }}
                   onBlur={formik.handleBlur}
-                  disabled={!selectedApp || submitState === State.loading}
+                  disabled={!selectedApp || isUpdating}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -639,7 +630,7 @@ export default function UpdateApp() {
                       accept=".svg,image/svg+xml"
                       onChange={handleFileChange}
                       style={{ display: "none" }}
-                      disabled={!selectedApp || submitState === State.loading}
+                      disabled={!selectedApp || isUpdating}
                     />
                   </Box>
                 )}
@@ -692,10 +683,7 @@ export default function UpdateApp() {
                           </Typography>
                         </Box>
                       </Box>
-                      <IconButton
-                        onClick={handleRemoveFile}
-                        disabled={!selectedApp || submitState === State.loading}
-                      >
+                      <IconButton onClick={handleRemoveFile} disabled={!selectedApp || isUpdating}>
                         <CloseIcon />
                       </IconButton>
                     </Box>
@@ -764,7 +752,7 @@ export default function UpdateApp() {
                     <Switch
                       checked={formik.values.isActive}
                       onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
-                      disabled={!selectedApp || submitState === State.loading}
+                      disabled={!selectedApp || isUpdating}
                     />
                   }
                   sx={{ ml: "0px" }}
@@ -772,8 +760,15 @@ export default function UpdateApp() {
               </Box>
 
               {/* Show general error */}
-              {submitState === State.failed && stateMessage && (
-                <Alert severity="error">{stateMessage}</Alert>
+              {isError && error && (
+                <Alert severity="error">
+                  {"data" in error &&
+                  typeof error.data === "object" &&
+                  error.data &&
+                  "message" in error.data
+                    ? String(error.data.message)
+                    : "Failed to update application. Please try again."}
+                </Alert>
               )}
             </Box>
 
@@ -788,7 +783,7 @@ export default function UpdateApp() {
               }}
             >
               <Button
-                disabled={!selectedApp || submitState === State.loading}
+                disabled={!selectedApp || isUpdating}
                 onClick={() => {
                   formik.resetForm();
                   if (selectedApp?.icon) {
@@ -801,12 +796,8 @@ export default function UpdateApp() {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={submitState === State.loading || !selectedApp}
-              >
-                {submitState === State.loading ? "Updating..." : "Update App"}
+              <Button type="submit" variant="contained" disabled={isUpdating || !selectedApp}>
+                {isUpdating ? "Updating..." : "Update App"}
               </Button>
             </Box>
           </form>

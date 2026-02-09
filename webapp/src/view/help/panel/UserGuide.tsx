@@ -13,11 +13,12 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { Box } from "@mui/material";
-import { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import MarkdownPreview from "@uiw/react-markdown-preview";
+
+import { useEffect, useState } from "react";
+
 import { useAppDispatch, useAppSelector } from "@slices/store";
 
 function UserGuide() {
@@ -41,10 +42,7 @@ function UserGuide() {
   const supportTeamEmails =
     useAppSelector((state) => state.appConfig.config?.supportTeamEmails) || [];
   const supportTeams = supportTeamEmails
-    .map(
-      ({ team, email }) =>
-        `- For **${team.toLowerCase()}**, email: [${email}](mailto:${email})`
-    )
+    .map(({ team, email }) => `- For **${team.toLowerCase()}**, email: [${email}](mailto:${email})`)
     .join("\n");
   const doc = markdownContent + supportTeams;
 

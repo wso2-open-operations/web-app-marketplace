@@ -1,4 +1,4 @@
-// Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
+// Copyright (c) 2026 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -16,11 +16,16 @@
 import { Grid } from "@mui/material";
 
 import ErrorHandler from "@component/common/ErrorHandler";
-import { RootState, useAppSelector } from "@root/src/slices/store";
+import { useGetUserAppsQuery } from "@root/src/services/app.api";
+import { useGetUserInfoQuery } from "@root/src/services/user.api";
 import AppCard from "@view/home/components/AppCard";
 
 function Favourites() {
-  const apps = useAppSelector((state: RootState) => state.app.userApps);
+  const { data: userInfo } = useGetUserInfoQuery();
+  const { data: apps = [] } = useGetUserAppsQuery(userInfo?.workEmail ?? "", {
+    skip: !userInfo?.workEmail,
+  });
+
   const favApps = apps?.filter((app) => app.isFavourite === 1) || [];
 
   return (

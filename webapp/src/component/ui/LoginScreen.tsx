@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Box, Card, CardContent, Container, Divider, Stack } from "@mui/material";
+import { Box, Card, CardContent, Container, Stack, useTheme } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 
@@ -27,6 +27,7 @@ import logo from "@src/assets/images/wso2-logo-black.png";
 
 const LoginScreen = () => {
   const { appSignIn, appSignOut } = useAppAuthContext();
+  const theme = useTheme();
 
   return (
     <Box
@@ -39,6 +40,8 @@ const LoginScreen = () => {
         backgroundImage: `url(${BackgroundImage})`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
+        p: 0,
+        color: theme.palette.customText.primary.p2.active,
       }}
     >
       <Container fixed maxWidth="xs">
@@ -46,82 +49,58 @@ const LoginScreen = () => {
           elevation={24}
           sx={{
             borderRadius: 3,
-            pt: 3,
-            mx: 1,
-            backgroundColor: "white",
+            backgroundColor: theme.palette.surface.secondary.active,
+            p: 2.5,
           }}
         >
-          <CardContent>
-            <Box
-              sx={{
-                px: 1,
-                backgroundColor: "white",
-              }}
+          <CardContent sx={{ paddingY: 0 }}>
+            <Grid
+              container
+              direction="column"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2.5}
             >
-              <Grid
-                container
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                spacing={2}
-                p={1}
-              >
-                <Grid size={{ xs: 12 }}>
-                  <img alt="logo" width="130" height="auto" src={logo}></img>
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <Typography
-                    align="center"
-                    sx={{ fontWeight: "bold" }}
-                    variant="h5"
-                    color={"black"}
-                  >
-                    {APP_NAME}
-                  </Typography>
-                </Grid>
-                <Grid size={{ xs: 12 }} sx={{ pb: 2 }}>
-                  <Typography
-                    align="center"
-                    sx={{ fontSize: "1em" }}
-                    color={"black"}
-                    fontWeight={"400"}
-                  >
-                    {APP_DESC}
-                  </Typography>
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <LoadingButton
-                    variant="contained"
-                    color="primary"
-                    sx={{ fontWeight: "bold" }}
-                    onClick={() => {
-                      appSignOut();
+              <img alt="logo" width="130" height="auto" src={logo}></img>
 
-                      appSignIn();
-                    }}
-                  >
-                    LOG IN
-                  </LoadingButton>
-                </Grid>
-                <Grid size={{ xs: 12 }} mt={6}>
-                  <Stack direction="column" spacing={2}>
-                    <Typography align="center" color={"black"}>
-                      Powered By
-                    </Typography>
-                    <Stack direction="row" spacing={2}>
-                      <img height={22} alt="Product logos" src={ProductLogos} />
-                    </Stack>
-                  </Stack>
-                </Grid>
-                <Grid size={{ xs: 12 }} mt={3}>
-                  <Typography align="center" color={"grey"} sx={{ fontSize: "0.8em" }}>
-                    {/* {`© ${format(new Date(), "yyyy")} WSO2 LLC`} */}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
+              <Typography align="center" sx={{ fontWeight: "600" }} variant="h5">
+                {APP_NAME}
+              </Typography>
+
+              <Typography
+                variant="body1"
+                align="center"
+                sx={{ color: theme.palette.customText.primary.p2.active }}
+              >
+                {APP_DESC}
+              </Typography>
+
+              <LoadingButton
+                variant="contained"
+                color="primary"
+                sx={{ fontWeight: "bold" }}
+                onClick={() => {
+                  appSignOut();
+
+                  appSignIn();
+                }}
+              >
+                LOG IN
+              </LoadingButton>
+
+              <Stack
+                direction="column"
+                spacing={2}
+                color={theme.palette.customText.primary.p4.active}
+              >
+                <Typography align="center">Powered By</Typography>
+
+                <Stack direction="row" spacing={2}>
+                  <img height={22} alt="Product logos" src={ProductLogos} />
+                </Stack>
+              </Stack>
+            </Grid>
           </CardContent>
-          <Divider />
         </Card>
       </Container>
     </Box>

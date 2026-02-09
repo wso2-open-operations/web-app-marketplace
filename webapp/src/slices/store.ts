@@ -17,27 +17,35 @@ import { configureStore } from "@reduxjs/toolkit";
 import { enableMapSet } from "immer";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
-import appsReducer from "@slices/appSlice/app";
+import { appApi } from "@services/app.api";
+import { configApi } from "@services/config.api";
+import { groupsApi } from "@services/groups.api";
+import { tagApi } from "@services/tag.api";
+import { userApi } from "@services/user.api";
 import authReducer from "@slices/authSlice/auth";
 import commonReducer from "@slices/commonSlice/common";
-import appConfigReducer from "@slices/configSlice/config";
-import groupReducer from "@slices/groupsSlice/groups";
-import tagReducer from "@slices/tagSlice/tag";
-import userReducer from "@slices/userSlice/user";
 
 enableMapSet();
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    user: userReducer,
     common: commonReducer,
-    appConfig: appConfigReducer,
-    app: appsReducer,
-    tag: tagReducer,
-    group: groupReducer,
+
+    // RTK Query API reducers
+    [appApi.reducerPath]: appApi.reducer,
+    [configApi.reducerPath]: configApi.reducer,
+    [groupsApi.reducerPath]: groupsApi.reducer,
+    [tagApi.reducerPath]: tagApi.reducer,
+    [userApi.reducerPath]: userApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware()
+      .concat(appApi.middleware)
+      .concat(configApi.middleware)
+      .concat(groupsApi.middleware)
+      .concat(tagApi.middleware)
+      .concat(userApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

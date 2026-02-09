@@ -184,3 +184,31 @@ type UpdateTheme record {|
     # Active theme
     string activeThemeName;
 |};
+
+# Filter to filter user groups
+public type Filter record {
+    # Filter
+    string filter?;
+};
+
+# Group.
+public type Group record {|
+    # Group ID
+    string id;
+    # Display name of the group
+    string displayName;
+    json...;
+|};
+
+# Group search result.
+public type GroupSearchResult record {|
+    # Total number of groups
+    int totalResults;
+    # Starting index of the response
+    int startIndex;
+    # Number of groups returned in the response
+    int itemsPerPage;
+    # List of group details
+    Group[] Resources = [];
+    json...;
+|};

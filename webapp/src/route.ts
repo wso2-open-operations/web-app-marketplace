@@ -21,7 +21,7 @@ import type { RouteObject } from "react-router-dom";
 
 import React from "react";
 
-import { Role } from "@/types/types";
+import { Role } from "@slices/authSlice/auth";
 import { isIncludedRole } from "@utils/utils";
 import { View } from "@view/index";
 

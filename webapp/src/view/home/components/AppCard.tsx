@@ -30,8 +30,7 @@ import {
 import { useState } from "react";
 
 import { UpdateAction } from "@/types/types";
-import { Tag, upsertAppFavourite } from "@slices/appSlice/app";
-import { useAppDispatch } from "@slices/store";
+import { Tag, useUpsertAppFavouriteMutation } from "@root/src/services/app.api";
 import { getChipStyles } from "@utils/utils";
 
 interface AppCardProps {
@@ -60,18 +59,22 @@ export default function AppCard({
   isClickable = true,
 }: AppCardProps) {
   const [isFavorite, setIsFavorite] = useState(isFavourite === 1);
-  const dispatch = useAppDispatch();
+  const [upsertFavourite] = useUpsertAppFavouriteMutation();
   const theme = useTheme();
 
   const handleFavoriteClick = () => {
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
-    dispatch(
-      upsertAppFavourite({
-        id: appId,
-        active: newFavoriteState ? UpdateAction.Favorite : UpdateAction.Unfavourite,
-      }),
-    );
+
+    upsertFavourite({
+      id: appId,
+      action: newFavoriteState ? UpdateAction.Favorite : UpdateAction.Unfavourite,
+    })
+      .unwrap()
+      .catch(() => {
+        // Revert on failure
+        setIsFavorite(!newFavoriteState);
+      });
   };
 
   const handleLaunchClick = () => {

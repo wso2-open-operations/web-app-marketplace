@@ -15,29 +15,28 @@
 // under the License.
 import { Box } from "@mui/material";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import ErrorHandler from "@component/common/ErrorHandler";
 import SearchBar from "@component/ui/SearchBar";
 import PreLoader from "@root/src/component/common/PreLoader";
-import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
-import { fetchTags } from "@root/src/slices/tagSlice/tag";
-import { State } from "@root/src/types/types";
+import { useGetUserAppsQuery } from "@root/src/services/app.api";
+import { useGetUserInfoQuery } from "@root/src/services/user.api";
 import AppCard from "@root/src/view/home/components/AppCard";
-import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
 import { extractUniqueTags, filterAndSortApps } from "@utils/searchUtils";
 
 export default function Home() {
-  const dispatch = useAppDispatch();
-  const { state, userApps, stateMessage } = useAppSelector((state: RootState) => state.app);
+  const { data: userInfo } = useGetUserInfoQuery();
+  const {
+    data: userApps,
+    isLoading,
+    isError,
+  } = useGetUserAppsQuery(userInfo?.workEmail ?? "", {
+    skip: !userInfo?.workEmail,
+  });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
-
-  useEffect(() => {
-    dispatch(fetchTags());
-    dispatch(fetchGroups());
-  }, [dispatch]);
 
   // Extract unique tags from apps
   const availableTags = useMemo(() => {
@@ -50,12 +49,12 @@ export default function Home() {
     return filterAndSortApps(userApps, searchTerm, selectedTags);
   }, [userApps, searchTerm, selectedTags]);
 
-  if (state === State.loading) {
+  if (isLoading) {
     return <PreLoader isLoading message={"Fetching your apps ..."} />;
   }
 
-  if (state === State.failed) {
-    return <ErrorHandler message={stateMessage} />;
+  if (isError) {
+    return <ErrorHandler message="Failed to load applications. Please try again later." />;
   }
 
   return (

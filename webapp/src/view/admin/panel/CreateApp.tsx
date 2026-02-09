@@ -13,175 +13,38 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import CloseIcon from "@mui/icons-material/Close";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import {
-  Alert,
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  FormControlLabel,
-  IconButton,
-  LinearProgress,
-  Switch,
-  TextField,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { useFormik } from "formik";
+import { Alert, Box, Button } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import ErrorHandler from "@component/common/ErrorHandler";
+import PreLoader from "@component/common/PreLoader";
+import { useGetUserGroupsQuery } from "@services/groups.api";
+import { useGetTagsQuery } from "@services/tag.api";
 
-import {
-  CreateAppPayload,
-  createApp,
-  fetchApps,
-  fetchUserApps,
-} from "@root/src/slices/appSlice/app";
-import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
-import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
-import { fetchTags } from "@root/src/slices/tagSlice/tag";
-import { State } from "@root/src/types/types";
-
-import { validationSchema } from "../utils/createAppSchema";
-
-const fileSize = 10 * 1024 * 1024;
-
-interface FileWithPreview {
-  file: File;
-  preview: string;
-  uploading: boolean;
-  progress: number;
-  error: string | null;
-}
+import AppStatusToggle from "./components/create-app/AppStatusToggle";
+import FileUploadArea from "./components/create-app/FileUploadArea";
+import LabeledTextField from "./components/create-app/LabeledTextField";
+import TagSelector from "./components/create-app/TagSelector";
+import UserGroupSelector from "./components/create-app/UserGroupSelector";
+import { useCreateApp } from "./hooks/useCreateApp";
 
 export default function CreateApp() {
-  const dispatch = useAppDispatch();
-  const tags = useAppSelector((state: RootState) => state.tag.tags);
-  const groups = useAppSelector((state: RootState) => state.group.groups);
-  const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
-  const { stateMessage, submitState } = useAppSelector((state: RootState) => state.app);
+  const { data: tags = [], isLoading: tagsLoading, isError: tagsError } = useGetTagsQuery();
+  const {
+    data: groups = [],
+    isLoading: groupsLoading,
+    isError: groupsError,
+  } = useGetUserGroupsQuery();
 
-  const theme = useTheme();
+  const { formik, filePreview, setFilePreview, isCreating, isError, error, handleCancel } =
+    useCreateApp();
 
-  const [filePreview, setFilePreview] = useState<FileWithPreview | null>(null);
-  const [dragActive, setDragActive] = useState(false);
+  if (tagsLoading || groupsLoading) {
+    return <PreLoader isLoading message="Loading admin view ... " />;
+  }
 
-  const userEmail = userInfo?.workEmail ?? "";
-
-  useEffect(() => {
-    dispatch(fetchGroups());
-    dispatch(fetchTags());
-  }, [dispatch]);
-
-  const formik = useFormik({
-    initialValues: {
-      title: "",
-      description: "",
-      link: "",
-      versionName: "",
-      tags: [] as number[],
-      groupIds: [] as string[],
-      icon: null as File | null,
-      isActive: true,
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      if (!values.icon) return;
-
-      // Convert icon file to base64 string
-      const reader = new FileReader();
-      reader.readAsDataURL(values.icon);
-      reader.onload = async () => {
-        const base64Icon = reader.result as string;
-
-        const payload: CreateAppPayload = {
-          name: values.title.trim(),
-          url: values.link.trim(),
-          description: values.description.trim(),
-          versionName: values.versionName.trim(),
-          tags: values.tags,
-          icon: base64Icon,
-          userGroups: values.groupIds,
-          isActive: values.isActive,
-        };
-
-        const result = await dispatch(createApp({ payload, userEmail }));
-
-        if (createApp.fulfilled.match(result)) {
-          formik.resetForm();
-          setFilePreview(null);
-
-          dispatch(fetchUserApps());
-          dispatch(fetchApps());
-        }
-      };
-
-      reader.onerror = () => {
-        formik.setFieldError("icon", "Failed to read icon file");
-      };
-    },
-  });
-
-  const handleFileSelect = (file: File) => {
-    if (file.type !== "image/svg+xml" || !file.name.toLowerCase().endsWith(".svg")) {
-      formik.setFieldError("icon", "Only SVG files are allowed");
-      return;
-    }
-
-    if (file.size > fileSize) {
-      formik.setFieldError("icon", "File size must not exceed 10MB");
-      return;
-    }
-
-    formik.setFieldValue("icon", file);
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setFilePreview({
-        file,
-        preview: e.target?.result as string,
-        uploading: false,
-        progress: 100,
-        error: null,
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      handleFileSelect(file);
-    }
-  };
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleFileSelect(file);
-    }
-  };
-
-  const handleRemoveFile = () => {
-    formik.setFieldValue("icon", null);
-    setFilePreview(null);
-  };
+  if (groupsError || tagsError) {
+    return <ErrorHandler message="Error while loading required data" />;
+  }
 
   return (
     <Box
@@ -192,10 +55,10 @@ export default function CreateApp() {
         p: 3,
       }}
     >
-      {/* Form Content */}
-      <Box sx={{ overflowY: "auto", flex: 1 }}>
+      <Box sx={{ overflowY: "auto", width: "100%" }}>
         <form onSubmit={formik.handleSubmit}>
           <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
+            {/* Left Column - Basic Info, Tags, Groups */}
             <Box
               sx={{
                 display: "flex",
@@ -204,184 +67,48 @@ export default function CreateApp() {
                 gap: 3,
               }}
             >
-              {/* App Name */}
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Typography
-                  variant="body1"
-                  sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
-                >
-                  App Name
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="title"
-                  placeholder="Web App Marketplace"
-                  value={formik.values.title}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.title && Boolean(formik.errors.title)}
-                  helperText={formik.touched.title && formik.errors.title}
-                  disabled={submitState === State.loading}
-                />
-              </Box>
+              <LabeledTextField
+                formik={formik}
+                name="title"
+                label="App Name"
+                placeholder="Web App Marketplace"
+                disabled={isCreating}
+              />
 
-              {/* App URL and Version Name in Row */}
               <Box sx={{ display: "flex", gap: 2, width: "100%" }}>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "100%" }}>
-                  <Typography
-                    variant="body1"
-                    sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
-                  >
-                    App Url
-                  </Typography>
+                <LabeledTextField
+                  formik={formik}
+                  name="link"
+                  label="App Url"
+                  placeholder="www.wso2.com"
+                  disabled={isCreating}
+                />
 
-                  <TextField
-                    fullWidth
-                    name="link"
-                    placeholder="www.wso2.com"
-                    value={formik.values.link}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.link && Boolean(formik.errors.link)}
-                    helperText={formik.touched.link && formik.errors.link}
-                    disabled={submitState === State.loading}
-                  />
-                </Box>
-
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "100%" }}>
-                  <Typography
-                    variant="body1"
-                    sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
-                  >
-                    App Version Name
-                  </Typography>
-
-                  <TextField
-                    fullWidth
-                    name="versionName"
-                    placeholder="Beta"
-                    value={formik.values.versionName}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.versionName && Boolean(formik.errors.versionName)}
-                    helperText={formik.touched.versionName && formik.errors.versionName}
-                    disabled={submitState === State.loading}
-                  />
-                </Box>
-              </Box>
-
-              {/* App Description */}
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Typography
-                  variant="body1"
-                  sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
-                >
-                  App Description
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="description"
-                  placeholder="Web App Marketplace"
-                  multiline
-                  rows={3}
-                  value={formik.values.description}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.description && Boolean(formik.errors.description)}
-                  helperText={formik.touched.description && formik.errors.description}
-                  disabled={submitState === State.loading}
+                <LabeledTextField
+                  formik={formik}
+                  name="versionName"
+                  label="App Version Name"
+                  placeholder="Beta"
+                  disabled={isCreating}
                 />
               </Box>
 
-              {/* Tag */}
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Typography
-                  variant="body1"
-                  sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
-                >
-                  Tags
-                </Typography>
+              <LabeledTextField
+                formik={formik}
+                name="description"
+                label="App Description"
+                placeholder="Web App Marketplace"
+                disabled={isCreating}
+                multiline
+                rows={3}
+              />
 
-                <Autocomplete
-                  multiple
-                  options={tags || []}
-                  getOptionLabel={(option) => option.name}
-                  value={tags?.filter((t) => formik.values.tags.includes(t.id)) || []}
-                  onChange={(_, newValue) => {
-                    formik.setFieldValue(
-                      "tags",
-                      newValue.map((tag) => tag.id),
-                    );
-                  }}
-                  onBlur={formik.handleBlur}
-                  disabled={submitState === State.loading}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name}
-                        sx={{
-                          backgroundColor: option.color ? `${option.color}1A` : "#e0e0e0",
-                          border: option.color
-                            ? `2px solid ${option.color}80`
-                            : "2px solid #bdbdbd",
-                          color: option.color || "#424242",
-                          fontWeight: 500,
-                          "& .MuiChip-deleteIcon": {
-                            color: option.color || "#424242",
-                            "&:hover": {
-                              color: option.color ? `${option.color}CC` : "#616161",
-                            },
-                          },
-                        }}
-                      />
-                    ))
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      name="tags"
-                      placeholder="Select one or more tags"
-                      error={formik.touched.tags && Boolean(formik.errors.tags)}
-                      helperText={formik.touched.tags && (formik.errors.tags as string)}
-                    />
-                  )}
-                />
-              </Box>
+              <TagSelector formik={formik} tags={tags} isDisabled={isCreating} />
 
-              {/* User Groups */}
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Typography
-                  variant="body1"
-                  sx={{ ml: 0.5, color: theme.palette.customText.primary.p2.active }}
-                >
-                  User Groups
-                </Typography>
-
-                <Autocomplete
-                  multiple
-                  options={groups || []}
-                  getOptionLabel={(option) => option}
-                  value={formik.values.groupIds}
-                  onChange={(_, newValue) => {
-                    formik.setFieldValue("groupIds", newValue);
-                  }}
-                  onBlur={formik.handleBlur}
-                  disabled={submitState === State.loading}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      name="groupIds"
-                      placeholder="Select user groups"
-                      error={formik.touched.groupIds && Boolean(formik.errors.groupIds)}
-                      helperText={formik.touched.groupIds && (formik.errors.groupIds as string)}
-                    />
-                  )}
-                />
-              </Box>
+              <UserGroupSelector formik={formik} groups={groups} isDisabled={isCreating} />
             </Box>
 
+            {/* Right Column - File Upload, Status, Error */}
             <Box
               sx={{
                 width: "100%",
@@ -390,252 +117,43 @@ export default function CreateApp() {
                 gap: 3,
               }}
             >
-              {/* App Icon Upload */}
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontWeight: 500,
-                    color: theme.palette.customText.primary.p2.active,
-                    ml: 0.5,
-                  }}
-                >
-                  App Icon
-                </Typography>
+              <FileUploadArea
+                formik={formik}
+                filePreview={filePreview}
+                setFilePreview={setFilePreview}
+              />
 
-                {/* File Upload Area */}
-                {!filePreview && (
-                  <Box
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                    sx={{
-                      border: "2px dashed",
-                      borderColor: dragActive
-                        ? theme.palette.customBorder.secondary.active
-                        : formik.touched.icon && formik.errors.icon
-                          ? theme.palette.error.main
-                          : "divider",
-                      borderRadius: 2,
-                      p: 6,
-                      textAlign: "center",
-                      cursor: "pointer",
-                      transition: "all 0.3s",
-                    }}
-                    onClick={() => document.getElementById("file-upload")?.click()}
-                  >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 2,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: "50%",
-                          bgcolor: "primary.main",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <UploadFileIcon />
-                      </Box>
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          gap: 0.5,
-                          color: theme.palette.customText.primary.p3.active,
-                        }}
-                      >
-                        <Typography>Drag and drop file or </Typography>
-                        <Typography
-                          sx={{
-                            color: theme.palette.customText.secondary.p1.active,
-                          }}
-                        >
-                          Select file
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    <input
-                      id="file-upload"
-                      type="file"
-                      accept=".svg,image/svg+xml"
-                      onChange={handleFileChange}
-                      style={{ display: "none" }}
-                    />
-                  </Box>
-                )}
-
-                {/* File Preview */}
-                {filePreview && (
-                  <Box
-                    sx={{
-                      border: "1px solid",
-                      borderColor: "divider",
-                      borderRadius: 2,
-                      p: 2,
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 48,
-                            bgcolor: "action.selected",
-                            borderRadius: 1,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {filePreview.preview && (
-                            <img
-                              src={filePreview.preview}
-                              alt="Preview"
-                              style={{ width: "100%", height: "100%" }}
-                            />
-                          )}
-                        </Box>
-                        <Box>
-                          <Typography variant="body1" fontWeight={500}>
-                            App Icon
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {(filePreview.file.size / (1024 * 1024)).toFixed(2)}
-                            MB
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <IconButton
-                        onClick={handleRemoveFile}
-                        disabled={submitState === State.loading}
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    </Box>
-                    {filePreview.uploading && (
-                      <Box sx={{ mt: 2 }}>
-                        <LinearProgress variant="determinate" value={filePreview.progress} />
-                        <Typography variant="caption" color="text.secondary">
-                          {filePreview.progress}%
-                        </Typography>
-                      </Box>
-                    )}
-                  </Box>
-                )}
-
-                {/* File validation info */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    color: theme.palette.customText.primary.p3.active,
-                    mx: 0.5,
-                  }}
-                >
-                  <Typography variant="caption" color="text.secondary">
-                    Supported formats : svg
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Maximum size : 10MB
-                  </Typography>
-                </Box>
-
-                {/* Error message */}
-                {formik.touched.icon && formik.errors.icon && (
-                  <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
-                    {formik.errors.icon as string}
-                  </Typography>
-                )}
-              </Box>
-
-              {/* Show general error */}
-              {submitState === State.failed && stateMessage && (
-                <Alert severity="error">{stateMessage}</Alert>
+              {isError && error && (
+                <Alert severity="error">
+                  {"data" in error &&
+                  typeof error.data === "object" &&
+                  error.data &&
+                  "message" in error.data
+                    ? String(error.data.message)
+                    : "Failed to create application. Please try again."}
+                </Alert>
               )}
+
+              <AppStatusToggle formik={formik} isDisabled={isCreating} />
 
               <Box
                 sx={{
                   display: "flex",
-                  flexDirection: "column",
-                  gap: 1,
-                  color: theme.palette.customText.primary.p2.active,
+                  justifyContent: "flex-end",
+                  alignItems: "flex-end",
+                  gap: 2,
+                  height: "100%",
                 }}
               >
-                <Typography>App Status</Typography>
-                <FormControlLabel
-                  sx={{ ml: "0px" }}
-                  label={
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        ml: 1.5,
-                        fontWeight: 500,
-                        color: formik.values.isActive
-                          ? theme.palette.customText.primary.p2.active
-                          : theme.palette.customText.primary.p3.active,
-                      }}
-                    >
-                      {formik.values.isActive ? "Active" : "Not Active"}
-                    </Typography>
-                  }
-                  labelPlacement="end"
-                  control={
-                    <Switch
-                      checked={formik.values.isActive}
-                      onChange={(e) => formik.setFieldValue("isActive", e.target.checked)}
-                      disabled={submitState === State.loading}
-                    />
-                  }
-                />
+                <Button disabled={isCreating} onClick={handleCancel} variant="outlined">
+                  Cancel
+                </Button>
+
+                <Button type="submit" variant="contained" disabled={isCreating || !formik.isValid}>
+                  {isCreating ? "Creating..." : "Create App"}
+                </Button>
               </Box>
             </Box>
-          </Box>
-
-          {/* Footer Buttons */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 2,
-              pb: 3,
-              px: 4,
-            }}
-          >
-            <Button
-              disabled={submitState === State.loading}
-              onClick={() => {
-                formik.resetForm();
-                handleRemoveFile();
-              }}
-              variant="outlined"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={submitState === State.loading || !formik.isValid}
-            >
-              {submitState === State.loading ? "Creating..." : "Create App"}
-            </Button>
           </Box>
         </form>
       </Box>

@@ -1,5 +1,9 @@
 @import "./styles/fonts.css";
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: "Poppins", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;

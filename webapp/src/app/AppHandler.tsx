@@ -1,4 +1,4 @@
-// Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
+// Copyright (c) 2026 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -15,70 +15,62 @@
 // under the License.
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-import { useEffect, useMemo, useState } from "react";
+import { FC, memo, useMemo } from "react";
 
+import { AppState } from "@/types/types";
 import ErrorHandler from "@component/common/ErrorHandler";
 import PreLoader from "@component/common/PreLoader";
 import Layout from "@layout/Layout";
 import NotFoundPage from "@layout/pages/404";
 import MaintenancePage from "@layout/pages/Maintenance";
-import { fetchUserApps } from "@slices/appSlice/app";
-import { RootState, useAppDispatch, useAppSelector } from "@slices/store";
-import { getActiveRoutesV2, routes } from "@src/route";
+import { RootState } from "@slices/store";
+import { useAppSelector } from "@slices/store";
 
-const AppHandler = () => {
-  const dispatch = useAppDispatch();
-  const auth = useAppSelector((state: RootState) => state.auth);
-  const [appState, setAppState] = useState<"loading" | "success" | "failed" | "maintenance">(
-    "loading",
-  );
+import { getActiveRoutesV2, routes } from "../route";
 
-  useEffect(() => {
-    dispatch(fetchUserApps());
-  }, [dispatch]);
-
-  const router = useMemo(
-    () =>
-      createBrowserRouter([
-        {
-          path: "/",
-          element: <Layout />,
-          errorElement: <NotFoundPage />,
-          children: getActiveRoutesV2(routes, auth.roles),
-        },
-      ]),
-    [auth.roles],
-  );
-
-  useEffect(() => {
-    if (auth.status === "loading") {
-      setAppState("loading");
-    } else if (auth.status === "success") {
-      setAppState("success");
-    } else if (auth.status === "failed") {
-      setAppState("failed");
-    } else if (auth.mode === "maintenance") {
-      setAppState("maintenance");
-    }
-  }, [auth.status, auth.mode]);
-
-  const renderApp = () => {
-    switch (appState) {
-      case "loading":
-        return <PreLoader isLoading={true} message={"We are getting things ready ..."} />;
-
-      case "failed":
-        return <ErrorHandler message={auth.statusMessage} />;
-
-      case "success":
-        return <RouterProvider router={router} />;
-
-      case "maintenance":
-        return <MaintenancePage />;
-    }
-  };
-
-  return <>{renderApp()}</>;
+const getAppState = (authStatus: string, authMode: string): AppState => {
+  if (authMode === AppState.Maintenance) return AppState.Maintenance;
+  if (authStatus === AppState.Loading) return AppState.Loading;
+  if (authStatus === AppState.Failed) return AppState.Failed;
+  return AppState.Success;
 };
 
-export default AppHandler;
+const AppHandler: FC = () => {
+  const { status, mode, roles, statusMessage } = useAppSelector((state: RootState) => state.auth);
+
+  const appState = useMemo(() => getAppState(status, mode), [status, mode]);
+
+  const appRoutes = useMemo(
+    () => [
+      {
+        path: "/",
+        element: <Layout />,
+        errorElement: <NotFoundPage />,
+        children: getActiveRoutesV2(routes, roles),
+      },
+    ],
+    [roles],
+  );
+
+  const browserRouter = useMemo(() => createBrowserRouter(appRoutes), [appRoutes]);
+
+  const renderApp = () => {
+    if (appState === AppState.Loading) {
+      return <PreLoader isLoading={true} message="We are getting things ready..." />;
+    }
+
+    if (appState === AppState.Maintenance) {
+      return <MaintenancePage />;
+    }
+
+    if (appState === AppState.Failed) {
+      return <ErrorHandler message={statusMessage} />;
+    }
+
+    return <RouterProvider router={browserRouter} />;
+  };
+
+  return renderApp();
+};
+
+export default memo(AppHandler);

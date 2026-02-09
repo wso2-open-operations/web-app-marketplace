@@ -1,4 +1,4 @@
-// Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
+// Copyright (c) 2026 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -82,7 +82,7 @@ export const tokens = (mode: PaletteMode) => {
   return {
     ...(mode === "dark"
       ? {
-          // Neutral colors - Dark mode
+          // Colors - Dark mode
           neutral: colors.neutral,
           secondary: colors.secondary,
           primary: colors.primary,
@@ -100,7 +100,7 @@ export const tokens = (mode: PaletteMode) => {
               p2: { active: colors.secondary["1000"], hover: "#FF6A0096", disabled: "#ff730096" },
             },
             brand: {
-              p1: { active: colors.primary["1100"], hover: "#FF6A0096", disabled: "#ff730096" },
+              p1: { active: colors.primary["1200"], hover: "#FF6A0096", disabled: "#ff730096" },
               p2: { active: colors.primary.main, hover: "#FF6A0096", disabled: "#ff73005c" },
             },
           },
@@ -149,12 +149,12 @@ export const tokens = (mode: PaletteMode) => {
               active: colors.neutral["1800"],
               hover: colors.neutral["1900"],
             },
+            secondary: {
+              active: "#171717",
+            },
             navbar: {
               active: colors.neutral["1900"],
               hover: colors.secondary["1700"],
-            },
-            secondary: {
-              active: "#171717",
             },
           },
 
@@ -214,17 +214,17 @@ export const tokens = (mode: PaletteMode) => {
           // Text colors - Light mode
           text: {
             primary: {
-              p1: { active: colors.neutral.black, hover: "#ffffff" },
-              p2: { active: colors.neutral["1600"], hover: "#ffffff" },
-              p3: { active: colors.neutral["1200"], hover: "#ffffff" },
-              p4: { active: colors.neutral["700"], hover: "#ffffff" },
+              p1: { active: colors.neutral.black, hover: "#FFFFFF" },
+              p2: { active: colors.neutral["1600"], hover: "#FFFFFF" },
+              p3: { active: colors.neutral["1200"], hover: "#FFFFFF" },
+              p4: { active: colors.neutral["700"], hover: "#FFFFFF" },
             },
             secondary: {
-              p1: { active: colors.secondary["800"], hover: "#FF6A0096", disabled: "#ff730096" },
-              p2: { active: colors.secondary.main, hover: "#FF6A0096", disabled: "#ff730096" },
+              p1: { active: colors.secondary["800"], hover: "#FFFFFF", disabled: "#FFFFFF" },
+              p2: { active: colors.secondary.main, hover: "#FFFFFF", disabled: "#FFFFFF" },
             },
             brand: {
-              p1: { active: colors.primary.main, hover: "#ffffff", disabled: "#ff730096" },
+              p1: { active: colors.primary["1100"], hover: "#FFFFFF", disabled: "#ff730096" },
               p2: { active: colors.neutral.white, hover: "#FF6A0096", disabled: "#ffffff96" },
             },
           },
@@ -263,12 +263,12 @@ export const tokens = (mode: PaletteMode) => {
               active: colors.neutral.light_white,
               hover: colors.neutral.white,
             },
-            navbar: {
-              active: colors.neutral["1900"],
-              hover: "#FFF",
-            },
             secondary: {
               active: colors.neutral.white,
+            },
+            navbar: {
+              active: colors.neutral["1900"],
+              hover: "#FFFFFF",
             },
           },
 
@@ -295,16 +295,16 @@ export const tokens = (mode: PaletteMode) => {
               disabled: "#00CEFF96",
             },
             secondary_light: {
-              active: colors.secondary["200"],
-              hover: "#fff",
+              active: colors.secondary["100"],
+              hover: "#FFFFFF",
             },
             neutral_light: {
               active: colors.neutral["100"],
-              hover: "#fff",
+              hover: "#FFFFFF",
             },
             neutral_dark: {
               active: colors.neutral["1700"],
-              hover: "#fff",
+              hover: "#FFFFFF",
             },
             xmas: {
               active: "#A6C8D9",
@@ -477,10 +477,10 @@ declare module "@mui/material/styles" {
       primary_light?: Record<string, string>;
       primary_dark?: Record<string, string>;
       secondary?: Record<string, string>;
-      secondary_light: Record<string, string>;
+      secondary_light?: Record<string, string>;
       neutral_light?: Record<string, string>;
       neutral_dark?: Record<string, string>;
-      xmas: Record<string, string>;
+      xmas?: Record<string, string>;
     };
     shadow?: {
       primary?: Record<string, string>;
@@ -492,9 +492,9 @@ declare module "@mui/material/styles" {
         p3?: { active: string; hover: string };
         p4?: { active: string; hover: string };
       };
-      secondary: {
-        p1: { active: string; hover: string; disabled?: string };
-        p2: { active: string; hover: string; disabled?: string };
+      secondary?: {
+        p1?: { active: string; hover: string; disabled?: string };
+        p2?: { active: string; hover: string; disabled?: string };
       };
       brand?: {
         p1?: { active: string; hover: string; disabled?: string };
@@ -526,7 +526,7 @@ export const themeSettings = (mode: PaletteMode) => {
       },
       error: {
         main: "#F23B0D",
-        light: "#FF704D ",
+        light: "#FF704D",
         dark: "#BD1C0F",
       },
       warning: {
@@ -621,17 +621,17 @@ export const themeSettings = (mode: PaletteMode) => {
       MuiButton: {
         styleOverrides: {
           root: {
-            textTransform: "none",
+            textTransform: "none" as const,
             borderRadius: 8,
             fontWeight: 500,
           },
           contained: {
             backgroundColor: colors.fill.primary.clicked,
             color: colors.text.brand.p2.active,
-            boxShadow: "none",
+            boxShadow: "none" as const,
             "&:hover": {
               backgroundColor: colors.fill.primary.hover,
-              boxShadow: "none",
+              boxShadow: "none" as const,
             },
             "&:active": {
               backgroundColor: colors.fill.primary.active,
@@ -662,11 +662,11 @@ export const themeSettings = (mode: PaletteMode) => {
             style: {
               padding: "8px 16px",
               backgroundColor: colors.fill.primary.active,
-              boxShadow: "none",
+              boxShadow: "none" as const,
               width: "fit-content",
               "&:hover": {
                 backgroundColor: colors.fill.primary.hover,
-                boxShadow: "none",
+                boxShadow: "none" as const,
               },
               "&.Mui-disabled": {
                 backgroundColor: colors.fill.primary.disabled,
@@ -730,19 +730,19 @@ export const themeSettings = (mode: PaletteMode) => {
       MuiSwitch: {
         styleOverrides: {
           root: {
-            width: 58,
-            height: 38,
+            width: 50,
+            height: 30,
             padding: 0.5,
             "& .MuiSwitch-switchBase": {
               padding: 0,
-              margin: "7px",
+              margin: "5px",
               transitionDuration: "300ms",
               color: alpha(colors.fill.secondary.active, 0.59),
               "&.Mui-checked": {
                 transform: "translateX(20px)",
                 color: colors.fill.secondary.active,
                 "& + .MuiSwitch-track": {
-                  backgroundColor: colors.fill.secondary_light.active,
+                  backgroundColor: alpha(colors.fill.secondary.active, 0.35),
                 },
               },
               "&.Mui-disabled": {
@@ -753,14 +753,33 @@ export const themeSettings = (mode: PaletteMode) => {
               },
             },
             "& .MuiSwitch-thumb": {
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
             },
             "& .MuiSwitch-track": {
               borderRadius: 38 / 2,
-              backgroundColor: alpha(colors.fill.secondary_light.active, 0.59),
+              backgroundColor: alpha(colors.fill.secondary_light.active, 1),
               opacity: 1,
             },
+          },
+        },
+      },
+      MuiTooltip: {
+        defaultProps: {
+          arrow: true,
+          placement: "right" as const,
+        },
+        styleOverrides: {
+          tooltip: {
+            backgroundColor: colors.neutral["1700"],
+            color: colors.neutral.white,
+            padding: "6px 8px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.16), 0px 0px 2px rgba(0, 0, 0, 0.08)",
+          },
+          arrow: {
+            color: colors.neutral["1700"],
           },
         },
       },
@@ -768,7 +787,7 @@ export const themeSettings = (mode: PaletteMode) => {
     breakpoints: {
       values: {
         xs: 0,
-        sm: 600,
+        sm: 700,
         md: 960,
         lg: 1280,
         xl: 1920,

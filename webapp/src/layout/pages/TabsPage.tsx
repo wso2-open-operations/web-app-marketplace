@@ -13,7 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 
@@ -61,7 +61,7 @@ export default function TabsPage({ tabsPage }: TabsPageProps) {
         transition: "color 200ms",
         display: "flex",
         flexDirection: "column",
-        gap: 2.5,
+        gap: 3,
       }}
     >
       {/* Tab Navigation */}
@@ -111,56 +111,63 @@ export function Tabs({ tabs, activeIndex, handleTabClick }: TabToggleProps) {
           width: "100%",
           position: "relative",
           transition: "color 200ms",
+          gap: 1,
+          px: 1,
         }}
         role="tablist"
         aria-orientation="horizontal"
       >
         {tabs.map((tab, index) => (
-          <Button
-            component={motion.button}
+          <Box
             key={index}
-            onClick={() => handleTabClick(index)}
-            disableRipple
-            role="tab"
-            id={`simple-tab-${index}`}
-            aria-selected={activeIndex === index}
-            aria-controls={`simple-tabpanel-${index}`}
-            tabIndex={activeIndex === index ? 0 : -1}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 2,
-              paddingTop: "8px",
-              paddingBottom: "16px",
-              borderRadius: "0px",
-              px: 2,
-              fontSize: "0.875rem",
-              fontWeight: "medium",
-              position: "relative",
-              color:
-                activeIndex === index
-                  ? theme.palette.customText.primary.p2.active
-                  : theme.palette.customText.primary.p3.active,
-              textTransform: "none",
-              minWidth: "auto",
-              borderBottom:
-                activeIndex === index
-                  ? `2px solid ${theme.palette.customText.primary.p2.active}`
-                  : "none",
-              "&:hover": {
-                backgroundColor: "transparent",
-              },
-            }}
+            sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "center" }}
           >
-            <Box
-              component="span"
-              sx={{ width: "fit-content", display: "flex", alignItems: "center" }}
+            <Button
+              component={motion.button}
+              onClick={() => handleTabClick(index)}
+              disableRipple
+              role="tab"
+              id={`simple-tab-${index}`}
+              aria-selected={activeIndex === index}
+              aria-controls={`simple-tabpanel-${index}`}
+              tabIndex={activeIndex === index ? 0 : -1}
+              sx={{
+                display: "flex",
+                gap: 1,
+                borderRadius: "6px",
+                backgroundColor:
+                  activeIndex === index ? theme.palette.fill.primary_light.active : "none",
+                color:
+                  activeIndex === index
+                    ? theme.palette.customText.brand.p1.active
+                    : theme.palette.customText.primary.p2.active,
+                "&:hover": {
+                  backgroundColor:
+                    activeIndex === index ? theme.palette.fill.primary_light.active : "transparent",
+                },
+              }}
             >
-              {React.cloneElement(tab.icon)}
-            </Box>
-            <Box component="span">{tab.tabTitle}</Box>
-          </Button>
+              <Box
+                component="span"
+                sx={{ width: "fit-content", display: "flex", alignItems: "center" }}
+              >
+                {React.cloneElement(tab.icon)}
+              </Box>
+              <Typography variant={activeIndex === index ? "h6" : "body1"}>
+                {tab.tabTitle}
+              </Typography>
+            </Button>
+            <Box
+              sx={{
+                height: "2px",
+                width: "75%",
+                position: "relative",
+                top: "1.5px",
+                backgroundColor:
+                  activeIndex === index ? theme.palette.customBorder.brand.active : "transparent",
+              }}
+            />
+          </Box>
         ))}
       </Box>
     </Box>
@@ -183,17 +190,27 @@ export function TabPanel(props: TabPanelProps) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
+      sx={{
+        maxHeight: "calc(100vh - 150px)",
+        overflowY: "auto",
+        // Hide scrollbar for Chrome, Safari and Opera
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
+        // Hide scrollbar for IE, Edge and Firefox
+        msOverflowStyle: "none",
+        scrollbarWidth: "none",
+        backgroundColor: theme.palette.surface.secondary.active,
+        borderRadius: 2,
+        border: `0.5px solid ${theme.palette.customBorder.territory.active}`,
+      }}
     >
       <Box
         component={motion.div}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
-        sx={{
-          border: `1px solid ${theme.palette.customBorder.territory.active}`,
-          borderRadius: 1.5,
-          backgroundColor: theme.palette.surface.secondary.active,
-        }}
+        sx={{ width: "100%", boxSizing: "border-box" }}
       >
         {children}
       </Box>

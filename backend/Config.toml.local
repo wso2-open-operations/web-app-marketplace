@@ -1,21 +1,34 @@
-[people.authorization.authorizedRoles]
-EMPLOYEE_ROLE = 100
-ADMIN_ROLE = 200
+[web_app_marketplace.authorization.authorizedRoles]
+EMPLOYEE_ROLE = 
+ADMIN_ROLE = 
 
-[people.database.dbConfig]
-host = ""
-user = ""
-password = ""
-database = ""
-port = 3306
+[web_app_marketplace.database.dbConfig]
+database = 
+host = 
+password = 
+port = 
+user = 
+[web_app_marketplace.database.dbConfig.connectionPool]
+maxConnectionLifeTime = 
+maxOpenConnections =
+minIdleConnections = 
 
-[people.database.dbConfig.connectionPool]
-maxOpenConnections = 10
-maxConnectionLifeTime = 100.0
-minIdleConnections= 3
+[web_app_marketplace.people]
+peopleEndpoint =
+[web_app_marketplace.people.clientAuthConfig]
+clientId =
+clientSecret =
+tokenUrl =
+[web_app_marketplace.people.retryConfig]
+backOffFactor =
+count =
+interval =
+maxWaitInterval =
 
-[people.database.dbConfig.options]
-connectTimeout = 10.0
-
-[people.database.dbConfig.options.ssl]
-mode = "REQUIRED"
+[web_app_marketplace.scim]
+scimOperationsServiceUrl = 
+[web_app_marketplace.scim.oauthConfig]
+tokenUrl = 
+clientId = 
+clientSecret = 
+scopes = 

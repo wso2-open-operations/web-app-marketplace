@@ -13,57 +13,15 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { Box, Button, Chip, TextField, Typography, useTheme } from "@mui/material";
-import { useFormik } from "formik";
-import * as Yup from "yup";
+import { Box, Chip, Typography, useTheme } from "@mui/material";
 
-import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
-import { State } from "@root/src/types/types";
-import { createTags, fetchTags } from "@slices/tagSlice/tag";
+import { useGetTagsQuery } from "@services/tag.api";
 
-interface Tag {
-  name: string;
-  color: string;
-}
-
-const validationSchema = Yup.object({
-  name: Yup.string().required("Tag name is required"),
-  color: Yup.string()
-    .required("Tag color is required")
-    .matches(
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
-      "Must be a valid hex color (e.g., #F5F5F5 or #FFF)",
-    ),
-});
+import CreateTagForm from "./components/create-tag/CreateTagForm";
 
 export default function CreateTags() {
-  const { submitState, tags } = useAppSelector((state: RootState) => state.tag);
-  const dispatch = useAppDispatch();
-  const userInfo = useAppSelector((state: RootState) => state.user.userInfo);
-  const userEmail = userInfo?.workEmail ?? "";
   const theme = useTheme();
-
-  const formik = useFormik<Tag>({
-    initialValues: {
-      name: "",
-      color: "",
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      const requestPayload = {
-        name: values.name,
-        color: values.color,
-        addedBy: userEmail,
-      };
-
-      const result = await dispatch(createTags(requestPayload));
-
-      if (createTags.fulfilled.match(result)) {
-        formik.resetForm();
-        dispatch(fetchTags());
-      }
-    },
-  });
+  const { data: tags = [] } = useGetTagsQuery();
 
   return (
     <Box
@@ -73,91 +31,9 @@ export default function CreateTags() {
         gap: 3,
       }}
     >
-      <Box sx={{ width: "100%", display: "flex", gap: 2, flexDirection: "column" }}>
-        <Typography
-          variant="h6"
-          sx={{
-            color: theme.palette.customText.primary.p2.active,
-          }}
-        >
-          Add Tags
-        </Typography>
+      <CreateTagForm />
 
-        <form onSubmit={formik.handleSubmit}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2.5,
-              color: theme.palette.customText.primary.p2.active,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-              }}
-            >
-              <Typography variant="body1">Tag Name</Typography>
-
-              <TextField
-                fullWidth
-                name="name"
-                placeholder="Sample Tag"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
-                disabled={submitState === State.loading}
-              />
-            </Box>
-
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <Typography variant="body1">Tag Color</Typography>
-              <TextField
-                fullWidth
-                name="color"
-                placeholder="#F5F5F5"
-                value={formik.values.color}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.color && Boolean(formik.errors.color)}
-                helperText={formik.touched.color && formik.errors.color}
-                disabled={submitState === State.loading}
-              />
-            </Box>
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 2,
-              pt: 3,
-            }}
-          >
-            <Button
-              disabled={submitState === State.loading}
-              onClick={() => {
-                formik.resetForm();
-              }}
-              variant="outlined"
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={submitState === State.loading || !formik.isValid}
-            >
-              {submitState === State.loading ? "Creating..." : "Create Tag"}
-            </Button>
-          </Box>
-        </form>
-      </Box>
+      {/* Display existing tags */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Typography
           variant="body1"
@@ -171,6 +47,7 @@ export default function CreateTags() {
         >
           Existing Tags
         </Typography>
+
         <Box
           sx={{
             display: "flex",

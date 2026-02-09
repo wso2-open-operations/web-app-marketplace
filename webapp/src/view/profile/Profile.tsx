@@ -15,21 +15,14 @@
 // under the License.
 import { Avatar, Box, Card, CardContent, Chip, Typography, useTheme } from "@mui/material";
 
-import { useEffect } from "react";
-
-import { fetchGroups } from "@root/src/slices/groupsSlice/groups";
-import { RootState, useAppDispatch, useAppSelector } from "@root/src/slices/store";
+import { useGetUserInfoQuery } from "@root/src/services/user.api";
+import { RootState, useAppSelector } from "@root/src/slices/store";
 
 export default function Profile() {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state: RootState) => state.user.userInfo);
+  const { data: user } = useGetUserInfoQuery();
   const token = useAppSelector((state: RootState) => state.auth.decodedIdToken);
   const groups = token?.groups;
   const theme = useTheme();
-
-  useEffect(() => {
-    dispatch(fetchGroups());
-  }, [dispatch]);
 
   return (
     <Card

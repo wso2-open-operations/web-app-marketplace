@@ -13,22 +13,23 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { VariantType } from "notistack";
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch } from "@slices/store";
 
 export interface CommonState {
   message: string;
   timestamp: number | null;
   type: VariantType;
+  autoHideDuration?: number;
 }
 
 const initialState: CommonState = {
   message: "",
   timestamp: null,
   type: "success",
+  autoHideDuration: 3000, // Default 3 seconds
 };
 
 export const CommonSlice = createSlice({
@@ -40,11 +41,13 @@ export const CommonSlice = createSlice({
       action: PayloadAction<{
         message: string;
         type: "success" | "error" | "warning";
-      }>
+        autoHideDuration?: number; // Optional duration in milliseconds
+      }>,
     ) => {
       state.message = action.payload.message;
       state.type = action.payload.type;
       state.timestamp = Date.now();
+      state.autoHideDuration = action.payload.autoHideDuration ?? 3000; // Default 3 seconds
     },
   },
 });
@@ -55,7 +58,7 @@ export function ShowSnackBarMessage(message: string, type: VariantType) {
       type: "common/enqueueSnackbarMessage",
       payload: {
         message: message,
-        type: "success",
+        type: type,
       },
     });
   };
